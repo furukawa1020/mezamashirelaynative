@@ -53,8 +53,14 @@
    ```
 
 2. **PlatformIO** でファームウェアをアップロード:
+   
+   VS Code の PlatformIO 拡張機能を使用:
+   - `c:\Users\wakuw\OneDrive\画像\ドキュメント\PlatformIO\Projects\mezamashinochild\` を開く
+   - 画面下部の PlatformIO ツールバーから「Upload」をクリック
+   
+   またはコマンドラインから:
    ```bash
-   cd arduino/mezamashinochild
+   cd "c:\Users\wakuw\OneDrive\画像\ドキュメント\PlatformIO\Projects\mezamashinochild"
    pio run --target upload
    pio device monitor
    ```

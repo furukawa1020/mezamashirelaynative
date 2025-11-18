@@ -8,6 +8,7 @@ import DataManager from '../components/DataManager'
 import { BLETagManager } from '../components/BLETagManager'
 import { SessionManager } from '../components/SessionManager'
 import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
+import { RelayNotification } from '../components/RelayNotification'
 
 export default function Dashboard(){
   usePageMeta('ダッシュボード','今日のセッションを確認・開始できます')
@@ -41,6 +42,7 @@ export default function Dashboard(){
 
       {view==='home' && (
         <div className="card">
+          <RelayNotification />
           <ScheduledAlarmManager />
           <SessionManager />
           <div style={{ marginTop: 16 }}>
