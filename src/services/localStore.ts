@@ -177,10 +177,25 @@ export async function listSessionSteps(sessionId:string){
   return all.filter((r:AnyObj)=>r.session_id===sessionId).sort((a:AnyObj,b:AnyObj)=> (a.order||0)-(b.order||0))
 }
 
-export async function completeSessionStep(sessionStepId:string){
+export async function completeSessionStep(sessionStepId:string, bleData?: {
+  ble_tag_id?: string;
+  ble_event?: string;
+  ble_confidence?: number;
+  duration_ms?: number;
+}){
   const all = load(KEYS.session_steps)
   const idx = all.findIndex((r:AnyObj)=>r.id===sessionStepId)
-  if(idx>=0){ all[idx].finished_at = Date.now(); all[idx].result = 'success'; save(KEYS.session_steps, all) }
+  if(idx>=0){ 
+    all[idx].finished_at = Date.now(); 
+    all[idx].result = 'success'; 
+    if (bleData) {
+      all[idx].ble_tag_id = bleData.ble_tag_id;
+      all[idx].ble_event = bleData.ble_event;
+      all[idx].ble_confidence = bleData.ble_confidence;
+      all[idx].duration_ms = bleData.duration_ms;
+    }
+    save(KEYS.session_steps, all);
+  }
 
   const step = all[idx]
   if(!step) return

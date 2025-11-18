@@ -3,6 +3,8 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import { useAuth } from './services/auth'
 import { useLocalAuth } from './services/localAuth'
+import { BLEProvider } from './services/BLEProvider'
+import { AlarmProvider } from './services/AlarmProvider'
 import Header from './components/Header'
 import OnboardingModal from './components/OnboardingModal'
 
@@ -25,12 +27,16 @@ export default function App(){
   if(loading) return <div style={{display:'flex',height:'100vh',alignItems:'center',justifyContent:'center'}}><div className="small muted">読み込み中…</div></div>
   if(!user) return <Login />
   return (
-    <div>
-      <div className="container">
-        <Header />
-        <Dashboard />
-      </div>
-      <OnboardingModal open={showOnboard} onClose={()=>{ try{ localStorage.setItem('mz_seen_onboarding','1') }catch(e){}; setShowOnboard(false) }} />
-    </div>
+    <AlarmProvider>
+      <BLEProvider>
+        <div>
+          <div className="container">
+            <Header />
+            <Dashboard />
+          </div>
+          <OnboardingModal open={showOnboard} onClose={()=>{ try{ localStorage.setItem('mz_seen_onboarding','1') }catch(e){}; setShowOnboard(false) }} />
+        </div>
+      </BLEProvider>
+    </AlarmProvider>
   )
 }

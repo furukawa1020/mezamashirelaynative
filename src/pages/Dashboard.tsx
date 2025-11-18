@@ -5,6 +5,8 @@ import Missions from './Missions'
 import Groups from './Groups'
 import { startSession } from '../services/firestore'
 import DataManager from '../components/DataManager'
+import { BLETagManager } from '../components/BLETagManager'
+import { SessionManager } from '../components/SessionManager'
 
 export default function Dashboard(){
   usePageMeta('ダッシュボード','今日のセッションを確認・開始できます')
@@ -38,9 +40,14 @@ export default function Dashboard(){
 
       {view==='home' && (
         <div className="card">
-          <h3>今日の起床セッション</h3>
-          <p>ここに当日のステップ進行 UI を実装します。BLE/NFC はスタブで代替可能です。</p>
-          <div className="card">
+          <SessionManager />
+          <div style={{ marginTop: 16 }}>
+            <BLETagManager />
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <DataManager />
+          </div>
+          <div className="card" style={{ marginTop: 16 }}>
             <h4>デバッグ: BLE/NFC ダミー</h4>
             <p>ダミーイベントを送信してステップ完了処理を検証できます。</p>
             <button className="button" onClick={()=>{
@@ -57,7 +64,6 @@ export default function Dashboard(){
               }}>アカウントにする（メールで保存）</button>
             </div>
           </div>
-          <DataManager />
         </div>
       )}
 
