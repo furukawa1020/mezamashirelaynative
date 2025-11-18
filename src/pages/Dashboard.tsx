@@ -7,6 +7,7 @@ import { startSession } from '../services/firestore'
 import DataManager from '../components/DataManager'
 import { BLETagManager } from '../components/BLETagManager'
 import { SessionManager } from '../components/SessionManager'
+import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
 
 export default function Dashboard(){
   usePageMeta('ダッシュボード','今日のセッションを確認・開始できます')
@@ -40,6 +41,7 @@ export default function Dashboard(){
 
       {view==='home' && (
         <div className="card">
+          <ScheduledAlarmManager />
           <SessionManager />
           <div style={{ marginTop: 16 }}>
             <BLETagManager />

@@ -1,30 +1,67 @@
-# めざましリレー (Mezamashi Relay) — プロトタイプ
+# めざましリレー (Mezamashi Relay) — IoT × PWA 起床リレーアプリ
 
-このリポジトリは PWA ベースの起床リレーアプリの最小プロトタイプです。
+このリポジトリは、**XIAO ESP32C3 + MPU6050** を使った BLE センサと PWA を統合した起床リレーアプリです。
 
-主な特徴（MVP）
-- Vite + React (TypeScript) のフロントエンド
-- Firebase Authentication (Email/Google) の雛形
-- PWA マニフェストとシンプルな Service Worker
-- BLE/NFC の受信はスタブ実装（ダミーイベントで動作確認可）
+## 主な特徴
 
-セットアップ
-1. Node.js (推奨 18+) をインストール
+### PWA（Progressive Web App）
+- **Vite + React (TypeScript)** のモダンなフロントエンド
+- **Local-first** 設計：Firebase なしでも localStorage で完全動作
+- **Web Bluetooth API** による BLE センサ連携
+- **アラーム音**：天国と地獄の音楽がループ再生（全ステップ完了まで）
+- **オフライン対応**：Service Worker + Install Prompt
+
+### BLE IoT センサ（XIAO ESP32C3 + MPU6050）
+- **モーションパターン検出**：OPEN / LIFT / SHAKE / CLOSE / FALSE（やったフリ）
+- **シーケンス認識**：OPEN → LIFT → CLOSE の一連動作を1ステップとして扱う
+- **BLE GATT Notify**：JSON ペイロードでイベント送信
+- **100Hz サンプリング**：高精度な動作検出
+
+### その他
+- **グループモード**：RACE（競争）/ ALL（全員クリア）
+- **データエクスポート/インポート**：QR コード共有、自動バックアップ
+- **マルチタグ対応**：最大3台の BLE タグを登録可能
+
+## クイックスタート
+
+### PWA 側のセットアップ
+
+1. **Node.js (推奨 18+)** をインストール
 2. 依存関係をインストール:
+   ```powershell
+   npm install
+   ```
 
-```powershell
-npm install
-```
+3. 開発サーバ起動:
+   ```powershell
+   npm run dev
+   ```
 
-3. Firebase のプロジェクトを作成し、Web SDK の設定値を `src/services/auth.tsx` の `firebaseConfig` に貼り付けてください。
-   - Firebase Authentication を有効化（Email/Password、Google）
-   - Firestore を作成（必要に応じてルール調整）
+4. （オプション）Firebase を使う場合:
+   - `.env.example` を `.env` にコピー
+   - Firebase プロジェクトを作成し、設定値を `.env` に記入
+   - `VITE_USE_FIREBASE=1` を設定
 
-4. 開発サーバ起動:
+### BLE センサ側のセットアップ
 
-```powershell
-npm run dev
-```
+1. **XIAO ESP32C3 + MPU6050** を配線:
+   ```
+   MPU6050 VCC → XIAO 3.3V
+   MPU6050 GND → XIAO GND
+   MPU6050 SDA → XIAO D4 (GPIO6)
+   MPU6050 SCL → XIAO D5 (GPIO7)
+   ```
+
+2. **PlatformIO** でファームウェアをアップロード:
+   ```bash
+   cd arduino/mezamashinochild
+   pio run --target upload
+   pio device monitor
+   ```
+
+3. シリアルモニタで "BLE: Advertising started" を確認
+
+詳細は [docs/BLE_TESTING_DEBUG.md](docs/BLE_TESTING_DEBUG.md) を参照してください。
 
 デプロイ
 - Vercel や Netlify にデプロイできます。ビルドコマンドは `npm run build`、公開ディレクトリは `dist` です。
