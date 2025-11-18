@@ -49,6 +49,7 @@ export default function Dashboard(){
           <div style={{ marginTop: 16 }}>
             <BLETagManager />
           </div>
+          <SensorDataViewer />
           <div style={{ marginTop: 16 }}>
             <DataManager />
           </div>
