@@ -185,22 +185,37 @@ export async function completeSessionStep(sessionStepId:string, bleData?: {
 }){
   const all = load(KEYS.session_steps)
   const idx = all.findIndex((r:AnyObj)=>r.id===sessionStepId)
-  if(idx>=0){ 
-    all[idx].finished_at = Date.now(); 
-    all[idx].result = 'success'; 
-    if (bleData) {
-      all[idx].ble_tag_id = bleData.ble_tag_id;
-      all[idx].ble_event = bleData.ble_event;
-      all[idx].ble_confidence = bleData.ble_confidence;
-      all[idx].duration_ms = bleData.duration_ms;
-    }
-    save(KEYS.session_steps, all);
-  }
+  if(idx < 0) return
 
   const step = all[idx]
   if(!step) return
   const sessionId = step.session_id
   if(!sessionId) return
+
+  // 同じセッションの全ステップを取得
+  const sessionSteps = all.filter((r:AnyObj)=>r.session_id===sessionId).sort((a:AnyObj,b:AnyObj)=> (a.order||0)-(b.order||0))
+  
+  // 最後のステップかどうかチェック
+  const isLastStep = step.order === Math.max(...sessionSteps.map((s:AnyObj)=>s.order||0))
+  
+  if (isLastStep) {
+    // 最後のステップ（ドア）の場合、すべての前のステップが完了していることを確認
+    const incompletePrevSteps = sessionSteps.filter((s:AnyObj)=> s.order < step.order && s.result !== 'success')
+    if (incompletePrevSteps.length > 0) {
+      throw new Error('すべてのステップを完了してから、ドアを開けてください')
+    }
+  }
+
+  // ステップを完了
+  all[idx].finished_at = Date.now(); 
+  all[idx].result = 'success'; 
+  if (bleData) {
+    all[idx].ble_tag_id = bleData.ble_tag_id;
+    all[idx].ble_event = bleData.ble_event;
+    all[idx].ble_confidence = bleData.ble_confidence;
+    all[idx].duration_ms = bleData.duration_ms;
+  }
+  save(KEYS.session_steps, all);
 
   // check if any remaining not-success steps
   const rem = all.filter((r:AnyObj)=>r.session_id===sessionId && r.result!=='success')

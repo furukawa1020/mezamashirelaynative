@@ -162,15 +162,48 @@ async function listSessionStepsFirebase(sessionId:string){
   return snap.docs.map(d=>({ id:d.id, ...d.data() }))
 }
 
-async function completeSessionStepFirebase(sessionStepId:string){
+async function completeSessionStepFirebase(sessionStepId:string, bleData?: {
+  ble_tag_id?: string;
+  ble_event?: string;
+  ble_confidence?: number;
+  duration_ms?: number;
+}){
   const ref = doc(firebaseDb,'session_steps',sessionStepId)
-  await updateDoc(ref, { finished_at: serverTimestamp(), result: 'success' })
   const snap = await getDoc(ref)
   if(!snap.exists()) return
+  
   const sdata:any = snap.data()
   const sessionId = sdata.session_id
   if(!sessionId) return
-  const q = query(collection(db,'session_steps'), where('session_id','==',sessionId), where('result','!=','success'))
+
+  // 同じセッションの全ステップを取得
+  const allStepsQuery = query(collection(firebaseDb,'session_steps'), where('session_id','==',sessionId), orderBy('order','asc'))
+  const allStepsSnap = await getDocs(allStepsQuery)
+  const sessionSteps = allStepsSnap.docs.map(d=>({ id:d.id, ...d.data() }))
+  
+  // 最後のステップかどうかチェック
+  const maxOrder = Math.max(...sessionSteps.map((s:any)=>s.order||0))
+  const isLastStep = sdata.order === maxOrder
+  
+  if (isLastStep) {
+    // 最後のステップ（ドア）の場合、すべての前のステップが完了していることを確認
+    const incompletePrevSteps = sessionSteps.filter((s:any)=> s.order < sdata.order && s.result !== 'success')
+    if (incompletePrevSteps.length > 0) {
+      throw new Error('すべてのステップを完了してから、ドアを開けてください')
+    }
+  }
+
+  // ステップを完了
+  const updateData: any = { finished_at: serverTimestamp(), result: 'success' }
+  if (bleData) {
+    updateData.ble_tag_id = bleData.ble_tag_id
+    updateData.ble_event = bleData.ble_event
+    updateData.ble_confidence = bleData.ble_confidence
+    updateData.duration_ms = bleData.duration_ms
+  }
+  await updateDoc(ref, updateData)
+
+  const q = query(collection(firebaseDb,'session_steps'), where('session_id','==',sessionId), where('result','!=','success'))
   const rem = await getDocs(q)
   if(rem.size === 0){ try{ await finishSessionAndComputeFirebase(sessionId) }catch(e){} }
 }

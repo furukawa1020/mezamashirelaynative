@@ -97,7 +97,8 @@ export function BLEProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (err: any) {
         console.error('[BLE] Failed to complete session_step:', err);
-        showToast('ステップの完了に失敗しました');
+        // エラーメッセージを表示（順番チェックのエラーなど）
+        showToast(err.message || 'ステップの完了に失敗しました');
       }
     },
     [ble.tags, user, showToast, playSuccess]
