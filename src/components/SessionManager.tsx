@@ -8,6 +8,7 @@ import { useAuth } from '../services/auth';
 import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions } from '../services/firestore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';
+import { SessionTimer } from '../components/SessionTimer';
 
 export function SessionManager() {
   const { user } = useAuth();
@@ -94,6 +95,11 @@ export function SessionManager() {
       <h3 style={{ margin: '0 0 16px 0', fontSize: 18, fontWeight: 600 }}>
         今日のセッション {isPlaying && <span style={{ color: '#ff3b30' }}>🔔 アラーム鳴動中</span>}
       </h3>
+
+      {/* タイマー表示（セッション実行中） */}
+      {currentSession && currentSession.status === 'started' && (
+        <SessionTimer session={currentSession} steps={steps} targetTime={600} />
+      )}
 
       {/* アラーム音量調整 */}
       {isPlaying && (

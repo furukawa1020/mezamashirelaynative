@@ -27,14 +27,16 @@ function playTone(type:'click'|'success'){
     o.connect(g)
     g.connect(ctx.destination)
     const now = ctx.currentTime
-    g.gain.exponentialRampToValueAtTime(type === 'click' ? 0.12 : 0.15, now + 0.02)
-    g.gain.exponentialRampToValueAtTime(0.0001, now + (type === 'click' ? 0.18 : 0.32))
+    g.gain.exponentialRampToValueAtTime(type === 'click' ? 0.12 : 0.2, now + 0.02)
+    g.gain.exponentialRampToValueAtTime(0.0001, now + (type === 'click' ? 0.18 : 0.4))
     if(type === 'success'){
-      o.frequency.setValueAtTime(660, now)
-      o.frequency.exponentialRampToValueAtTime(880, now + 0.12)
+      // 運動会風の「ピロリン♪」音（3音階）
+      o.frequency.setValueAtTime(523, now) // ド
+      o.frequency.exponentialRampToValueAtTime(659, now + 0.1) // ミ
+      o.frequency.exponentialRampToValueAtTime(784, now + 0.2) // ソ
     }
     o.start(now)
-    o.stop(now + (type === 'click' ? 0.19 : 0.35))
+    o.stop(now + (type === 'click' ? 0.19 : 0.42))
     setTimeout(()=>{ try{ ctx.close() }catch(e){} }, 600)
   }catch(e){ }
 }
