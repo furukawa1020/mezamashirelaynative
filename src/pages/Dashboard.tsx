@@ -8,7 +8,8 @@ import DataManager from '../components/DataManager'
 import { BLETagManager } from '../components/BLETagManager'
 import { SessionManager } from '../components/SessionManager'
 import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
-import { RelayNotification } from '../components/RelayNotification'
+import { RelayNotification } from '../components/RelayNotification';
+import { SensorDataViewer } from '../components/SensorDataViewer';
 
 export default function Dashboard(){
   usePageMeta('ダッシュボード','今日のセッションを確認・開始できます')
