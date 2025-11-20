@@ -22,10 +22,18 @@ export function ScheduledAlarmManager() {
       const missions = await listMissions(user.uid);
       const now = new Date();
       const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const todayKey = now.toISOString().split('T')[0]; // YYYY-MM-DD
 
       // 今日のアラーム時刻を持つミッションを探す
       for (const mission of missions) {
         if (mission.wake_time === currentTime) {
+          // 既にこのミッションで今日セッションを開始済みかチェック
+          const alreadyTriggeredKey = `mz_alarm_triggered_${mission.id}_${todayKey}`;
+          if (localStorage.getItem(alreadyTriggeredKey)) {
+            console.log(`[ScheduledAlarm] Already triggered today for mission: ${mission.name}`);
+            continue; // 重複起動を防ぐ
+          }
+
           // アラーム時刻に到達！
           console.log(`[ScheduledAlarm] Triggering alarm for mission: ${mission.name}`);
           
@@ -45,8 +53,10 @@ export function ScheduledAlarmManager() {
               navigator.vibrate([200, 100, 200, 100, 200]);
             }
 
-            // ページをリロードしてセッション表示を更新
-            window.location.reload();
+            // 今日は既に起動済みとマーク（翌日まで有効）
+            localStorage.setItem(alreadyTriggeredKey, 'true');
+
+            // リロードせずに状態を更新（Dashboard が再レンダリングされてセッションが表示される）
           } catch (e: any) {
             console.error('[ScheduledAlarm] Failed to start session:', e);
             showToast('セッション開始に失敗しました');
