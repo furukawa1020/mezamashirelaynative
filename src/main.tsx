@@ -39,7 +39,9 @@ createRoot(document.getElementById('root')!).render(
 // register service worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/src/sw.js')
+    // 本番環境では /sw.js、開発環境では /src/sw.js
+    const swPath = import.meta.env.DEV ? '/src/sw.js' : '/sw.js'
+    navigator.serviceWorker.register(swPath)
       .then(reg => {
         console.log('[SW] Registered:', reg.scope)
         // 新しいSWが待機中なら即座にアクティブ化
