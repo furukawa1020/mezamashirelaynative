@@ -35,6 +35,8 @@ createRoot(document.getElementById('root')!).render(
 )
 
 // register service worker for PWA
+// 一時的に無効化（デバッグ用）
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/src/sw.js')
@@ -59,3 +61,4 @@ if ('serviceWorker' in navigator) {
     }
   })
 }
+*/
