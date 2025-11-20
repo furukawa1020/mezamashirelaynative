@@ -57,10 +57,34 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
     audioRef.current.play().then(() => {
       setIsPlaying(true);
       console.log('[Alarm] Started playing heaven-and-hell');
+      
+      // 通知API（ユーザーがタップしやすいように）
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('⏰ アラーム！', {
+          body: '起きる時間です！タップしてセッションを開始',
+          requireInteraction: true,
+          vibrate: [200, 100, 200, 100, 200],
+        });
+      }
     }).catch((err) => {
       console.error('[Alarm] Failed to play:', err);
-      // ユーザーに再生許可を求める（ブラウザのポリシー）
-      alert('アラームを再生するには、画面をタップしてください');
+      
+      // フォールバック: 通知またはアラートでユーザーに促す
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification('⏰ アラーム（音声ブロック）', {
+          body: 'タップして音を有効化してください',
+          requireInteraction: true,
+        });
+        notification.onclick = () => {
+          audioRef.current?.play();
+          notification.close();
+        };
+      } else {
+        // 通知権限がない場合はアラート
+        if (confirm('アラームを再生するには「OK」をタップしてください')) {
+          audioRef.current?.play();
+        }
+      }
     });
   }, []);
 

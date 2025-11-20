@@ -10,6 +10,7 @@ import { SessionManager } from '../components/SessionManager'
 import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
 import { RelayNotification } from '../components/RelayNotification';
 import { SensorDataViewer } from '../components/SensorDataViewer';
+import { NotificationPermission } from '../components/NotificationPermission';
 
 export default function Dashboard(){
   usePageMeta('ダッシュボード','今日のセッションを確認・開始できます')
@@ -75,6 +76,8 @@ export default function Dashboard(){
 
       {view==='missions' && <Missions />}
       {view==='groups' && <Groups />}
+      
+      <NotificationPermission />
     </div>
   )
 }
