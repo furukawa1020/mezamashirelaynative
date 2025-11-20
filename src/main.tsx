@@ -10,29 +10,29 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <>
-        {(import.meta.env.VITE_USE_FIREBASE === '1') ? (
-          // Explicit opt-in to Firebase when VITE_USE_FIREBASE=1
-          <AuthProvider>
-            <SoundProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
-            </SoundProvider>
-          </AuthProvider>
-        ) : (
-          // Default: local-first mode
-          <LocalAuthProvider>
-            <SoundProvider>
-              <ToastProvider>
-                <App />
-              </ToastProvider>
-            </SoundProvider>
-          </LocalAuthProvider>
-        )}
-      </>
-    </ErrorBoundary>
+    {(import.meta.env.VITE_USE_FIREBASE === '1') ? (
+      // Explicit opt-in to Firebase when VITE_USE_FIREBASE=1
+      <ErrorBoundary>
+        <AuthProvider>
+          <SoundProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </SoundProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+    ) : (
+      // Default: local-first mode
+      <ErrorBoundary>
+        <LocalAuthProvider>
+          <SoundProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </SoundProvider>
+        </LocalAuthProvider>
+      </ErrorBoundary>
+    )}
   </React.StrictMode>
 )
 
