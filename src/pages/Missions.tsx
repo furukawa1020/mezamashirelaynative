@@ -34,7 +34,10 @@ export default function Missions(){
   const addStep = async (missionId:string)=>{
     const label = prompt('ステップ名を入力')
     if(!label) return
-    await createMissionStep(missionId, { label })
+    // 既存のステップを取得して、次の order を決定
+    const currentSteps = await listMissionSteps(missionId)
+    const nextOrder = currentSteps.length > 0 ? Math.max(...currentSteps.map(s => s.order || 0)) + 1 : 1
+    await createMissionStep(missionId, { label, order: nextOrder })
     await loadSteps(missionId)
   }
 
