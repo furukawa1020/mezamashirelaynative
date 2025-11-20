@@ -37,8 +37,6 @@ createRoot(document.getElementById('root')!).render(
 )
 
 // register service worker for PWA
-// 一時的に無効化（デバッグ用）
-/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/src/sw.js')
@@ -54,7 +52,8 @@ if ('serviceWorker' in navigator) {
       })
   })
   
-  // SW更新時に自動リロード
+  // SW更新時に自動リロード（一時的に無効化）
+  /*
   let refreshing = false
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!refreshing) {
@@ -62,5 +61,5 @@ if ('serviceWorker' in navigator) {
       window.location.reload()
     }
   })
+  */
 }
-*/

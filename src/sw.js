@@ -1,5 +1,5 @@
-const CACHE_STATIC = 'mz-static-v3'
-const CACHE_DYNAMIC = 'mz-dynamic-v3'
+const CACHE_STATIC = 'mz-static-v4'
+const CACHE_DYNAMIC = 'mz-dynamic-v4'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
