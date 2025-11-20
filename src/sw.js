@@ -1,10 +1,8 @@
-const CACHE_STATIC = 'mz-static-v1'
-const CACHE_DYNAMIC = 'mz-dynamic-v1'
+const CACHE_STATIC = 'mz-static-v3'
+const CACHE_DYNAMIC = 'mz-dynamic-v3'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/assets/index.css',
-  '/assets/index.js',
   '/manifest.json'
 ]
 
@@ -33,21 +31,45 @@ self.addEventListener('fetch', (event) => {
   // navigation requests (SPA) -> network-first then cache fallback
   if (req.mode === 'navigate'){
     event.respondWith(
-      fetch(req).then(res => {
-        const copy = res.clone()
-        caches.open(CACHE_DYNAMIC).then(c=>c.put(req, copy))
-        return res
-      }).catch(()=> caches.match('/index.html'))
+      fetch(req)
+        .then(res => {
+          if (res.ok) {
+            const copy = res.clone()
+            caches.open(CACHE_DYNAMIC).then(c=>c.put(req, copy))
+          }
+          return res
+        })
+        .catch(err => {
+          console.error('[SW] Navigation fetch failed:', err)
+          return caches.match('/index.html').then(cached => {
+            if (cached) return cached
+            // 最終フォールバック: オフラインページ
+            return new Response('オフラインです。ネットワークを確認してください。', {
+              status: 503,
+              headers: { 'Content-Type': 'text/html; charset=utf-8' }
+            })
+          })
+        })
     )
     return
   }
 
   // Static assets: cache-first
   if(url.pathname.startsWith('/assets') || url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.endsWith('.png') || url.pathname.endsWith('.jpg')){
-    event.respondWith(caches.match(req).then(cacheRes => cacheRes || fetch(req).then(res=>{ caches.open(CACHE_STATIC).then(c=>c.put(req,res.clone())); return res })))
+    event.respondWith(
+      caches.match(req).then(cacheRes => {
+        if (cacheRes) return cacheRes
+        return fetch(req).then(res => {
+          if (res.ok) {
+            caches.open(CACHE_STATIC).then(c=>c.put(req,res.clone()))
+          }
+          return res
+        })
+      })
+    )
     return
   }
 
   // For other requests (APIs): try network then cache
-  event.respondWith(fetch(req).then(res=>{ return res }).catch(()=> caches.match(req)))
+  event.respondWith(fetch(req).catch(()=> caches.match(req)))
 })
