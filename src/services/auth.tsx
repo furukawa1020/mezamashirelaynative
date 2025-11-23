@@ -1,114 +1,96 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useLocalAuth } from './localAuth'
-import { initializeApp } from 'firebase/app'
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as fbSignOut,
-  GoogleAuthProvider,
-  signInWithPopup
-} from 'firebase/auth'
-import { signInAnonymously, sendSignInLinkToEmail, isSignInWithEmailLink, EmailAuthProvider, linkWithCredential, signInWithEmailLink } from 'firebase/auth'
 
-// Use Vite env variables (VITE_FIREBASE_*) for deployment-safe config
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'YOUR_API_KEY',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'YOUR_AUTH_DOMAIN',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'YOUR_PROJECT_ID',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || undefined,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || undefined
+export type User = {
+  uid: string
+  displayName: string | null
+  email: string | null
+  isAnonymous: boolean
 }
 
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
+interface AuthContextValue {
+  user: User | null
+  loading: boolean
+  updateProfile: (name: string) => Promise<void>
+  signOut: () => Promise<void>
+  // Stub for compatibility, or we can remove it if we fix all call sites
+  sendAccountClaimLink?: (email: string) => Promise<boolean>
+}
 
-const AuthContext = createContext<any>({})
+const AuthContext = createContext<AuthContextValue | null>(null)
 
-export function AuthProvider({ children }:{children:React.ReactNode}){
-  const [user, setUser] = useState<any>(null)
+const STORAGE_KEY = 'mz_local_user'
+
+function genId() {
+  return 'local-' + Math.random().toString(36).slice(2, 9)
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [initializing, setInitializing] = useState(true)
 
-  useEffect(()=>{
-    const unsub = onAuthStateChanged(auth, u=>{
-      setUser(u)
-      setLoading(false)
-      setInitializing(false)
-    })
-    return ()=>unsub()
-  },[])
-
-  // Ensure anonymous sign-in if no user
-  useEffect(()=>{
-    if(!initializing) return
-    // if there's already a user, nothing to do
-    if(auth.currentUser) { setInitializing(false); return }
-    // Try to handle email-link sign-in first
-    const href = typeof window !== 'undefined' ? window.location.href : ''
-    if(href && isSignInWithEmailLink(auth, href)){
-      // try to get email from localStorage
-      const email = window.localStorage.getItem('mz_claim_email') || window.prompt('Please provide the email you used to sign in') || ''
-      if(email){
-        // If there is a current anonymous user, link; otherwise sign in with link
-        if(auth.currentUser){
-          try{
-            const cred = EmailAuthProvider.credentialWithLink(email, href)
-            linkWithCredential(auth.currentUser, cred).catch(()=>{
-              // fallback: sign in with email link
-              signInWithEmailLink(auth, email, href).catch(()=>{})
-            })
-          }catch(e){
-            // fallback
-            signInWithEmailLink(auth, email, href).catch(()=>{})
-          }
-        }else{
-          signInWithEmailLink(auth, email, href).catch(()=>{})
-        }
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        // Ensure compatibility with User type
+        setUser({
+          uid: parsed.id || parsed.uid,
+          displayName: parsed.name || parsed.displayName || 'ゲスト',
+          email: parsed.email || null,
+          isAnonymous: true
+        })
+      } else {
+        const newUser = { uid: genId(), displayName: 'ゲスト', email: null, isAnonymous: true }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser))
+        setUser(newUser)
       }
+    } catch (e) {
+      const newUser = { uid: genId(), displayName: 'ゲスト', email: null, isAnonymous: true }
+      setUser(newUser)
     }
+    setLoading(false)
+  }, [])
 
-    // If still not signed in, sign in anonymously
-    if(!auth.currentUser){
-      signInAnonymously(auth).catch(()=>{})
-    }
-  },[initializing])
+  const updateProfile = async (name: string) => {
+    if (!user) return
+    const newUser = { ...user, displayName: name }
+    setUser(newUser)
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser))
+    } catch (e) { }
+  }
 
-  const login = (email:string,password:string)=> signInWithEmailAndPassword(auth,email,password)
-  const register = (email:string,password:string)=> createUserWithEmailAndPassword(auth,email,password)
-  const signOut = ()=> fbSignOut(auth)
-  const loginWithGoogle = ()=> signInWithPopup(auth,new GoogleAuthProvider())
-  
-  // send magic link to claim/upgrade anonymous account
-  const sendAccountClaimLink = async (email:string) => {
-    const actionCodeSettings = {
-      // URL you want to redirect back to. The domain for this URL must be whitelisted in the Firebase Console.
-      url: (typeof window !== 'undefined' ? window.location.href.split('#')[0] : '/') ,
-      handleCodeInApp: true
-    }
-    try{
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings)
-      // remember the email for when the user returns
-      try{ localStorage.setItem('mz_claim_email', email) }catch(e){}
-      return true
-    }catch(e){ return false }
+  const signOut = async () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch (e) { }
+    setUser(null)
+    // Reload to reset state or redirect to login
+    window.location.reload()
+  }
+
+  const value: AuthContextValue = {
+    user,
+    loading,
+    updateProfile,
+    signOut,
+    sendAccountClaimLink: async () => false // Not supported in local mode
   }
 
   return (
-    <AuthContext.Provider value={{user,loading,login,register,signOut,loginWithGoogle,sendAccountClaimLink}}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export function useAuth(){
-  // Prefer Firebase context when provided, otherwise fall back to local auth if available.
-  const ctx = useContext(AuthContext)
-  const local = useLocalAuth()
-
-  // If firebase context looks populated, return it
-  if(ctx && (ctx.user || ctx.login || ctx.sendAccountClaimLink)) return ctx
-  // else return local auth (which provides user, loading, setName, signOut, isLocal)
-  return local || ctx
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    // Return a dummy context if used outside provider (shouldn't happen) or just null
+    // But for safety let's throw or return default
+    return { user: null, loading: false, updateProfile: async () => {}, signOut: async () => {} }
+  }
+  return context
 }
