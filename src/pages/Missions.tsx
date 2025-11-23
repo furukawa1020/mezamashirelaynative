@@ -131,7 +131,7 @@ export default function Missions() {
                       </div>
                     </div>
                   </div>
-                  <button style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: 18 }} onClick={() => removeStep(m.id, s.id)}>×</button>
+                  <button style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: 12 }} onClick={() => removeStep(m.id, s.id)}>削除</button>
                 </div>
               ))}
             </div>

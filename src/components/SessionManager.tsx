@@ -39,7 +39,7 @@ export function SessionManager() {
     setSessions(s);
 
     // 進行中のセッションがあれば自動選択
-    const active = s.find((x: any) => x.status === 'started');
+    const active = s.find((x: any) => x.status === 'in_progress');
     if (active) {
       setCurrentSession(active);
       loadSteps(active.id);
@@ -136,7 +136,7 @@ export function SessionManager() {
       </h3>
 
       {/* タイマー表示（セッション実行中） */}
-      {currentSession && currentSession.status === 'started' && (
+      {currentSession && currentSession.status === 'in_progress' && (
         <SessionTimer session={currentSession} steps={steps} targetTime={600} />
       )}
 
