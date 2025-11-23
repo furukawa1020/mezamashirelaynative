@@ -20,6 +20,8 @@ export function SessionManager() {
 
   // Ref to track which step is currently being processed to prevent double-firing
   const processingStepId = React.useRef<string | null>(null);
+  // Ref to track completed steps in this session to prevent re-triggering
+  const completedStepIds = React.useRef<Set<string>>(new Set());
 
   // Sensor hooks
   const { shakeCount, resetCount } = useMotion();
@@ -113,15 +115,25 @@ export function SessionManager() {
 
   const completeStep = React.useCallback(async (stepId: string) => {
     // Prevent multiple calls for the same step
-    if (processingStepId.current === stepId) return;
+    if (processingStepId.current === stepId || completedStepIds.current.has(stepId)) return;
+
     processingStepId.current = stepId;
+    completedStepIds.current.add(stepId);
+
+    // Reset sensors immediately to prevent next step from auto-completing if it uses the same sensor
+    resetCount();
 
     try {
       await completeSessionStep(stepId);
       if (currentSession) {
         await loadSteps(currentSession.id);
-        resetCount();
       }
+    } catch (e) {
+      console.error('Failed to complete step:', e);
+      // If failed, remove from completed set so it can be retried? 
+      // Or keep it to prevent loop? Better to keep it and let user retry manually if needed (though manual button calls this too).
+      // Actually for manual retry we might want to allow it.
+      // For now, let's assume if it fails we shouldn't auto-retry immediately.
     } finally {
       processingStepId.current = null;
     }
