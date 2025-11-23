@@ -9,7 +9,8 @@ import QRScanner from './sensors/QRScanner';
 import { useMotion } from '../hooks/useMotion';
 import { useGeolocation } from '../hooks/useGeolocation';
 
-export function SessionManager() {
+export const SessionManager = React.memo(function SessionManager() {
+  console.log('[SessionManager] Render');
   const { user } = useAuth();
   const { isPlaying, startAlarm, stopAlarm, volume, setVolume } = useAlarm();
   const [sessions, setSessions] = useState<any[]>([]);
@@ -327,4 +328,4 @@ export function SessionManager() {
       )}
     </div>
   );
-}
+});
