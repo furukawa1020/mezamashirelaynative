@@ -15,7 +15,7 @@ export function SessionTimer({ session, steps, targetTime = 600 }: SessionTimerP
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   useEffect(() => {
-    if (!session || session.status !== 'started') {
+    if (!session || session.status !== 'in_progress') {
       setElapsedSeconds(0);
       return;
     }
@@ -34,7 +34,7 @@ export function SessionTimer({ session, steps, targetTime = 600 }: SessionTimerP
     return () => clearInterval(interval);
   }, [session]);
 
-  if (!session || session.status !== 'started') {
+  if (!session || session.status !== 'in_progress') {
     return null;
   }
 

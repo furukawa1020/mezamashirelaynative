@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 
 export function useMotion(threshold = 15) {
-    const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
     const [shakeCount, setShakeCount] = useState(0);
     const [isShaking, setIsShaking] = useState(false);
 
@@ -31,7 +30,7 @@ export function useMotion(threshold = 15) {
                 lastX = x || 0;
                 lastY = y || 0;
                 lastZ = z || 0;
-                setAcceleration({ x: lastX, y: lastY, z: lastZ });
+                // Removed setAcceleration to prevent re-renders
             }
         };
 
@@ -58,5 +57,5 @@ export function useMotion(threshold = 15) {
         };
     }, [threshold]);
 
-    return { acceleration, shakeCount, isShaking, resetCount: () => setShakeCount(0) };
+    return { shakeCount, isShaking, resetCount: () => setShakeCount(0) };
 }
