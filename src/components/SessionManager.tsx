@@ -33,7 +33,7 @@ export function SessionManager() {
   }, [user]);
 
   // 今日のセッションを読み込み
-  const loadSessions = async () => {
+  const loadSessions = React.useCallback(async () => {
     if (!user) return [];
     const s = await listTodaySessionsByUser(user.uid);
     setSessions(s);
@@ -42,26 +42,39 @@ export function SessionManager() {
     const active = s.find((x: any) => x.status === 'in_progress');
     if (active) {
       setCurrentSession(active);
-      loadSteps(active.id);
+      // loadSteps will be called by the effect below when currentSession changes
     }
     return s;
-  };
+  }, [user]);
 
   useEffect(() => {
     loadSessions();
-  }, [user]);
+  }, [loadSessions]);
 
   // ステップ読み込み
-  const loadSteps = async (sessionId: string) => {
+  const loadSteps = React.useCallback(async (sessionId: string) => {
     const st = await listSessionSteps(sessionId);
-    setSteps(st);
+    // Only update if different to avoid re-renders
+    setSteps(prev => {
+      if (JSON.stringify(prev) === JSON.stringify(st)) return prev;
+      return st;
+    });
 
     // 全ステップ完了チェック
     const allCompleted = st.every((s: any) => s.result === 'success');
     if (allCompleted && isPlaying) {
       stopAlarm();
     }
-  };
+  }, [isPlaying, stopAlarm]);
+
+  // currentSession が変わったらステップを読み込む
+  useEffect(() => {
+    if (currentSession) {
+      loadSteps(currentSession.id);
+    } else {
+      setSteps([]);
+    }
+  }, [currentSession, loadSteps]);
 
   // セッション開始
   const handleStartSession = async (missionId: string) => {
@@ -69,18 +82,13 @@ export function SessionManager() {
     setLoading(true);
     try {
       const sid = await startSession(user.uid, missionId);
-      const updatedSessions = await loadSessions(); // Get fresh list
-      const newSession = updatedSessions.find((s: any) => s.id === sid);
+      await loadSessions(); // This will trigger the effect to load steps
 
-      if (newSession) {
-        setCurrentSession(newSession);
-        await loadSteps(sid);
-        startAlarm(); // アラーム開始
+      startAlarm(); // アラーム開始
 
-        // GPS初期位置保存
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(pos => setInitialLocation(pos.coords));
-        }
+      // GPS初期位置保存
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => setInitialLocation(pos.coords));
       }
     } catch (e: any) {
       alert('セッション開始に失敗: ' + e.message);
@@ -95,7 +103,7 @@ export function SessionManager() {
       await loadSteps(currentSession.id);
       resetCount(); // Shake count reset
     }
-  }, [currentSession, resetCount]);
+  }, [currentSession, loadSteps, resetCount]);
 
   const completeStep = React.useCallback(async (stepId: string) => {
     await completeSessionStep(stepId);
@@ -105,10 +113,12 @@ export function SessionManager() {
       await loadSteps(currentSession.id);
       resetCount();
     }
-  }, [currentSession, resetCount]);
+  }, [currentSession, loadSteps, resetCount]);
 
-  // Active Step Logic
-  const activeStep = steps.find(s => s.result !== 'success');
+  // Active Step Logic - useMemo to avoid recalculation on every render
+  const activeStep = React.useMemo(() => {
+    return steps.find(s => s.result !== 'success');
+  }, [steps]);
 
   // Shake Logic
   useEffect(() => {
@@ -118,7 +128,7 @@ export function SessionManager() {
         completeStep(activeStep.id);
       }
     }
-  }, [shakeCount, activeStep]);
+  }, [shakeCount, activeStep, completeStep]);
 
   // GPS Logic
   useEffect(() => {
@@ -129,12 +139,12 @@ export function SessionManager() {
         completeStep(activeStep.id);
       }
     }
-  }, [location, activeStep, initialLocation]);
+  }, [location, activeStep, initialLocation, getDistanceFrom, completeStep]);
 
   useEffect(() => {
     window.addEventListener('mezamashi:step-complete', handleStepComplete);
     return () => window.removeEventListener('mezamashi:step-complete', handleStepComplete);
-  }, [currentSession]);
+  }, [handleStepComplete]);
 
   return (
     <div style={{ padding: 16, background: '#f5f5f7', borderRadius: 12 }}>

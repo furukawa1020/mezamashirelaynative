@@ -56,6 +56,7 @@ export default function Dashboard() {
           </div>
 
           <div style={{ marginTop: 20 }}>
+            <SessionManager />
             <RelayNotification />
             <ScheduledAlarmManager />
           </div>
