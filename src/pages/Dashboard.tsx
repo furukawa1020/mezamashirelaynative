@@ -33,26 +33,31 @@ export default function Dashboard() {
 
   return (
     <div className="container">
-      <h2>ようこそ、{user?.displayName || user?.email}</h2>
+      <header style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 24, marginBottom: 4 }}>おはよう、{user?.displayName || 'ゲスト'}</h1>
+        <div className="small muted">今日の調子はどうですか？</div>
+      </header>
 
-      <nav style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
-        <button className="button" onClick={() => setView('home')}>ホーム</button>
-        <button className="button" onClick={() => setView('missions')}>ミッション</button>
-        <button className="button" onClick={() => setView('groups')}>グループ</button>
-        <button className="button" onClick={onStart}>今日のセッション開始</button>
-      </nav>
+      <div className="nav-tabs">
+        <div className={`nav-tab ${view === 'home' ? 'active' : ''}`} onClick={() => setView('home')}>ホーム</div>
+        <div className={`nav-tab ${view === 'missions' ? 'active' : ''}`} onClick={() => setView('missions')}>ミッション</div>
+        <div className={`nav-tab ${view === 'groups' ? 'active' : ''}`} onClick={() => setView('groups')}>グループ</div>
+      </div>
 
       {view === 'home' && (
-        <div className="card">
-          <RelayNotification />
-          <ScheduledAlarmManager />
-          <SessionManager />
-          <div style={{ marginTop: 16 }}>
-            <BLETagManager />
+        <div className="floating">
+          <div className="card" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: 60, marginBottom: 10 }}>🌞</div>
+            <h2 style={{ marginBottom: 10 }}>朝のリレー</h2>
+            <p className="muted" style={{ marginBottom: 30 }}>次のタスクへバトンをつなごう</p>
+            <button className="button" style={{ width: '100%', fontSize: 18, padding: 16 }} onClick={onStart}>
+              今日のセッション開始
+            </button>
           </div>
-          <SensorDataViewer />
-          <div style={{ marginTop: 16 }}>
-            <DataManager />
+
+          <div style={{ marginTop: 20 }}>
+            <RelayNotification />
+            <ScheduledAlarmManager />
           </div>
         </div>
       )}

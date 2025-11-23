@@ -6,12 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
 import { useToast } from '../components/Toast';
-
-// Import both firestore and localStore
-import * as firestore from '../services/firestore';
 import * as localStore from '../services/localStore';
-
-const useFirebase = import.meta.env.VITE_USE_FIREBASE === '1';
 
 export function RelayNotification() {
   const { user } = useAuth();
@@ -23,7 +18,7 @@ export function RelayNotification() {
 
     const checkRelay = async () => {
       try {
-        const backend = useFirebase ? firestore : localStore;
+        const backend = localStore;
 
         // 今日のセッションを取得
         const sessions = await backend.listTodaySessionsByUser(user.uid);
@@ -50,7 +45,7 @@ export function RelayNotification() {
 
         // 次の人のIDを取得
         const nextUserId = memberIds[myIndex + 1];
-        
+
         // 全セッションから次の人のセッションをチェック
         const allSessions = await backend.listTodaySessionsByGroup?.(group.id) || sessions;
         const nextUserSessions = allSessions.filter((s: any) => s.user_id === nextUserId);
@@ -60,7 +55,7 @@ export function RelayNotification() {
           setRelayStatus('✅ 次の走者も完了しています');
         } else {
           setRelayStatus('🏃 次の走者にバトンタッチしました！');
-          
+
           // 通知（Web Push Notification は権限が必要なので、簡易版としてトースト）
           showToast(`🏃 次の走者（メンバー ${myIndex + 2}）にバトンタッチ！`);
         }

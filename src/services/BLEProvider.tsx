@@ -65,17 +65,32 @@ export function BLEProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        // 今日のセッションステップを検索
-        const allSteps = await listSessionSteps(''); // 全セッション（簡易実装）
-        const targetStep = allSteps.find(
-          (s) =>
-            s.step_id === tag.mission_step_id &&
-            s.result === 'pending'
+        // Find active session for the user
+        const sessions = await import('../services/localStore').then(m => m.listTodaySessionsByUser(user.uid));
+        const activeSession = sessions.find((s: any) => s.status === 'started' || s.status === 'in_progress');
+
+        if (!activeSession) {
+          console.warn('No active session found');
+          return;
+        }
+
+        // Get steps for the active session
+        const sessionSteps = await listSessionSteps(activeSession.id);
+        const targetStep = sessionSteps.find(
+          (s: any) =>
+            s.mission_step_id === tag.mission_step_id && // Note: tag links to mission_step_id, not session_step_id directly usually? 
+            // Actually localStore creates session_steps with mission_step_id.
+            // Let's verify data structure. 
+            // localStore: session_steps have { id, session_id, mission_step_id, ... }
+            // tag has mission_step_id.
+            // So we match session_step.mission_step_id === tag.mission_step_id
+            s.mission_step_id === tag.mission_step_id &&
+            s.result !== 'success'
         );
 
         if (!targetStep) {
-          console.warn(`No pending session_step found for step_id=${tag.mission_step_id}`);
-          showToast('該当するステップが見つかりません');
+          console.warn(`No pending session_step found for mission_step_id=${tag.mission_step_id} in session ${activeSession.id}`);
+          // showToast('該当するステップが見つかりません'); // Don't spam toast if just scanning
           return;
         }
 

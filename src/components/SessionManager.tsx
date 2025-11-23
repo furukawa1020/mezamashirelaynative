@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
-import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions } from '../services/firestore';
+import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';
 import { SessionTimer } from '../components/SessionTimer';

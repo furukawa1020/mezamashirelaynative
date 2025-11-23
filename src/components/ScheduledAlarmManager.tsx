@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
-import { listMissions, startSession } from '../services/firestore';
+import { listMissions, startSession } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import { useToast } from '../components/Toast';
 
@@ -36,7 +36,7 @@ export function ScheduledAlarmManager() {
 
           // アラーム時刻に到達！
           console.log(`[ScheduledAlarm] Triggering alarm for mission: ${mission.name}`);
-          
+
           try {
             // セッション開始
             const sessionId = await startSession(user.uid, mission.id);
