@@ -104,67 +104,6 @@ export default function Missions() {
             listMissions(user.uid).then(setMissions).catch(() => { }).finally(() => setLoading(false))
           }, [user])
 
-          const loadSteps = async (missionId: string) => {
-            const s = await listMissionSteps(missionId)
-            setMissions(prev => prev.map(m => m.id === missionId ? { ...m, steps: s } : m))
-          }
-
-          const add = async () => {
-            if (!user) return
-            await createMission(user.uid, { name, wake_time: wakeTime })
-            setName('')
-            const updated = await listMissions(user.uid)
-            setMissions(updated)
-          }
-
-          const remove = async (id: string) => {
-            if (!confirm('本当に削除しますか？')) return
-            await deleteMission(id)
-            const updated = await listMissions(user?.uid || '')
-            setMissions(updated)
-          }
-
-          const addStep = async (missionId: string) => {
-            const label = prompt('ステップ名を入力')
-            if (!label) return
-
-            // Ask for type
-            const typeStr = prompt('タイプを選択:\n1: 手動 (Manual)\n2: シェイク (Shake)\n3: QRコード (QR)\n4: AI物体認識 (AI)\n5: GPS移動 (GPS)', '1')
-            let action_type: 'manual' | 'shake' | 'qr' | 'gps' | 'ai_detect' = 'manual'
-            let action_config: any = {}
-
-            if (typeStr === '2') {
-              action_type = 'shake'
-              const count = prompt('シェイク回数は？', '20')
-              action_config = { count: parseInt(count || '20') }
-            } else if (typeStr === '3') {
-              action_type = 'qr'
-              const val = prompt('正解のQR/バーコード値は？(空欄なら何でもOK)', '')
-              action_config = { targetValue: val }
-            } else if (typeStr === '4') {
-              action_type = 'ai_detect'
-              const target = prompt('検出する物体は？(例: cup, bottle, person, cell phone)', 'cup')
-              action_config = { targetLabel: target || 'cup' }
-            } else if (typeStr === '5') {
-              action_type = 'gps'
-              const dist = prompt('移動距離(m)は？', '100')
-              action_config = { distance: parseInt(dist || '100') }
-            }
-
-            // 既存のステップを取得して、次の order を決定
-            const currentSteps = await listMissionSteps(missionId)
-            const nextOrder = currentSteps.length > 0 ? Math.max(...currentSteps.map(s => s.order || 0)) + 1 : 1
-
-            await createMissionStep(missionId, { label, order: nextOrder, action_type, action_config })
-            await loadSteps(missionId)
-          }
-
-          const removeStep = async (missionId: string, stepId: string) => {
-            if (!confirm('ステップを削除しますか？')) return
-            await deleteMissionStep(stepId)
-            await loadSteps(missionId)
-          }
-
           return (
             <div className="floating">
               <div className="card">

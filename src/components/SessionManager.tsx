@@ -1,14 +1,13 @@
-/**
- * SessionManager - セッション管理とアラーム制御
- * セッション開始時にアラームを開始し、全ステップ完了時に停止
- */
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
-import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions } from '../services/localStore';
+import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions, completeSessionStep } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';
 import { SessionTimer } from '../components/SessionTimer';
+import AICamera from './sensors/AICamera';
+import QRScanner from './sensors/QRScanner';
+import { useMotion } from '../hooks/useMotion';
+import { useGeolocation } from '../hooks/useGeolocation';
 
 export function SessionManager() {
   const { user } = useAuth();
@@ -18,6 +17,11 @@ export function SessionManager() {
   const [steps, setSteps] = useState<any[]>([]);
   const [missions, setMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Sensor hooks
+  const { shakeCount, resetCount } = useMotion();
+  const { location, getDistanceFrom } = useGeolocation();
+  const [initialLocation, setInitialLocation] = useState<GeolocationCoordinates | null>(null);
 
   // ミッション読み込み
   useEffect(() => {
@@ -70,6 +74,11 @@ export function SessionManager() {
         setCurrentSession(newSession);
         await loadSteps(sid);
         startAlarm(); // アラーム開始
+
+        // GPS初期位置保存
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(pos => setInitialLocation(pos.coords));
+        }
       }
     } catch (e: any) {
       alert('セッション開始に失敗: ' + e.message);
@@ -82,8 +91,38 @@ export function SessionManager() {
   const handleStepComplete = async () => {
     if (currentSession) {
       await loadSteps(currentSession.id);
+      resetCount(); // Shake count reset
     }
   };
+
+  const completeStep = async (stepId: string) => {
+    await completeSessionStep(stepId);
+    handleStepComplete();
+  }
+
+  // Active Step Logic
+  const activeStep = steps.find(s => s.result !== 'success');
+
+  // Shake Logic
+  useEffect(() => {
+    if (activeStep?.action_type === 'shake') {
+      const target = activeStep.action_config?.count || 20;
+      if (shakeCount >= target) {
+        completeStep(activeStep.id);
+      }
+    }
+  }, [shakeCount, activeStep]);
+
+  // GPS Logic
+  useEffect(() => {
+    if (activeStep?.action_type === 'gps' && initialLocation && location) {
+      const targetDist = activeStep.action_config?.distance || 100;
+      const dist = getDistanceFrom(initialLocation.latitude, initialLocation.longitude);
+      if (dist && dist >= targetDist) {
+        completeStep(activeStep.id);
+      }
+    }
+  }, [location, activeStep, initialLocation]);
 
   useEffect(() => {
     window.addEventListener('mezamashi:step-complete', handleStepComplete);
@@ -171,12 +210,59 @@ export function SessionManager() {
       {/* 進行中のセッション */}
       {currentSession && (
         <div>
-          <div style={{ marginBottom: 12, padding: 12, background: 'white', borderRadius: 8 }}>
-            <strong style={{ fontSize: 16 }}>進行中のセッション</strong>
-            <p style={{ margin: '4px 0 0 0', fontSize: 14, color: '#666' }}>
-              開始: {new Date(currentSession.started_at).toLocaleTimeString('ja-JP')}
-            </p>
-          </div>
+          {/* Active Challenge Area */}
+          {activeStep && (
+            <div style={{ marginBottom: 20, padding: 16, background: 'white', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+              <h4 style={{ marginTop: 0, textAlign: 'center' }}>🔥 現在のチャレンジ: {activeStep.label}</h4>
+
+              {activeStep.action_type === 'ai_detect' && (
+                <AICamera
+                  targetLabel={activeStep.action_config?.targetLabel || 'cup'}
+                  onDetected={() => completeStep(activeStep.id)}
+                />
+              )}
+
+              {activeStep.action_type === 'qr' && (
+                <QRScanner
+                  onScan={(val) => {
+                    const target = activeStep.action_config?.targetValue;
+                    if (!target || val === target) {
+                      completeStep(activeStep.id);
+                    } else {
+                      alert('違うQRコードです！');
+                    }
+                  }}
+                />
+              )}
+
+              {activeStep.action_type === 'shake' && (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 48 }}>👋</div>
+                  <p>スマホを振ってください！</p>
+                  <div style={{ fontSize: 24, fontWeight: 'bold' }}>{shakeCount} / {activeStep.action_config?.count || 20}</div>
+                  <progress value={shakeCount} max={activeStep.action_config?.count || 20} style={{ width: '100%' }} />
+                </div>
+              )}
+
+              {activeStep.action_type === 'gps' && (
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 48 }}>🏃</div>
+                  <p>移動してください！</p>
+                  <div style={{ fontSize: 24, fontWeight: 'bold' }}>
+                    {initialLocation && location
+                      ? Math.round(getDistanceFrom(initialLocation.latitude, initialLocation.longitude) || 0)
+                      : 0}m / {activeStep.action_config?.distance || 100}m
+                  </div>
+                </div>
+              )}
+
+              {activeStep.action_type === 'manual' && (
+                <div style={{ textAlign: 'center' }}>
+                  <button className="button" onClick={() => completeStep(activeStep.id)}>完了！</button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* ステップ一覧 */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -184,7 +270,7 @@ export function SessionManager() {
               <StepItem
                 key={step.id}
                 step={step}
-                onComplete={() => handleStepComplete()}
+                onComplete={() => completeStep(step.id)}
               />
             ))}
           </div>
