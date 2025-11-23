@@ -8,7 +8,7 @@
  * - localStorage への永続化
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   BLETag,
   BLEMotionEvent,
@@ -24,7 +24,7 @@ export function useBLE() {
   const [connections, setConnections] = useState<Map<string, BLEConnection>>(new Map());
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const eventHandlers = useRef<((event: BLEMotionEvent) => void)[]>([]);
 
   // 初期化: localStorage からタグを読み込み
@@ -266,7 +266,7 @@ export function useBLE() {
     }
   }, [tags, connections, reconnectTag]);
 
-  return {
+  return React.useMemo(() => ({
     tags,
     connections,
     isScanning,
@@ -279,5 +279,5 @@ export function useBLE() {
     onBLEEvent,
     reconnectTag,
     reconnectAll,
-  };
+  }), [tags, connections, isScanning, error, isBluetoothAvailable, scanAndPair, removeTag, linkTagToStep, renameTag, onBLEEvent, reconnectTag, reconnectAll]);
 }

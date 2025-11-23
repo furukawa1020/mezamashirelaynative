@@ -266,14 +266,14 @@ export const SessionManager = React.memo(function SessionManager() {
 
               {activeStep.action_type === 'qr' && (
                 <QRScanner
-                  onScan={(val) => {
+                  onScan={React.useCallback((val: string) => {
                     const target = activeStep.action_config?.targetValue;
                     if (!target || val === target) {
                       completeStep(activeStep.id);
                     } else {
                       alert('違うQRコードです！');
                     }
-                  }}
+                  }, [activeStep, completeStep])}
                 />
               )}
 
