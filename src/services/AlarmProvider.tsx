@@ -64,7 +64,7 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
           body: '起きる時間です！タップしてセッションを開始',
           requireInteraction: true,
           vibrate: [200, 100, 200, 100, 200],
-        });
+        } as any);
       }
     }).catch((err) => {
       console.error('[Alarm] Failed to play:', err);
