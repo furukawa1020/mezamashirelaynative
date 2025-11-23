@@ -11,6 +11,7 @@ interface AuthContextValue {
   user: User | null
   loading: boolean
   updateProfile: (name: string) => Promise<void>
+  login: () => Promise<void>
   signOut: () => Promise<void>
   // Stub for compatibility, or we can remove it if we fix all call sites
   sendAccountClaimLink?: (email: string) => Promise<boolean>
@@ -61,6 +62,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) { }
   }
 
+  const login = async () => {
+    const newUser = { uid: genId(), displayName: 'ゲスト', email: null, isAnonymous: true }
+    setUser(newUser)
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser))
+    } catch (e) { }
+  }
+
   const signOut = async () => {
     try {
       localStorage.removeItem(STORAGE_KEY)
@@ -74,6 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     updateProfile,
+    login,
     signOut,
     sendAccountClaimLink: async () => false // Not supported in local mode
   }
@@ -90,7 +100,7 @@ export function useAuth() {
   if (!context) {
     // Return a dummy context if used outside provider (shouldn't happen) or just null
     // But for safety let's throw or return default
-    return { user: null, loading: false, updateProfile: async () => {}, signOut: async () => {} }
+    return { user: null, loading: false, updateProfile: async () => { }, signOut: async () => { } }
   }
   return context
 }

@@ -54,10 +54,15 @@ export default function Dashboard() {
           <div style={{ marginTop: 16 }}>
             <DataManager />
           </div>
-          <div className="card" style={{ marginTop: 16 }}>
-            {view === 'groups' && <Groups />}
+        </div>
+        </div>
+  )
+}
 
-            <NotificationPermission />
-          </div>
-          )
+{ view === 'missions' && <Missions /> }
+{ view === 'groups' && <Groups /> }
+
+<NotificationPermission />
+    </div >
+  )
 }
