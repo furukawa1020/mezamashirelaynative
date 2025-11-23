@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
-import { listTodaySessionsByUser, listSessionSteps } from '../services/firestore';
+import { listTodaySessionsByUser, listSessionSteps } from '../services/localStore';
 
 interface SensorStats {
   totalEvents: number;
@@ -31,7 +31,7 @@ export function SensorDataViewer() {
     try {
       // 今日のセッション取得
       const sessions = await listTodaySessionsByUser(user.uid);
-      
+
       // 全ステップ取得
       const allSteps: any[] = [];
       for (const session of sessions) {
@@ -161,8 +161,8 @@ export function SensorDataViewer() {
         </div>
       </div>
 
-      <button 
-        onClick={loadData} 
+      <button
+        onClick={loadData}
         style={{ marginTop: 12, padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: 4, cursor: 'pointer' }}
       >
         🔄 更新

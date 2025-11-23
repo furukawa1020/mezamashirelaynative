@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { useBLEContext } from '../services/BLEProvider';
-import { listMissions, listMissionSteps } from '../services/firestore';
+import { listMissions, listMissionSteps } from '../services/localStore';
 import { useAuth } from '../services/auth';
 
 export function BLETagManager() {
