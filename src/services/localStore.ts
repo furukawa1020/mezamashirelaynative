@@ -27,16 +27,20 @@ export async function createMission(userId: string, data: { name: string; wake_t
   save(KEYS.missions, all)
   return id
 }
-
-export async function listMissions(userId: string) {
-  const all = load(KEYS.missions)
-  return all.filter((r: AnyObj) => r.user_id === userId).sort((a: AnyObj, b: AnyObj) => (b.created_at || 0) - (a.created_at || 0))
-}
-
-export async function createMissionStep(missionId: string, data: { label: string; order?: number; type?: string; nfc_tag_id?: string; ble_event_type?: string }) {
+export async function createMissionStep(missionId: string, data: { label: string; order?: number; type?: string; action_type?: 'manual' | 'shake' | 'qr' | 'gps'; action_config?: any; nfc_tag_id?: string; ble_event_type?: string }) {
   const all = load(KEYS.mission_steps)
   const id = genId('ms')
-  const rec = { id, mission_id: missionId, label: data.label, order: data.order || 0, type: data.type || 'manual', nfc_tag_id: data.nfc_tag_id || null, ble_event_type: data.ble_event_type || null }
+  const rec = {
+    id,
+    mission_id: missionId,
+    label: data.label,
+    order: data.order || 0,
+    type: data.type || 'manual',
+    action_type: data.action_type || 'manual',
+    action_config: data.action_config || {},
+    nfc_tag_id: data.nfc_tag_id || null,
+    ble_event_type: data.ble_event_type || null
+  }
   all.push(rec)
   save(KEYS.mission_steps, all)
   return id
@@ -116,12 +120,39 @@ export async function startSession(userId: string, missionId: string, groupId?: 
     const ms = await listMissionSteps(missionId)
     const ssteps = load(KEYS.session_steps)
     for (const m of ms) {
-      ssteps.push({ id: genId('ss'), session_id: id, mission_step_id: m.id, label: m.label || '', started_at: Date.now(), finished_at: null, result: 'not_started', lap_ms: null, order: m.order || 0 })
+      ssteps.push({
+        id: genId('ss'),
+        session_id: id,
+        mission_step_id: m.id,
+        label: m.label || '',
+        action_type: m.action_type || 'manual',
+        action_config: m.action_config || {},
+        started_at: Date.now(),
+        finished_at: null,
+        result: 'not_started',
+        lap_ms: null,
+        order: m.order || 0
+      })
     }
     save(KEYS.session_steps, ssteps)
   } catch (e) { }
 
   return id
+}
+// ... (rest of the file)
+
+// Seed sample data for a user (useful for demos)
+export async function seedSampleData(userId: string) {
+  // create a sample mission with 3 steps
+  const missionId = await createMission(userId, { name: '朝のストレッチ', wake_time: '07:00' })
+  await createMissionStep(missionId, { label: 'ベッドから出る', order: 0, action_type: 'shake', action_config: { count: 20 } })
+  await createMissionStep(missionId, { label: '顔を洗う', order: 1, action_type: 'manual' })
+  await createMissionStep(missionId, { label: '深呼吸して完了', order: 2, action_type: 'manual' })
+
+  // sample group
+  const groupId = await createGroup(userId, 'テストグループ', 'ALL')
+  await joinGroup(userId, groupId)
+  return { missionId, groupId }
 }
 
 export async function finishSession(sessionId: string, finishedAt?: any) {
@@ -259,20 +290,6 @@ export function importAll(data: AnyObj) {
     }
     return true
   } catch (e) { return false }
-}
-
-// Seed sample data for a user (useful for demos)
-export async function seedSampleData(userId: string) {
-  // create a sample mission with 3 steps
-  const missionId = await createMission(userId, { name: '朝のストレッチ', wake_time: '07:00' })
-  await createMissionStep(missionId, { label: 'ベッドから出る', order: 0 })
-  await createMissionStep(missionId, { label: '顔を洗う', order: 1 })
-  await createMissionStep(missionId, { label: '深呼吸して完了', order: 2 })
-
-  // sample group
-  const groupId = await createGroup(userId, 'テストグループ', 'ALL')
-  await joinGroup(userId, groupId)
-  return { missionId, groupId }
 }
 
 // Backup helpers
