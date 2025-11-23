@@ -33,7 +33,7 @@ export async function listMissions(userId: string) {
   return all.filter((r: AnyObj) => r.user_id === userId).sort((a: AnyObj, b: AnyObj) => (b.created_at || 0) - (a.created_at || 0))
 }
 
-export async function createMissionStep(missionId: string, data: { label: string; order?: number; type?: string; action_type?: 'manual' | 'shake' | 'qr' | 'gps'; action_config?: any; nfc_tag_id?: string; ble_event_type?: string }) {
+export async function createMissionStep(missionId: string, data: { label: string; order?: number; type?: string; action_type?: 'manual' | 'shake' | 'qr' | 'gps' | 'ai_detect'; action_config?: any; nfc_tag_id?: string; ble_event_type?: string }) {
   const all = load(KEYS.mission_steps)
   const id = genId('ms')
   const rec = {
