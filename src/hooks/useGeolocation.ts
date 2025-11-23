@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 export function useGeolocation() {
     const [location, setLocation] = useState<GeolocationCoordinates | null>(null);
@@ -29,7 +29,7 @@ export function useGeolocation() {
     }, []);
 
     // Calculate distance in meters between two coordinates (Haversine formula)
-    const getDistanceFrom = (lat: number, lng: number) => {
+    const getDistanceFrom = useCallback((lat: number, lng: number) => {
         if (!location) return null;
         const R = 6371e3; // metres
         const φ1 = location.latitude * Math.PI / 180;
@@ -43,7 +43,7 @@ export function useGeolocation() {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return R * c;
-    };
+    }, [location]);
 
-    return { location, error, getDistanceFrom };
+    return useMemo(() => ({ location, error, getDistanceFrom }), [location, error, getDistanceFrom]);
 }

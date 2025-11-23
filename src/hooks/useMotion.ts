@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 export function useMotion(threshold = 15) {
     const [shakeCount, setShakeCount] = useState(0);
@@ -57,5 +57,7 @@ export function useMotion(threshold = 15) {
         };
     }, [threshold]);
 
-    return { shakeCount, isShaking, resetCount: () => setShakeCount(0) };
+    const resetCount = useCallback(() => setShakeCount(0), []);
+
+    return useMemo(() => ({ shakeCount, isShaking, resetCount }), [shakeCount, isShaking, resetCount]);
 }
