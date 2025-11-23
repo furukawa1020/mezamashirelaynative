@@ -34,7 +34,7 @@ export function SessionManager() {
 
   // 今日のセッションを読み込み
   const loadSessions = async () => {
-    if (!user) return;
+    if (!user) return [];
     const s = await listTodaySessionsByUser(user.uid);
     setSessions(s);
 
@@ -44,6 +44,7 @@ export function SessionManager() {
       setCurrentSession(active);
       loadSteps(active.id);
     }
+    return s;
   };
 
   useEffect(() => {
@@ -68,8 +69,9 @@ export function SessionManager() {
     setLoading(true);
     try {
       const sid = await startSession(user.uid, missionId);
-      await loadSessions();
-      const newSession = sessions.find((s: any) => s.id === sid);
+      const updatedSessions = await loadSessions(); // Get fresh list
+      const newSession = updatedSessions.find((s: any) => s.id === sid);
+
       if (newSession) {
         setCurrentSession(newSession);
         await loadSteps(sid);
@@ -88,17 +90,22 @@ export function SessionManager() {
   };
 
   // ステップ完了時に再読み込み
-  const handleStepComplete = async () => {
+  const handleStepComplete = React.useCallback(async () => {
     if (currentSession) {
       await loadSteps(currentSession.id);
       resetCount(); // Shake count reset
     }
-  };
+  }, [currentSession, resetCount]);
 
-  const completeStep = async (stepId: string) => {
+  const completeStep = React.useCallback(async (stepId: string) => {
     await completeSessionStep(stepId);
-    handleStepComplete();
-  }
+    // handleStepComplete is called via event listener or directly?
+    // In the original code, it was called directly.
+    if (currentSession) {
+      await loadSteps(currentSession.id);
+      resetCount();
+    }
+  }, [currentSession, resetCount]);
 
   // Active Step Logic
   const activeStep = steps.find(s => s.result !== 'success');

@@ -28,6 +28,11 @@ export default function AICamera({ targetLabel, onDetected }: AICameraProps) {
         loadModel();
     }, []);
 
+    const onDetectedRef = useRef(onDetected);
+    useEffect(() => {
+        onDetectedRef.current = onDetected;
+    }, [onDetected]);
+
     // Detection loop
     useEffect(() => {
         if (!model || !webcamRef.current?.video) return;
@@ -41,13 +46,13 @@ export default function AICamera({ targetLabel, onDetected }: AICameraProps) {
                 // Check for target
                 const found = preds.find(p => p.class.toLowerCase() === targetLabel.toLowerCase() && p.score > 0.6);
                 if (found) {
-                    onDetected();
+                    onDetectedRef.current();
                 }
             }
         }, 500); // Check every 500ms
 
         return () => clearInterval(interval);
-    }, [model, targetLabel, onDetected]);
+    }, [model, targetLabel]);
 
     return (
         <div style={{ position: 'relative', width: '100%', maxWidth: 400, margin: '0 auto' }}>
