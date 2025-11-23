@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useAuth } from '../services/auth'
-
 import IconButton from './IconButton'
 import { useSound } from '../services/soundProvider'
 import NameModal from './NameModal'
@@ -15,13 +14,6 @@ export default function Header() {
   const { showToast } = useToast()
 
   const [openName, setOpenName] = useState(false)
-
-  const onKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      setMuted(!muted)
-    }
-  }
 
   return (
     <>
@@ -43,7 +35,7 @@ export default function Header() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div className="small muted" aria-live="polite">{user?.displayName || user?.name || user?.email}</div>
+          <div className="small muted" aria-live="polite">{user?.displayName || user?.email}</div>
           <IconButton ariaLabel={muted ? '音をオン' : '音をオフ'} onClick={() => setMuted(!muted)} role="switch" ariaChecked={!muted}>
             {muted ? (
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
@@ -57,3 +49,21 @@ export default function Header() {
               </svg>
             )}
           </IconButton>
+
+          <button className="button" style={{ padding: '8px 10px', borderRadius: 10 }} onClick={() => setOpenName(true)} aria-label="表示名を編集">名前編集</button>
+          <NameModal open={openName} initial={user?.displayName || ''} onClose={() => setOpenName(false)} onSave={async (name) => {
+            try {
+              await updateProfile(name)
+              showToast('表示名を保存しました')
+            } catch (e) { }
+            setOpenName(false)
+          }} />
+
+          <button className="button" style={{ padding: '8px 10px', borderRadius: 10 }} onClick={signOut}>サインアウト</button>
+        </div>
+      </header>
+      {/* show install prompt at app-level */}
+      <InstallPrompt />
+    </>
+  )
+}
