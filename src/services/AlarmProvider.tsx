@@ -47,17 +47,17 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       localStorage.setItem('mz_alarm_volume', volume.toString());
-    } catch {}
+    } catch { }
   }, [volume]);
 
   const startAlarm = useCallback(() => {
     if (!audioRef.current) return;
-    
+
     // ユーザーインタラクションが必要な場合のエラーハンドリング
     audioRef.current.play().then(() => {
       setIsPlaying(true);
       console.log('[Alarm] Started playing heaven-and-hell');
-      
+
       // 通知API（ユーザーがタップしやすいように）
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('⏰ アラーム！', {
@@ -68,7 +68,7 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
       }
     }).catch((err) => {
       console.error('[Alarm] Failed to play:', err);
-      
+
       // フォールバック: 通知またはアラートでユーザーに促す
       if ('Notification' in window && Notification.permission === 'granted') {
         const notification = new Notification('⏰ アラーム（音声ブロック）', {
@@ -90,20 +90,20 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
 
   const stopAlarm = useCallback(() => {
     if (!audioRef.current) return;
-    
+
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
     setIsPlaying(false);
     console.log('[Alarm] Stopped');
   }, []);
 
-  const value: AlarmContextValue = {
+  const value: AlarmContextValue = React.useMemo(() => ({
     isPlaying,
     startAlarm,
     stopAlarm,
     volume,
     setVolume,
-  };
+  }), [isPlaying, startAlarm, stopAlarm, volume]);
 
   return <AlarmContext.Provider value={value}>{children}</AlarmContext.Provider>;
 }

@@ -18,6 +18,9 @@ export function SessionManager() {
   const [missions, setMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Ref to track which step is currently being processed to prevent double-firing
+  const processingStepId = React.useRef<string | null>(null);
+
   // Sensor hooks
   const { shakeCount, resetCount } = useMotion();
   const { location, getDistanceFrom } = useGeolocation();
@@ -41,8 +44,11 @@ export function SessionManager() {
     // 進行中のセッションがあれば自動選択
     const active = s.find((x: any) => x.status === 'in_progress');
     if (active) {
-      setCurrentSession(active);
-      // loadSteps will be called by the effect below when currentSession changes
+      // Only update if the ID is different to avoid re-renders
+      setCurrentSession((prev: any) => {
+        if (prev?.id === active.id) return prev;
+        return active;
+      });
     }
     return s;
   }, [user]);
@@ -106,12 +112,18 @@ export function SessionManager() {
   }, [currentSession, loadSteps, resetCount]);
 
   const completeStep = React.useCallback(async (stepId: string) => {
-    await completeSessionStep(stepId);
-    // handleStepComplete is called via event listener or directly?
-    // In the original code, it was called directly.
-    if (currentSession) {
-      await loadSteps(currentSession.id);
-      resetCount();
+    // Prevent multiple calls for the same step
+    if (processingStepId.current === stepId) return;
+    processingStepId.current = stepId;
+
+    try {
+      await completeSessionStep(stepId);
+      if (currentSession) {
+        await loadSteps(currentSession.id);
+        resetCount();
+      }
+    } finally {
+      processingStepId.current = null;
     }
   }, [currentSession, loadSteps, resetCount]);
 

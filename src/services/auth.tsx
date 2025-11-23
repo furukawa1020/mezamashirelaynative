@@ -79,14 +79,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.reload()
   }
 
-  const value: AuthContextValue = {
+  const value: AuthContextValue = React.useMemo(() => ({
     user,
     loading,
     updateProfile,
     login,
     signOut,
     sendAccountClaimLink: async () => false // Not supported in local mode
-  }
+  }), [user, loading]);
 
   return (
     <AuthContext.Provider value={value}>
