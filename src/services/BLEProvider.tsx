@@ -132,7 +132,7 @@ export function BLEProvider({ children }: { children: React.ReactNode }) {
     }
   }, []); // 初回のみ
 
-  const value: BLEContextValue = {
+  const value: BLEContextValue = React.useMemo(() => ({
     tags: ble.tags,
     connections: ble.connections,
     isScanning: ble.isScanning,
@@ -143,7 +143,7 @@ export function BLEProvider({ children }: { children: React.ReactNode }) {
     linkTagToStep: ble.linkTagToStep,
     renameTag: ble.renameTag,
     reconnectAll: ble.reconnectAll,
-  };
+  }), [ble]);
 
   return <BLEContext.Provider value={value}>{children}</BLEContext.Provider>;
 }
