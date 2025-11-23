@@ -3,36 +3,21 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import './styles.css'
 import { AuthProvider } from './services/auth'
-import LocalAuthProvider from './services/localAuth'
 import { SoundProvider } from './services/soundProvider'
 import ToastProvider from './components/Toast'
 import { ErrorBoundary } from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {(import.meta.env.VITE_USE_FIREBASE === '1') ? (
-      // Explicit opt-in to Firebase when VITE_USE_FIREBASE=1
-      <ErrorBoundary>
-        <AuthProvider>
-          <SoundProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </SoundProvider>
-        </AuthProvider>
-      </ErrorBoundary>
-    ) : (
-      // Default: local-first mode
-      <ErrorBoundary>
-        <LocalAuthProvider>
-          <SoundProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </SoundProvider>
-        </LocalAuthProvider>
-      </ErrorBoundary>
-    )}
+    <ErrorBoundary>
+      <AuthProvider>
+        <SoundProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </SoundProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 )
 
@@ -53,7 +38,7 @@ if ('serviceWorker' in navigator) {
         console.error('[SW] Registration failed:', err)
       })
   })
-  
+
   // SW更新時に自動リロード（一時的に無効化）
   /*
   let refreshing = false
