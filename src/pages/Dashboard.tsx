@@ -55,14 +55,12 @@ export default function Dashboard() {
             <DataManager />
           </div>
         </div>
-        </div>
-  )
-}
+      )}
 
-{ view === 'missions' && <Missions /> }
-{ view === 'groups' && <Groups /> }
+      {view === 'missions' && <Missions />}
+      {view === 'groups' && <Groups />}
 
-<NotificationPermission />
-    </div >
+      <NotificationPermission />
+    </div>
   )
 }

@@ -100,7 +100,7 @@ export function useAuth() {
   if (!context) {
     // Return a dummy context if used outside provider (shouldn't happen) or just null
     // But for safety let's throw or return default
-    return { user: null, loading: false, updateProfile: async () => { }, signOut: async () => { } }
+    return { user: null, loading: false, updateProfile: async () => { }, login: async () => { }, signOut: async () => { } }
   }
   return context
 }

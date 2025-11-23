@@ -57,23 +57,3 @@ export default function Header() {
               </svg>
             )}
           </IconButton>
-          {isLocal && (
-            <>
-              <button className="button" style={{ padding: '8px 10px', borderRadius: 10 }} onClick={() => setOpenName(true)} aria-label="表示名を編集">名前編集</button>
-              <NameModal open={openName} initial={user?.name || user?.displayName || ''} onClose={() => setOpenName(false)} onSave={async (name) => {
-                try {
-                  await local.setName(name)
-                  showToast('表示名を保存しました')
-                } catch (e) { }
-                setOpenName(false)
-              }} />
-            </>
-          )}
-          <button className="button" style={{ padding: '8px 10px', borderRadius: 10 }} onClick={signOut}>サインアウト</button>
-        </div>
-      </header>
-      {/* show install prompt at app-level */}
-      <InstallPrompt />
-    </>
-  )
-}
