@@ -149,16 +149,39 @@ export async function startSession(userId: string, missionId: string, groupId?: 
 
 // Seed sample data for a user (useful for demos)
 export async function seedSampleData(userId: string) {
-  // create a sample mission with 3 steps
-  const missionId = await createMission(userId, { name: '朝のストレッチ', wake_time: '07:00' })
-  await createMissionStep(missionId, { label: 'ベッドから出る', order: 0, action_type: 'shake', action_config: { count: 20 } })
-  await createMissionStep(missionId, { label: '顔を洗う', order: 1, action_type: 'manual' })
-  await createMissionStep(missionId, { label: '深呼吸して完了', order: 2, action_type: 'manual' })
+  // Check if user already has missions
+  const existing = await listMissions(userId);
+  if (existing.length > 0) {
+    return { missionId: existing[0].id, groupId: null };
+  }
 
-  // sample group
-  const groupId = await createGroup(userId, 'テストグループ', 'ALL')
-  await joinGroup(userId, groupId)
-  return { missionId, groupId }
+  // Create comprehensive sample mission with all sensor types
+  const missionId = await createMission(userId, { name: '🌅 朝のルーティン（サンプル）', wake_time: '07:00' })
+  await createMissionStep(missionId, {
+    label: '👋 ベッドから出る',
+    order: 1,
+    action_type: 'shake',
+    action_config: { count: 10 }
+  })
+  await createMissionStep(missionId, {
+    label: '☕ コーヒーカップを見つける',
+    order: 2,
+    action_type: 'ai_detect',
+    action_config: { targetLabel: 'cup' }
+  })
+  await createMissionStep(missionId, {
+    label: '🚶 少し歩く（10m）',
+    order: 3,
+    action_type: 'gps',
+    action_config: { distance: 10 }
+  })
+  await createMissionStep(missionId, {
+    label: '✅ 完了！',
+    order: 4,
+    action_type: 'manual'
+  })
+
+  return { missionId, groupId: null }
 }
 
 export async function finishSession(sessionId: string, finishedAt?: any) {
