@@ -19,14 +19,31 @@ export default function App() {
     } catch (e) { }
   }, [user])
 
-  if (loading) return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><div className="small muted">読み込み中…</div></div>
+  if (loading) return (
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#121214',
+      color: '#ffffff'
+    }}>
+      <div style={{ fontSize: 12, color: '#8e8e93' }}>読み込み中…</div>
+    </div>
+  )
   if (!user) return <Login />
 
   return (
     <AlarmProvider>
       <BLEProvider>
-        <div>
-          <div className="container">
+        <div style={{ background: '#121214', minHeight: '100vh', color: '#ffffff' }}>
+          <div style={{
+            maxWidth: 600,
+            margin: '0 auto',
+            padding: 20,
+            boxSizing: 'border-box',
+            minHeight: '100vh'
+          }}>
             <Header />
             <Dashboard />
           </div>

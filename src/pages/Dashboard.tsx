@@ -41,20 +41,78 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="container">
+    <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <header style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, marginBottom: 4 }}>おはよう、{user?.displayName || 'ゲスト'}</h1>
-        <div className="small muted">今日の調子はどうですか？</div>
+        <h1 style={{ fontSize: 24, marginBottom: 4, fontWeight: 700 }}>おはよう、{user?.displayName || 'ゲスト'}</h1>
+        <div style={{ fontSize: 12, color: '#8e8e93' }}>今日の調子はどうですか？</div>
       </header>
 
-      <div className="nav-tabs">
-        <div className={`nav-tab ${view === 'home' ? 'active' : ''}`} onClick={() => setView('home')}>ホーム</div>
-        <div className={`nav-tab ${view === 'missions' ? 'active' : ''}`} onClick={() => setView('missions')}>ミッション</div>
-        <div className={`nav-tab ${view === 'groups' ? 'active' : ''}`} onClick={() => setView('groups')}>グループ</div>
+      <div style={{
+        display: 'flex',
+        background: '#1c1c1e',
+        padding: 4,
+        borderRadius: 14,
+        marginBottom: 20
+      }}>
+        <div
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: 10,
+            borderRadius: 10,
+            cursor: 'pointer',
+            fontWeight: view === 'home' ? 600 : 500,
+            color: view === 'home' ? 'white' : '#8e8e93',
+            background: view === 'home' ? '#3a3a3c' : 'transparent',
+            transition: 'all 0.2s'
+          }}
+          onClick={() => setView('home')}
+        >
+          ホーム
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: 10,
+            borderRadius: 10,
+            cursor: 'pointer',
+            fontWeight: view === 'missions' ? 600 : 500,
+            color: view === 'missions' ? 'white' : '#8e8e93',
+            background: view === 'missions' ? '#3a3a3c' : 'transparent',
+            transition: 'all 0.2s'
+          }}
+          onClick={() => setView('missions')}
+        >
+          ミッション
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: 10,
+            borderRadius: 10,
+            cursor: 'pointer',
+            fontWeight: view === 'groups' ? 600 : 500,
+            color: view === 'groups' ? 'white' : '#8e8e93',
+            background: view === 'groups' ? '#3a3a3c' : 'transparent',
+            transition: 'all 0.2s'
+          }}
+          onClick={() => setView('groups')}
+        >
+          グループ
+        </div>
       </div>
 
       {view === 'home' && (
-        <div className="floating">
+        <div style={{ animation: 'float 6s ease-in-out infinite' }}>
+          <style>{`
+            @keyframes float {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(-10px); }
+              100% { transform: translateY(0px); }
+            }
+          `}</style>
           {/* Mission Selection Cards - Sports Day Theme */}
           {missions.length > 0 && (
             <div style={{ marginBottom: 24 }}>
@@ -70,7 +128,7 @@ export default function Dashboard() {
                   margin: 0,
                   fontSize: 20,
                   fontWeight: 800,
-                  color: '#1d1d1f',
+                  color: '#ffffff',
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
                   letterSpacing: '-0.02em'
                 }}>
@@ -220,15 +278,33 @@ export default function Dashboard() {
           )}
 
           {missions.length === 0 && !loadingMissions && (
-            <div className="card" style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{
+              background: '#1c1c1e',
+              borderRadius: 16,
+              padding: '40px 20px',
+              textAlign: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}>
               <div style={{ fontSize: 60, marginBottom: 10 }}>🌞</div>
-              <h2 style={{ marginBottom: 10 }}>朝のリレー</h2>
-              <p className="muted" style={{ marginBottom: 20 }}>
+              <h2 style={{ marginBottom: 10, fontWeight: 700 }}>朝のリレー</h2>
+              <p style={{ marginBottom: 20, color: '#8e8e93' }}>
                 まずは「ミッション」タブでミッションを作成しましょう
               </p>
               <button
-                className="button"
-                style={{ padding: '12px 24px' }}
+                style={{
+                  background: 'linear-gradient(135deg, #0a84ff, #5e5ce6)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  fontSize: 16,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8
+                }}
                 onClick={() => setView('missions')}
               >
                 ミッションを作成
