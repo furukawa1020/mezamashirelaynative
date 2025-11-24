@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import { useAuth } from './services/auth'
+import { useAuth } from './services/AuthContext'
 import { BLEProvider } from './services/BLEProvider'
 import { AlarmProvider } from './services/AlarmProvider'
 import Header from './components/Header'

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
-import { useAuth } from '../services/auth'
+import { useAuth } from '../services/AuthContext'
 import Missions from './Missions'
 import Groups from './Groups'
 import { startSession, listMissions } from '../services/localStore'

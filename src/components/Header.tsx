@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAuth } from '../services/auth'
+import { useAuth } from '../services/AuthContext'
 import IconButton from './IconButton'
 import { useSound } from '../services/soundProvider'
 import NameModal from './NameModal'

@@ -5,7 +5,7 @@
 import React, { useState } from 'react';
 import { useBLEContext } from '../services/BLEProvider';
 import { listMissions, listMissionSteps } from '../services/localStore';
-import { useAuth } from '../services/auth';
+import { useAuth } from '../services/AuthContext';
 
 export function BLETagManager() {
   const { user } = useAuth();

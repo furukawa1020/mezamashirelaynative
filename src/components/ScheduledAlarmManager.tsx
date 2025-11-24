@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/auth';
+import { useAuth } from '../services/AuthContext';
 import { listMissions, startSession } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import { useToast } from '../components/Toast';

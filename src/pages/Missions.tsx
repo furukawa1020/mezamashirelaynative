@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../services/auth'
+import { useAuth } from '../services/AuthContext'
 import { createMission, listMissions, createMissionStep, listMissionSteps, deleteMission, deleteMissionStep } from '../services/localStore'
 import usePageMeta from '../hooks/usePageMeta'
 import Skeleton from '../components/Skeleton'

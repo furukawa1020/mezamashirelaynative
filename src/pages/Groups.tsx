@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
-import { useAuth } from '../services/auth'
+import { useAuth } from '../services/AuthContext'
 import { createGroup, joinGroup, listGroupMembers, getGroup, listTodaySessionsByGroup, getGroupDailyStatus } from '../services/localStore'
 import Skeleton from '../components/Skeleton'
 import { IconParty, IconRunning, IconCheckCircle } from '../components/Icons'

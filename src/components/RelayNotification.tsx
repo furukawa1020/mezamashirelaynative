@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/auth';
+import { useAuth } from '../services/AuthContext';
 import { useToast } from '../components/Toast';
 import { listTodaySessionsByUser, getGroup, listGroupMembers, listTodaySessionsByGroup } from '../services/localStore';
 

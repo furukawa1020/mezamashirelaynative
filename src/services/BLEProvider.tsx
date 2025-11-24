@@ -6,7 +6,7 @@ import React, { createContext, useContext, useEffect, useCallback } from 'react'
 import { useBLE } from '../hooks/useBLE';
 import { BLEMotionEvent } from '../types/ble';
 import { completeSessionStep, listSessionSteps } from '../services/localStore';
-import { useAuth } from '../services/auth';
+import { useAuth } from '../services/AuthContext';
 import { useToast } from '../components/Toast';
 import { useSound, playSuccess } from '../services/soundProvider';
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/auth';
+import { useAuth } from '../services/AuthContext';
 import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions, completeSessionStep } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
-import { useAuth } from '../services/auth'
+import { useAuth } from '../services/AuthContext'
 
 export default function Login() {
   usePageMeta('ようこそ', 'めざましリレーを始めましょう')
