@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
+console.log('[AuthContext] Module loaded');
+
 export type User = {
     uid: string
     displayName: string | null
