@@ -3,6 +3,8 @@ import { useAuth } from '../services/auth'
 import { createMission, listMissions, createMissionStep, listMissionSteps, deleteMission, deleteMissionStep } from '../services/localStore'
 import usePageMeta from '../hooks/usePageMeta'
 import Skeleton from '../components/Skeleton'
+import { Modal } from '../components/Modal'
+import { StepTypeSelector } from '../components/StepTypeSelector'
 
 export default function Missions() {
   usePageMeta('ミッション一覧', 'ミッションを作成・編集して朝のタスクを共有しましょう')
@@ -11,6 +13,8 @@ export default function Missions() {
   const [loading, setLoading] = useState<boolean>(true)
   const [name, setName] = useState('')
   const [wakeTime, setWakeTime] = useState('07:00')
+  const [addingStepFor, setAddingStepFor] = useState<string | null>(null)
+  const [stepLabel, setStepLabel] = useState('')
 
   useEffect(() => {
     if (!user) return
@@ -25,6 +29,10 @@ export default function Missions() {
 
   const add = async () => {
     if (!user) return
+    if (!name.trim()) {
+      alert('ミッション名を入力してください')
+      return
+    }
     await createMission(user.uid, { name, wake_time: wakeTime })
     setName('')
     const updated = await listMissions(user.uid)
@@ -38,39 +46,29 @@ export default function Missions() {
     setMissions(updated)
   }
 
-  const addStep = async (missionId: string) => {
-    const label = prompt('ステップ名を入力')
-    if (!label) return
+  const addStep = (missionId: string) => {
+    setAddingStepFor(missionId)
+    setStepLabel('')
+  }
 
-    // Ask for type
-    const typeStr = prompt('タイプを選択:\n1: 手動 (Manual)\n2: シェイク (Shake)\n3: QRコード (QR)\n4: AI物体認識 (AI)\n5: GPS移動 (GPS)', '1')
-    let action_type: 'manual' | 'shake' | 'qr' | 'gps' | 'ai_detect' = 'manual'
-    let action_config: any = {}
-
-    if (typeStr === '2') {
-      action_type = 'shake'
-      const count = prompt('シェイク回数は？', '20')
-      action_config = { count: parseInt(count || '20') }
-    } else if (typeStr === '3') {
-      action_type = 'qr'
-      const val = prompt('正解のQR/バーコード値は？(空欄なら何でもOK)', '')
-      action_config = { targetValue: val }
-    } else if (typeStr === '4') {
-      action_type = 'ai_detect'
-      const target = prompt('検出する物体は？(例: cup, bottle, person, cell phone)', 'cup')
-      action_config = { targetLabel: target || 'cup' }
-    } else if (typeStr === '5') {
-      action_type = 'gps'
-      const dist = prompt('移動距離(m)は？', '100')
-      action_config = { distance: parseInt(dist || '100') }
+  const handleStepTypeSelect = async (type: 'manual' | 'shake' | 'qr' | 'gps' | 'ai_detect', config: any) => {
+    if (!addingStepFor || !stepLabel.trim()) {
+      alert('ステップ名を入力してください')
+      return
     }
 
-    // 既存のステップを取得して、次の order を決定
-    const currentSteps = await listMissionSteps(missionId)
+    const currentSteps = await listMissionSteps(addingStepFor)
     const nextOrder = currentSteps.length > 0 ? Math.max(...currentSteps.map(s => s.order || 0)) + 1 : 1
 
-    await createMissionStep(missionId, { label, order: nextOrder, action_type, action_config })
-    await loadSteps(missionId)
+    await createMissionStep(addingStepFor, {
+      label: stepLabel,
+      order: nextOrder,
+      action_type: type,
+      action_config: config
+    })
+    await loadSteps(addingStepFor)
+    setAddingStepFor(null)
+    setStepLabel('')
   }
 
   const removeStep = async (missionId: string, stepId: string) => {
@@ -138,6 +136,31 @@ export default function Missions() {
           </div>
         ))
       )}
+
+      {/* Step Type Selector Modal */}
+      <Modal
+        open={addingStepFor !== null}
+        onClose={() => setAddingStepFor(null)}
+        title="新しいステップを追加"
+      >
+        <div style={{ padding: 16 }}>
+          <label style={{ display: 'block', fontSize: 14, marginBottom: 4, fontWeight: 600 }}>
+            ステップ名
+          </label>
+          <input
+            className="input"
+            value={stepLabel}
+            onChange={e => setStepLabel(e.target.value)}
+            placeholder="例: ベッドから出る"
+            style={{ width: '100%', marginBottom: 20 }}
+            autoFocus
+          />
+        </div>
+        <StepTypeSelector
+          onSelect={handleStepTypeSelect}
+          onCancel={() => setAddingStepFor(null)}
+        />
+      </Modal>
     </div>
   )
 }
