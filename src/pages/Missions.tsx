@@ -5,6 +5,7 @@ import usePageMeta from '../hooks/usePageMeta'
 import Skeleton from '../components/Skeleton'
 import { Modal } from '../components/Modal'
 import { StepTypeSelector } from '../components/StepTypeSelector'
+import { IconShake, IconScan, IconMapPin, IconQRCode, IconTouch, IconAlarm } from '../components/Icons'
 
 export default function Missions() {
   usePageMeta('ミッション一覧', 'ミッションを作成・編集して朝のタスクを共有しましょう')
@@ -164,7 +165,7 @@ export default function Missions() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 'bold' }}>{m.name}</div>
-                <div style={{ fontSize: 12, color: '#8e8e93' }}>⏰ {m.wake_time} 起床</div>
+                <div style={{ fontSize: 12, color: '#8e8e93', display: 'flex', alignItems: 'center', gap: 4 }}><IconAlarm size={14} /> {m.wake_time} 起床</div>
               </div>
               <button
                 style={{
@@ -211,10 +212,6 @@ export default function Missions() {
                 </button>
               </div>
               {(m.steps || []).length === 0 && <div style={{ fontSize: 12, color: '#8e8e93', textAlign: 'center' }}>ステップがありません</div>}
-              import {IconShake, IconScan, IconMapPin, IconQRCode, IconTouch} from '../components/Icons'
-
-              // ... (inside component)
-
               {(m.steps || []).map((s: any) => (
                 <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #3a3a3c' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
