@@ -1,4 +1,16 @@
-setVolume: (v: number) => void;
+/**
+ * AlarmProvider - アラーム音（天国と地獄）の管理
+ * セッション開始時にループ再生を開始し、全ステップ完了時に停止
+ */
+
+import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
+
+interface AlarmContextValue {
+  isPlaying: boolean;
+  startAlarm: () => void;
+  stopAlarm: () => void;
+  volume: number;
+  setVolume: (v: number) => void;
 }
 
 const AlarmContext = createContext<AlarmContextValue | null>(null);

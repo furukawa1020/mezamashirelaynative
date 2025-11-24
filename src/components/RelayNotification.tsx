@@ -1,68 +1,82 @@
+/**
+ * RelayNotification - グループリレーの次の人通知
+ * RACE モードで自分が完了したら、次の人に通知を送る
+ */
 
-useEffect(() => {
-  if (!user) return;
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../services/auth';
+import { useToast } from '../components/Toast';
+import * as localStore from '../services/localStore';
 
-  const checkRelay = async () => {
-    try {
-      const backend = localStore;
+export function RelayNotification() {
+  const { user } = useAuth();
+  const { showToast } = useToast();
+  const [relayStatus, setRelayStatus] = useState<string | null>(null);
 
-      // 今日のセッションを取得
-      const sessions = await backend.listTodaySessionsByUser(user.uid);
-      const completedSession = sessions.find((s: any) => s.status === 'completed' && s.group_id);
+  useEffect(() => {
+    if (!user) return;
 
-      if (!completedSession) return;
+    const checkRelay = async () => {
+      try {
+        const backend = localStore;
 
-      // グループ情報を取得
-      const group = await backend.getGroup(completedSession.group_id);
-      if (!group || group.mode !== 'RACE') return;
+        // 今日のセッションを取得
+        const sessions = await backend.listTodaySessionsByUser(user.uid);
+        const completedSession = sessions.find((s: any) => s.status === 'completed' && s.group_id);
 
-      // グループメンバーを取得
-      const members = await backend.listGroupMembers(group.id);
-      const memberIds = members.map((m: any) => m.user_id);
-      const myIndex = memberIds.indexOf(user.uid);
+        if (!completedSession) return;
 
-      if (myIndex === -1) return;
+        // グループ情報を取得
+        const group = await backend.getGroup(completedSession.group_id);
+        if (!group || group.mode !== 'RACE') return;
 
-      if (myIndex === memberIds.length - 1) {
-        // 最後の人なのでリレー完了
-        setRelayStatus('🏆 あなたがラストランナーです！全員完了しました');
-        return;
+        // グループメンバーを取得
+        const members = await backend.listGroupMembers(group.id);
+        const memberIds = members.map((m: any) => m.user_id);
+        const myIndex = memberIds.indexOf(user.uid);
+
+        if (myIndex === -1) return;
+
+        if (myIndex === memberIds.length - 1) {
+          // 最後の人なのでリレー完了
+          setRelayStatus('🏆 あなたがラストランナーです！全員完了しました');
+          return;
+        }
+
+        // 次の人のIDを取得
+        const nextUserId = memberIds[myIndex + 1];
+
+        // 全セッションから次の人のセッションをチェック
+        const allSessions = await backend.listTodaySessionsByGroup?.(group.id) || sessions;
+        const nextUserSessions = allSessions.filter((s: any) => s.user_id === nextUserId);
+        const nextUserCompleted = nextUserSessions.some((s: any) => s.status === 'completed');
+
+        if (nextUserCompleted) {
+          setRelayStatus('次の走者も完了しています');
+        } else {
+          setRelayStatus('次の走者にバトンタッチしました！');
+
+          // 通知（Web Push Notification は権限が必要なので、簡易版としてトースト）
+          showToast(`次の走者（メンバー ${myIndex + 2}）にバトンタッチ！`);
+        }
+      } catch (error) {
+        console.error('Relay check error:', error);
       }
+    };
 
-      // 次の人のIDを取得
-      const nextUserId = memberIds[myIndex + 1];
+    checkRelay();
 
-      // 全セッションから次の人のセッションをチェック
-      const allSessions = await backend.listTodaySessionsByGroup?.(group.id) || sessions;
-      const nextUserSessions = allSessions.filter((s: any) => s.user_id === nextUserId);
-      const nextUserCompleted = nextUserSessions.some((s: any) => s.status === 'completed');
+    // 10秒ごとにチェック
+    const interval = setInterval(checkRelay, 10000);
 
-      if (nextUserCompleted) {
-        setRelayStatus('次の走者も完了しています');
-      } else {
-        setRelayStatus('次の走者にバトンタッチしました！');
+    return () => clearInterval(interval);
+  }, [user, showToast]);
 
-        // 通知（Web Push Notification は権限が必要なので、簡易版としてトースト）
-        showToast(`次の走者（メンバー ${myIndex + 2}）にバトンタッチ！`);
-      }
-    } catch (error) {
-      console.error('Relay check error:', error);
-    }
-  };
+  if (!relayStatus) return null;
 
-  checkRelay();
-
-  // 10秒ごとにチェック
-  const interval = setInterval(checkRelay, 10000);
-
-  return () => clearInterval(interval);
-}, [user, showToast]);
-
-if (!relayStatus) return null;
-
-return (
-  <div style={{ padding: 12, background: '#fff3cd', borderRadius: 8, marginBottom: 16, textAlign: 'center' }}>
-    <div style={{ fontSize: 14, fontWeight: 500 }}>{relayStatus}</div>
-  </div>
-);
+  return (
+    <div style={{ padding: 12, background: '#fff3cd', borderRadius: 8, marginBottom: 16, textAlign: 'center' }}>
+      <div style={{ fontSize: 14, fontWeight: 500 }}>{relayStatus}</div>
+    </div>
+  );
 }
