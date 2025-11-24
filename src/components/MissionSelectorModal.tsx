@@ -60,12 +60,14 @@ export function MissionSelectorModal({ open, onClose, onSelect }: MissionSelecto
     };
 
     return (
-        <Modal open={open} onClose={onClose} title="ミッションを選択">
+        <Modal open={open} onClose={onClose} title="バトンを受け取る">
             <div
                 style={{
                     padding: '16px 24px 24px',
                     // iOS safe area support
                     paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+                    background: 'linear-gradient(180deg, #FFFFFF 0%, #F2F2F7 100%)',
+                    minHeight: '100%',
                 }}
             >
                 {loading ? (
@@ -74,20 +76,32 @@ export function MissionSelectorModal({ open, onClose, onSelect }: MissionSelecto
                     </div>
                 ) : missions.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-                        <div style={{ fontSize: 48, marginBottom: 16 }}>📋</div>
-                        <p style={{ margin: '0 0 8px 0', fontSize: 16, fontWeight: 600, color: '#1d1d1f' }}>
-                            ミッションがありません
+                        <div style={{ fontSize: 64, marginBottom: 16 }}>👟</div>
+                        <p style={{ margin: '0 0 8px 0', fontSize: 18, fontWeight: 700, color: '#1d1d1f' }}>
+                            コースが空っぽです！
                         </p>
-                        <p style={{ margin: 0, fontSize: 14, color: '#666' }}>
-                            先に「ミッション」タブでミッションを作成してください。
+                        <p style={{ margin: 0, fontSize: 14, color: '#86868b' }}>
+                            まずは「ミッション」タブで<br />新しいコース（ミッション）を作りましょう。
                         </p>
                     </div>
                 ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {missions.map((mission) => (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div style={{
+                            fontSize: 13,
+                            fontWeight: 600,
+                            color: '#FF9500',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            marginBottom: -8,
+                            paddingLeft: 4
+                        }}>
+                            Choose Your Course
+                        </div>
+                        {missions.map((mission, index) => (
                             <MissionCard
                                 key={mission.id}
                                 mission={mission}
+                                index={index}
                                 onSelect={handleSelect}
                             />
                         ))}
@@ -101,9 +115,11 @@ export function MissionSelectorModal({ open, onClose, onSelect }: MissionSelecto
 // Separate component for better performance and touch handling
 function MissionCard({
     mission,
+    index,
     onSelect
 }: {
     mission: MissionWithSteps;
+    index: number;
     onSelect: (id: string) => void;
 }) {
     const [isPressed, setIsPressed] = useState(false);
@@ -118,18 +134,28 @@ function MissionCard({
         onSelect(mission.id);
     };
 
+    // Sports day colors
+    const laneColors = ['#FF9500', '#34C759', '#007AFF', '#AF52DE', '#FF2D55'];
+    const accentColor = laneColors[index % laneColors.length];
+
     return (
         <div
             role="button"
             tabIndex={0}
             aria-label={`${mission.name}を選択`}
             style={{
-                background: isPressed ? '#e8e8ea' : '#f5f5f7',
-                borderRadius: 12,
-                padding: 16,
+                background: '#FFFFFF',
+                borderRadius: 16,
+                padding: '20px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                border: isPressed ? '2px solid #007aff' : '2px solid transparent',
+                transition: 'transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s',
+                transform: isPressed ? 'scale(0.98)' : 'scale(1)',
+                boxShadow: isPressed
+                    ? '0 2px 8px rgba(0,0,0,0.05)'
+                    : '0 8px 24px rgba(0,0,0,0.08)',
+                borderLeft: `6px solid ${accentColor}`,
+                position: 'relative',
+                overflow: 'hidden',
                 // Prevent text selection on touch devices
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
@@ -151,14 +177,30 @@ function MissionCard({
                 }
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            {/* Track Lane Number Background */}
+            <div style={{
+                position: 'absolute',
+                right: -10,
+                bottom: -20,
+                fontSize: 120,
+                fontWeight: 900,
+                color: '#F2F2F7',
+                zIndex: 0,
+                fontFamily: 'Impact, sans-serif',
+                opacity: 0.5,
+                pointerEvents: 'none',
+            }}>
+                {index + 1}
+            </div>
+
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                         style={{
-                            fontSize: 18,
-                            fontWeight: 600,
+                            fontSize: 20,
+                            fontWeight: 700,
                             color: '#1d1d1f',
-                            marginBottom: 4,
+                            marginBottom: 6,
                             // Prevent text overflow on small screens
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -170,32 +212,52 @@ function MissionCard({
                     <div
                         style={{
                             display: 'flex',
-                            gap: 16,
-                            fontSize: 14,
+                            gap: 12,
+                            fontSize: 15,
                             color: '#666',
                             flexWrap: 'wrap',
+                            alignItems: 'center'
                         }}
                     >
-                        <span style={{ whiteSpace: 'nowrap' }}>⏰ {mission.wake_time}</span>
-                        <span style={{ whiteSpace: 'nowrap' }}>📝 {mission.stepCount} ステップ</span>
+                        <span style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            background: '#F2F2F7',
+                            padding: '4px 8px',
+                            borderRadius: 6,
+                            fontWeight: 500
+                        }}>
+                            ⏰ {mission.wake_time}
+                        </span>
+                        <span style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            fontWeight: 500,
+                            color: '#86868b'
+                        }}>
+                            👟 {mission.stepCount} Steps
+                        </span>
                     </div>
                 </div>
                 <div
                     style={{
-                        width: 32,
-                        height: 32,
-                        minWidth: 32,
+                        width: 44,
+                        height: 44,
+                        minWidth: 44,
                         borderRadius: '50%',
-                        background: '#007aff',
+                        background: accentColor,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: 'white',
-                        fontSize: 18,
+                        fontSize: 20,
                         flexShrink: 0,
+                        boxShadow: `0 4px 12px ${accentColor}66`,
                     }}
                 >
-                    →
+                    ▶
                 </div>
             </div>
         </div>

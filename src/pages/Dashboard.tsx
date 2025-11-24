@@ -55,108 +55,166 @@ export default function Dashboard() {
 
       {view === 'home' && (
         <div className="floating">
-          {/* Mission Selection Cards */}
+          {/* Mission Selection Cards - Sports Day Theme */}
           {missions.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <h3 style={{ marginLeft: 8, marginBottom: 12 }}>ミッションを選択</h3>
-              <div style={{ display: 'grid', gap: 12 }}>
-                {missions.map(mission => (
-                  <div
-                    key={mission.id}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`${mission.name}を開始`}
-                    className="card"
-                    style={{
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      border: '2px solid transparent',
-                      // Disable tap highlight on mobile
-                      WebkitTapHighlightColor: 'transparent',
-                      // Improve touch responsiveness
-                      touchAction: 'manipulation',
-                      // Prevent text selection on touch devices
-                      WebkitUserSelect: 'none',
-                      userSelect: 'none',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = '#0a84ff'
-                      e.currentTarget.style.transform = 'translateY(-2px)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'transparent'
-                      e.currentTarget.style.transform = 'translateY(0)'
-                    }}
-                    onClick={() => onStartSession(mission.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        onStartSession(mission.id);
-                      }
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: 18,
-                          fontWeight: 600,
-                          marginBottom: 4,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}>
-                          {mission.name}
-                        </div>
-                        <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 8 }}>
-                          ⏰ {mission.wake_time} 起床
-                        </div>
-                        {mission.steps && mission.steps.length > 0 && (
-                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                            {mission.steps.slice(0, 3).map((step: any, idx: number) => (
-                              <span
-                                key={idx}
-                                style={{
-                                  fontSize: 11,
-                                  padding: '2px 6px',
-                                  background: '#374151',
-                                  borderRadius: 4,
-                                  color: '#d1d5db',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                {step.action_type === 'shake' && '👋'}
-                                {step.action_type === 'ai_detect' && '🤖'}
-                                {step.action_type === 'gps' && '📍'}
-                                {step.action_type === 'qr' && '📷'}
-                                {step.action_type === 'manual' && '👆'}
-                                {' '}{step.label}
-                              </span>
-                            ))}
-                            {mission.steps.length > 3 && (
-                              <span style={{ fontSize: 11, color: '#9ca3af' }}>
-                                +{mission.steps.length - 3}
-                              </span>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 16,
+                paddingLeft: 4
+              }}>
+                <span style={{ fontSize: 24 }}>🏃</span>
+                <h3 style={{
+                  margin: 0,
+                  fontSize: 20,
+                  fontWeight: 800,
+                  color: '#1d1d1f',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+                  letterSpacing: '-0.02em'
+                }}>
+                  READY TO START?
+                </h3>
+              </div>
+
+              <div style={{ display: 'grid', gap: 16 }}>
+                {missions.map((mission, index) => {
+                  const laneColors = ['#FF9500', '#34C759', '#007AFF', '#AF52DE', '#FF2D55'];
+                  const accentColor = laneColors[index % laneColors.length];
+
+                  return (
+                    <div
+                      key={mission.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${mission.name}を開始`}
+                      className="card"
+                      style={{
+                        cursor: 'pointer',
+                        transition: 'transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.1s',
+                        border: 'none',
+                        borderLeft: `6px solid ${accentColor}`,
+                        borderRadius: 16,
+                        padding: 20,
+                        background: '#FFFFFF',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        // Disable tap highlight on mobile
+                        WebkitTapHighlightColor: 'transparent',
+                        // Improve touch responsiveness
+                        touchAction: 'manipulation',
+                        // Prevent text selection on touch devices
+                        WebkitUserSelect: 'none',
+                        userSelect: 'none',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.transform = 'scale(0.99)'
+                        e.currentTarget.style.boxShadow = '0 2px 10px rgba(0,0,0,0.04)'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'scale(1)'
+                        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)'
+                      }}
+                      onClick={() => onStartSession(mission.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onStartSession(mission.id);
+                        }
+                      }}
+                    >
+                      {/* Track Lane Number Background */}
+                      <div style={{
+                        position: 'absolute',
+                        right: -10,
+                        bottom: -20,
+                        fontSize: 120,
+                        fontWeight: 900,
+                        color: '#F2F2F7',
+                        zIndex: 0,
+                        fontFamily: 'Impact, sans-serif',
+                        opacity: 0.5,
+                        pointerEvents: 'none',
+                      }}>
+                        {index + 1}
+                      </div>
+
+                      <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{
+                            fontSize: 20,
+                            fontWeight: 700,
+                            marginBottom: 6,
+                            color: '#1d1d1f',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {mission.name}
+                          </div>
+                          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                            <div style={{
+                              fontSize: 14,
+                              color: '#1d1d1f',
+                              background: '#F2F2F7',
+                              padding: '4px 10px',
+                              borderRadius: 20,
+                              fontWeight: 600,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 4
+                            }}>
+                              ⏰ {mission.wake_time}
+                            </div>
+
+                            {mission.steps && mission.steps.length > 0 && (
+                              <div style={{ display: 'flex', gap: 4 }}>
+                                {mission.steps.slice(0, 3).map((step: any, idx: number) => (
+                                  <span
+                                    key={idx}
+                                    style={{
+                                      fontSize: 16,
+                                    }}
+                                    title={step.label}
+                                  >
+                                    {step.action_type === 'shake' && '👋'}
+                                    {step.action_type === 'ai_detect' && '🤖'}
+                                    {step.action_type === 'gps' && '📍'}
+                                    {step.action_type === 'qr' && '📷'}
+                                    {step.action_type === 'manual' && '👆'}
+                                  </span>
+                                ))}
+                                {mission.steps.length > 3 && (
+                                  <span style={{ fontSize: 12, color: '#86868b', alignSelf: 'center', fontWeight: 600 }}>
+                                    +{mission.steps.length - 3}
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                      <div style={{
-                        width: 40,
-                        height: 40,
-                        minWidth: 40,
-                        borderRadius: '50%',
-                        background: '#0a84ff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 20,
-                        flexShrink: 0,
-                      }}>
-                        ▶
+                        </div>
+                        <div style={{
+                          width: 48,
+                          height: 48,
+                          minWidth: 48,
+                          borderRadius: '50%',
+                          background: accentColor,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: 24,
+                          color: 'white',
+                          flexShrink: 0,
+                          boxShadow: `0 4px 12px ${accentColor}66`,
+                        }}>
+                          ▶
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
