@@ -78,49 +78,146 @@ export default function Missions() {
   }
 
   return (
-    <div className="floating">
-      <div className="card">
-        <h3>新しいミッション</h3>
-        <label className="small muted">ミッション名</label>
-        <input className="input" value={name} onChange={e => setName(e.target.value)} placeholder="例: 朝のルーティン" />
-        <label className="small muted">起床時間</label>
-        <input className="input" type="time" value={wakeTime} onChange={e => setWakeTime(e.target.value)} />
+    <div style={{ animation: 'float 6s ease-in-out infinite' }}>
+      <style>{`
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+          100% { transform: translateY(0px); }
+        }
+      `}</style>
+      <div style={{
+        background: '#1c1c1e',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+      }}>
+        <h3 style={{ margin: '0 0 16px 0', fontWeight: 700 }}>新しいミッション</h3>
+        <label style={{ fontSize: 12, color: '#8e8e93' }}>ミッション名</label>
+        <input
+          style={{
+            width: '100%',
+            padding: 12,
+            borderRadius: 12,
+            border: '1px solid #333',
+            background: '#2c2c2e',
+            color: 'white',
+            fontSize: 16,
+            boxSizing: 'border-box',
+            marginBottom: 12
+          }}
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="例: 朝のルーティン"
+        />
+        <label style={{ fontSize: 12, color: '#8e8e93' }}>起床時間</label>
+        <input
+          style={{
+            width: '100%',
+            padding: 12,
+            borderRadius: 12,
+            border: '1px solid #333',
+            background: '#2c2c2e',
+            color: 'white',
+            fontSize: 16,
+            boxSizing: 'border-box',
+            marginBottom: 12
+          }}
+          type="time"
+          value={wakeTime}
+          onChange={e => setWakeTime(e.target.value)}
+        />
         <div style={{ marginTop: 12, textAlign: 'right' }}>
-          <button className="button" onClick={add}>作成する</button>
+          <button
+            style={{
+              background: 'linear-gradient(135deg, #0a84ff, #5e5ce6)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: 12,
+              fontWeight: 600,
+              fontSize: 16,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8
+            }}
+            onClick={add}
+          >
+            作成する
+          </button>
         </div>
       </div>
 
-      <h3 style={{ marginLeft: 8, marginBottom: 12 }}>マイミッション</h3>
+      <h3 style={{ marginLeft: 8, marginBottom: 12, fontWeight: 700 }}>マイミッション</h3>
       {loading ? (
-        <div className="card"><Skeleton lines={3} /></div>
+        <div style={{ background: '#1c1c1e', borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}><Skeleton lines={3} /></div>
       ) : missions.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', color: '#666' }}>
+        <div style={{ background: '#1c1c1e', borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.2)', textAlign: 'center', color: '#666' }}>
           ミッションがありません。<br />新しいミッションを作成しましょう。
         </div>
       ) : (
         missions.map(m => (
-          <div key={m.id} className="card" style={{ position: 'relative' }}>
+          <div key={m.id} style={{ background: '#1c1c1e', borderRadius: 16, padding: 20, marginBottom: 16, boxShadow: '0 4px 12px rgba(0,0,0,0.2)', position: 'relative' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
                 <div style={{ fontSize: 18, fontWeight: 'bold' }}>{m.name}</div>
-                <div className="small muted">⏰ {m.wake_time} 起床</div>
+                <div style={{ fontSize: 12, color: '#8e8e93' }}>⏰ {m.wake_time} 起床</div>
               </div>
-              <button className="button" style={{ background: 'var(--danger)', padding: '6px 12px', fontSize: 12 }} onClick={() => remove(m.id)}>削除</button>
+              <button
+                style={{
+                  background: '#ff453a',
+                  color: 'white',
+                  border: 'none',
+                  padding: '6px 12px',
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8
+                }}
+                onClick={() => remove(m.id)}
+              >
+                削除
+              </button>
             </div>
 
             <div style={{ background: '#2c2c2e', borderRadius: 8, padding: 12 }}>
               <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="small muted">ステップ一覧</span>
-                <button className="button" style={{ padding: '4px 8px', fontSize: 12, background: '#3a3a3c' }} onClick={() => addStep(m.id)}>+ 追加</button>
+                <span style={{ fontSize: 12, color: '#8e8e93' }}>ステップ一覧</span>
+                <button
+                  style={{
+                    background: '#3a3a3c',
+                    color: 'white',
+                    border: 'none',
+                    padding: '4px 8px',
+                    borderRadius: 12,
+                    fontWeight: 600,
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8
+                  }}
+                  onClick={() => addStep(m.id)}
+                >
+                  + 追加
+                </button>
               </div>
-              {(m.steps || []).length === 0 && <div className="small muted" style={{ textAlign: 'center' }}>ステップがありません</div>}
+              {(m.steps || []).length === 0 && <div style={{ fontSize: 12, color: '#8e8e93', textAlign: 'center' }}>ステップがありません</div>}
               {(m.steps || []).map((s: any) => (
                 <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #3a3a3c' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#0a84ff', color: 'white', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.order}</div>
                     <div>
                       <div>{s.label}</div>
-                      <div className="small muted" style={{ fontSize: 10 }}>
+                      <div style={{ fontSize: 10, color: '#8e8e93' }}>
                         {s.action_type === 'shake' && `👋 シェイク (${s.action_config?.count}回)`}
                         {s.action_type === 'qr' && `📷 QRスキャン`}
                         {s.action_type === 'ai_detect' && `🤖 AI検出 (${s.action_config?.targetLabel})`}
@@ -148,11 +245,20 @@ export default function Missions() {
             ステップ名
           </label>
           <input
-            className="input"
+            style={{
+              width: '100%',
+              padding: 12,
+              borderRadius: 12,
+              border: '1px solid #333',
+              background: '#2c2c2e',
+              color: 'white',
+              fontSize: 16,
+              boxSizing: 'border-box',
+              marginBottom: 20
+            }}
             value={stepLabel}
             onChange={e => setStepLabel(e.target.value)}
             placeholder="例: ベッドから出る"
-            style={{ width: '100%', marginBottom: 20 }}
             autoFocus
           />
         </div>
