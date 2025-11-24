@@ -211,18 +211,22 @@ export default function Missions() {
                 </button>
               </div>
               {(m.steps || []).length === 0 && <div style={{ fontSize: 12, color: '#8e8e93', textAlign: 'center' }}>ステップがありません</div>}
+              import {IconShake, IconScan, IconMapPin, IconQRCode, IconTouch} from '../components/Icons'
+
+              // ... (inside component)
+
               {(m.steps || []).map((s: any) => (
                 <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #3a3a3c' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#0a84ff', color: 'white', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{s.order}</div>
                     <div>
                       <div>{s.label}</div>
-                      <div style={{ fontSize: 10, color: '#8e8e93' }}>
-                        {s.action_type === 'shake' && `👋 シェイク (${s.action_config?.count}回)`}
-                        {s.action_type === 'qr' && `📷 QRスキャン`}
-                        {s.action_type === 'ai_detect' && `🤖 AI検出 (${s.action_config?.targetLabel})`}
-                        {s.action_type === 'gps' && `📍 GPS移動 (${s.action_config?.distance}m)`}
-                        {s.action_type === 'manual' && `👆 手動`}
+                      <div style={{ fontSize: 10, color: '#8e8e93', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {s.action_type === 'shake' && <><IconShake size={12} /> シェイク ({s.action_config?.count}回)</>}
+                        {s.action_type === 'qr' && <><IconQRCode size={12} /> QRスキャン</>}
+                        {s.action_type === 'ai_detect' && <><IconScan size={12} /> AI検出 ({s.action_config?.targetLabel})</>}
+                        {s.action_type === 'gps' && <><IconMapPin size={12} /> GPS移動 ({s.action_config?.distance}m)</>}
+                        {s.action_type === 'manual' && <><IconTouch size={12} /> 手動</>}
                       </div>
                     </div>
                   </div>
