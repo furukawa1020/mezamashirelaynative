@@ -54,7 +54,7 @@ export default function Groups() {
   }
 
   return (
-  return (
+
     <div style={{ animation: 'float 6s ease-in-out infinite' }}>
       <style>{`
         @keyframes float {

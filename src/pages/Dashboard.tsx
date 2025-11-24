@@ -123,7 +123,7 @@ export default function Dashboard() {
                 marginBottom: 16,
                 paddingLeft: 4
               }}>
-                <span style={{ fontSize: 24 }}>🏃</span>
+                <span style={{ fontSize: 24 }}>🏁</span>
                 <h3 style={{
                   margin: 0,
                   fontSize: 20,
@@ -207,47 +207,6 @@ export default function Dashboard() {
                             marginBottom: 6,
                             color: '#1d1d1f',
                             overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}>
-                            {mission.name}
-                          </div>
-                          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                            <div style={{
-                              fontSize: 14,
-                              color: '#1d1d1f',
-                              background: '#F2F2F7',
-                              padding: '4px 10px',
-                              borderRadius: 20,
-                              fontWeight: 600,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 4
-                            }}>
-                              ⏰ {mission.wake_time}
-                            </div>
-
-                            {mission.steps && mission.steps.length > 0 && (
-                              <div style={{ display: 'flex', gap: 4 }}>
-                                {mission.steps.slice(0, 3).map((step: any, idx: number) => (
-                                  <span
-                                    key={idx}
-                                    style={{
-                                      fontSize: 16,
-                                    }}
-                                    title={step.label}
-                                  >
-                                    {step.action_type === 'shake' && '👋'}
-                                    {step.action_type === 'ai_detect' && '🤖'}
-                                    {step.action_type === 'gps' && '📍'}
-                                    {step.action_type === 'qr' && '📷'}
-                                    {step.action_type === 'manual' && '👆'}
-                                  </span>
-                                ))}
-                                {mission.steps.length > 3 && (
-                                  <span style={{ fontSize: 12, color: '#86868b', alignSelf: 'center', fontWeight: 600 }}>
-                                    +{mission.steps.length - 3}
-                                  </span>
                                 )}
                               </div>
                             )}
@@ -270,60 +229,50 @@ export default function Dashboard() {
                           ▶
                         </div>
                       </div>
-                    </div>
-                  );
+            </div>
+          );
                 })}
-              </div>
-            </div>
-          )}
-
-          {missions.length === 0 && !loadingMissions && (
-            <div style={{
-              background: '#1c1c1e',
-              borderRadius: 16,
-              padding: '40px 20px',
-              textAlign: 'center',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-            }}>
-              <div style={{ fontSize: 60, marginBottom: 10 }}>🌞</div>
-              <h2 style={{ marginBottom: 10, fontWeight: 700 }}>朝のリレー</h2>
-              <p style={{ marginBottom: 20, color: '#8e8e93' }}>
-                まずは「ミッション」タブでミッションを作成しましょう
-              </p>
-              <button
-                style={{
-                  background: 'linear-gradient(135deg, #0a84ff, #5e5ce6)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: 12,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8
-                }}
-                onClick={() => setView('missions')}
-              >
-                ミッションを作成
-              </button>
-            </div>
-          )}
-
-          <div style={{ marginTop: 20 }}>
-            <SessionManager />
-            <RelayNotification />
-            <ScheduledAlarmManager />
-          </div>
         </div>
+            </div>
+  )
+}
+
+{
+  missions.length === 0 && !loadingMissions && (
+    <div style={{
+      background: 'linear-gradient(135deg, #0a84ff, #5e5ce6)',
+      color: 'white',
+      border: 'none',
+      padding: '12px 24px',
+      borderRadius: 12,
+      fontWeight: 600,
+      fontSize: 16,
+      cursor: 'pointer',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8
+    }}
+      onClick={() => setView('missions')}
+    >
+      ミッションを作成
+    </button>
+    </div >
+  )
+}
+
+<div style={{ marginTop: 20 }}>
+  <SessionManager />
+  <RelayNotification />
+  <ScheduledAlarmManager />
+</div>
+        </div >
       )}
 
-      {view === 'missions' && <Missions />}
-      {view === 'groups' && <Groups />}
+{ view === 'missions' && <Missions /> }
+{ view === 'groups' && <Groups /> }
 
-      <NotificationPermission />
-    </div>
+<NotificationPermission />
+    </div >
   )
 }
