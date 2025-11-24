@@ -63,11 +63,21 @@ export default function Dashboard() {
                 {missions.map(mission => (
                   <div
                     key={mission.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${mission.name}を開始`}
                     className="card"
                     style={{
                       cursor: 'pointer',
                       transition: 'all 0.2s',
-                      border: '2px solid transparent'
+                      border: '2px solid transparent',
+                      // Disable tap highlight on mobile
+                      WebkitTapHighlightColor: 'transparent',
+                      // Improve touch responsiveness
+                      touchAction: 'manipulation',
+                      // Prevent text selection on touch devices
+                      WebkitUserSelect: 'none',
+                      userSelect: 'none',
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.borderColor = '#0a84ff'
@@ -78,10 +88,23 @@ export default function Dashboard() {
                       e.currentTarget.style.transform = 'translateY(0)'
                     }}
                     onClick={() => onStartSession(mission.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onStartSession(mission.id);
+                      }
+                    }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 18,
+                          fontWeight: 600,
+                          marginBottom: 4,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}>
                           {mission.name}
                         </div>
                         <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 8 }}>
@@ -97,7 +120,8 @@ export default function Dashboard() {
                                   padding: '2px 6px',
                                   background: '#374151',
                                   borderRadius: 4,
-                                  color: '#d1d5db'
+                                  color: '#d1d5db',
+                                  whiteSpace: 'nowrap',
                                 }}
                               >
                                 {step.action_type === 'shake' && '👋'}
@@ -119,12 +143,14 @@ export default function Dashboard() {
                       <div style={{
                         width: 40,
                         height: 40,
+                        minWidth: 40,
                         borderRadius: '50%',
                         background: '#0a84ff',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: 20
+                        fontSize: 20,
+                        flexShrink: 0,
                       }}>
                         ▶
                       </div>
