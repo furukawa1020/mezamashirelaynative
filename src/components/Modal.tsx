@@ -25,7 +25,7 @@ export function Modal({ open, onClose, title, children, maxWidth = 600 }: ModalP
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: 'rgba(10,10,12,0.5)',
-                zIndex: 1000,
+                zIndex: 9999,
                 padding: 16,
                 // iOS safe area support
                 paddingTop: 'max(16px, env(safe-area-inset-top))',

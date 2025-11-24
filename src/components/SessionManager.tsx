@@ -8,6 +8,7 @@ import AICamera from './sensors/AICamera';
 import QRScanner from './sensors/QRScanner';
 import { useMotion } from '../hooks/useMotion';
 import { useGeolocation } from '../hooks/useGeolocation';
+import { IconShake, IconRunning, IconParty } from './Icons';
 
 export const SessionManager = React.memo(function SessionManager() {
   console.log('[SessionManager] Render');
@@ -282,7 +283,7 @@ export const SessionManager = React.memo(function SessionManager() {
 
               {activeStep.action_type === 'shake' && (
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 48 }}>👋</div>
+                  <div style={{ fontSize: 48, display: 'flex', justifyContent: 'center', color: '#f59e0b' }}><IconShake size={48} /></div>
                   <p>スマホを振ってください！</p>
                   <div style={{ fontSize: 24, fontWeight: 'bold' }}>{shakeCount} / {activeStep.action_config?.count || 20}</div>
                   <progress value={shakeCount} max={activeStep.action_config?.count || 20} style={{ width: '100%' }} />
@@ -291,7 +292,7 @@ export const SessionManager = React.memo(function SessionManager() {
 
               {activeStep.action_type === 'gps' && (
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 48 }}>🏃</div>
+                  <div style={{ fontSize: 48, display: 'flex', justifyContent: 'center', color: '#3b82f6' }}><IconRunning size={48} /></div>
                   <p>移動してください！</p>
                   <div style={{ fontSize: 24, fontWeight: 'bold' }}>
                     {initialLocation && location
@@ -322,8 +323,8 @@ export const SessionManager = React.memo(function SessionManager() {
 
           {steps.every((s) => s.result === 'success') && (
             <div style={{ marginTop: 16, padding: 12, background: '#d4edda', borderRadius: 8 }}>
-              <p style={{ margin: 0, color: '#155724', fontSize: 14, fontWeight: 600 }}>
-                🎉 すべてのステップが完了しました！
+              <p style={{ margin: 0, color: '#155724', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'center' }}>
+                <IconParty size={16} color="#155724" /> すべてのステップが完了しました！
               </p>
             </div>
           )}

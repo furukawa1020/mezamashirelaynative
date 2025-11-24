@@ -68,3 +68,55 @@ export const IconAlarm = ({ size = 24, color = 'currentColor' }: { size?: number
         <path d="M17.64 18.67 20 21" />
     </svg>
 );
+
+export const IconFlag = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+        <line x1="4" x2="4" y1="22" y2="15" />
+    </svg>
+);
+
+export const IconParty = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5.8 11.3 2 22l10.7-3.79" />
+        <path d="M4 3h.01" />
+        <path d="M22 8h.01" />
+        <path d="M15 2h.01" />
+        <path d="M22 20h.01" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="m13.4 10.6 6.8-7.8" />
+        <path d="m13.4 13.4 6.8 7.8" />
+        <path d="m10.6 13.4-7.8 6.8" />
+        <path d="m10.6 10.6-7.8-6.8" />
+    </svg>
+);
+
+export const IconRunning = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="13" cy="5" r="1" />
+        <path d="m3 21 8-8" />
+        <path d="m12 13 3-3 3 3" />
+        <path d="M17 21v-6" />
+        <path d="M8 12 5 9" />
+    </svg>
+);
+
+export const IconCheck = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 6 9 17l-5-5" />
+    </svg>
+);
+
+export const IconCheckCircle = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <path d="m9 12 2 2 4-4" />
+    </svg>
+);
+
+export const IconBell = ({ size = 24, color = 'currentColor' }: { size?: number, color?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+);

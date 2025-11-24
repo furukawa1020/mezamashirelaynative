@@ -8,7 +8,7 @@ import { SessionManager } from '../components/SessionManager'
 import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
 import { RelayNotification } from '../components/RelayNotification'
 import { NotificationPermission } from '../components/NotificationPermission'
-import { IconAlarm, IconShake, IconScan, IconMapPin, IconQRCode, IconTouch } from '../components/Icons'
+import { IconAlarm, IconShake, IconScan, IconMapPin, IconQRCode, IconTouch, IconFlag } from '../components/Icons'
 
 export default function Dashboard() {
   usePageMeta('ダッシュボード', '今日のセッションを確認・開始できます')
@@ -124,7 +124,7 @@ export default function Dashboard() {
                 marginBottom: 16,
                 paddingLeft: 4
               }}>
-                <span style={{ fontSize: 24 }}>🏁</span>
+                <div style={{ color: '#FF9500' }}><IconFlag size={24} /></div>
                 <h3 style={{
                   margin: 0,
                   fontSize: 20,

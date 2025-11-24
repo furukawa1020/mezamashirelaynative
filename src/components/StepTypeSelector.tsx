@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { IconTouch, IconShake, IconScan, IconMapPin, IconQRCode, IconCheck } from './Icons'
 
 interface StepTypeSelectorProps {
     onSelect: (type: 'manual' | 'shake' | 'qr' | 'gps' | 'ai_detect', config: any) => void
@@ -12,14 +13,14 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
     const stepTypes = [
         {
             type: 'manual' as const,
-            icon: '👆',
+            icon: <IconTouch size={32} />,
             title: '手動完了',
             description: 'ボタンをタップして完了',
             color: '#10b981'
         },
         {
             type: 'shake' as const,
-            icon: '👋',
+            icon: <IconShake size={32} />,
             title: 'シェイク',
             description: 'スマホを振って完了',
             color: '#f59e0b',
@@ -29,7 +30,7 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
         },
         {
             type: 'ai_detect' as const,
-            icon: '🤖',
+            icon: <IconScan size={32} />,
             title: 'AI物体検出',
             description: 'カメラで物を検出',
             color: '#8b5cf6',
@@ -42,7 +43,7 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
         },
         {
             type: 'gps' as const,
-            icon: '📍',
+            icon: <IconMapPin size={32} />,
             title: 'GPS移動',
             description: '指定距離を歩く',
             color: '#3b82f6',
@@ -52,7 +53,7 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
         },
         {
             type: 'qr' as const,
-            icon: '📷',
+            icon: <IconQRCode size={32} />,
             title: 'QRコード',
             description: 'QR/バーコードをスキャン',
             color: '#ec4899',
@@ -96,7 +97,7 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
                         }}
                     >
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div style={{ fontSize: 32 }}>{stepType.icon}</div>
+                            <div style={{ color: stepType.color }}>{stepType.icon}</div>
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>
                                     {stepType.title}
@@ -117,7 +118,7 @@ export function StepTypeSelector({ onSelect, onCancel }: StepTypeSelectorProps) 
                                     color: 'white',
                                     fontSize: 14
                                 }}>
-                                    ✓
+                                    <IconCheck size={14} />
                                 </div>
                             )}
                         </div>

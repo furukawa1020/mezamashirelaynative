@@ -3,6 +3,7 @@ import usePageMeta from '../hooks/usePageMeta'
 import { useAuth } from '../services/auth'
 import { createGroup, joinGroup, listGroupMembers, getGroup, listTodaySessionsByGroup, getGroupDailyStatus } from '../services/localStore'
 import Skeleton from '../components/Skeleton'
+import { IconParty, IconRunning, IconCheckCircle } from '../components/Icons'
 
 type Member = { id: string; user_id: string }
 
@@ -207,7 +208,15 @@ export default function Groups() {
                 <div key={s.id} style={{ padding: '8px 0', borderBottom: '1px solid #3a3a3c', display: 'flex', justifyContent: 'space-between' }}>
                   <span>{s.user_id}</span>
                   <span style={{ color: s.status === 'completed' ? '#30d158' : '#8e8e93' }}>
-                    {s.status === 'completed' ? '完了 🎉' : '進行中 🏃'} {s.rank ? `(Rank ${s.rank})` : ''}
+                    {s.status === 'completed' ? (
+                      <span style={{ color: '#30d158', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <IconParty size={16} /> 完了 {s.rank ? `(Rank ${s.rank})` : ''}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#8e8e93', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <IconRunning size={16} /> 進行中 {s.rank ? `(Rank ${s.rank})` : ''}
+                      </span>
+                    )}
                   </span>
                 </div>
               ))
@@ -218,7 +227,11 @@ export default function Groups() {
             <h4 style={{ marginBottom: 4, fontWeight: 700 }}>今日のステータス</h4>
             {loading ? <Skeleton lines={1} /> : (dailyStatus ? (
               <div>
-                <div>全員達成: {dailyStatus.all_cleared ? '✅ 達成！' : 'まだ'}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {dailyStatus.all_cleared ? (
+                    <><IconCheckCircle size={16} color="#30d158" /> 達成！</>
+                  ) : 'まだ'}
+                </div>
                 <div>連続達成: {dailyStatus.clear_streak}日</div>
               </div>
             ) : <div style={{ fontSize: 12, color: '#8e8e93' }}>記録なし</div>)}
