@@ -1,31 +1,40 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
 import { useAuth } from '../services/auth'
 import Missions from './Missions'
 import Groups from './Groups'
-import { startSession } from '../services/localStore'
-import DataManager from '../components/DataManager'
-import { BLETagManager } from '../components/BLETagManager'
+import { startSession, listMissions } from '../services/localStore'
 import { SessionManager } from '../components/SessionManager'
 import { ScheduledAlarmManager } from '../components/ScheduledAlarmManager'
-import { RelayNotification } from '../components/RelayNotification';
-import { SensorDataViewer } from '../components/SensorDataViewer';
-import { NotificationPermission } from '../components/NotificationPermission';
+import { RelayNotification } from '../components/RelayNotification'
+import { NotificationPermission } from '../components/NotificationPermission'
 
 export default function Dashboard() {
   usePageMeta('ダッシュボード', '今日のセッションを確認・開始できます')
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const [view, setView] = useState<'home' | 'missions' | 'groups'>('home')
+  const [missions, setMissions] = useState<any[]>([])
+  const [loadingMissions, setLoadingMissions] = useState(false)
 
-  const onStart = async () => {
-    if (!user) return alert('ログインしてください')
-    // 簡易: 最初の自分の mission を取得してセッション開始する流れにする
+  useEffect(() => {
+    if (user && view === 'home') {
+      setLoadingMissions(true)
+      listMissions(user.uid)
+        .then(setMissions)
+        .catch(() => { })
+        .finally(() => setLoadingMissions(false))
+    }
+  }, [user, view])
+
+  const onStartSession = async (missionId: string) => {
+    if (!user) {
+      alert('ログインしてください')
+      return
+    }
+
     try {
-      // TODO: ここは本来ミッション選択UIにする
-      const missionId = prompt('開始するミッションIDを入力（まずは作成してください）')
-      if (!missionId) return
-      const sid = await startSession(user.uid, missionId)
-      alert('セッション開始: ' + sid)
+      await startSession(user.uid, missionId)
+      // SessionManager will automatically pick up the new session
     } catch (e: any) {
       alert('開始に失敗しました: ' + e.message)
     }
@@ -46,14 +55,102 @@ export default function Dashboard() {
 
       {view === 'home' && (
         <div className="floating">
-          <div className="card" style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <div style={{ fontSize: 60, marginBottom: 10 }}>🌞</div>
-            <h2 style={{ marginBottom: 10 }}>朝のリレー</h2>
-            <p className="muted" style={{ marginBottom: 30 }}>次のタスクへバトンをつなごう</p>
-            <button className="button" style={{ width: '100%', fontSize: 18, padding: 16 }} onClick={onStart}>
-              今日のセッション開始
-            </button>
-          </div>
+          {/* Mission Selection Cards */}
+          {missions.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{ marginLeft: 8, marginBottom: 12 }}>ミッションを選択</h3>
+              <div style={{ display: 'grid', gap: 12 }}>
+                {missions.map(mission => (
+                  <div
+                    key={mission.id}
+                    className="card"
+                    style={{
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      border: '2px solid transparent'
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = '#0a84ff'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = 'transparent'
+                      e.currentTarget.style.transform = 'translateY(0)'
+                    }}
+                    onClick={() => onStartSession(mission.id)}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
+                          {mission.name}
+                        </div>
+                        <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 8 }}>
+                          ⏰ {mission.wake_time} 起床
+                        </div>
+                        {mission.steps && mission.steps.length > 0 && (
+                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {mission.steps.slice(0, 3).map((step: any, idx: number) => (
+                              <span
+                                key={idx}
+                                style={{
+                                  fontSize: 11,
+                                  padding: '2px 6px',
+                                  background: '#374151',
+                                  borderRadius: 4,
+                                  color: '#d1d5db'
+                                }}
+                              >
+                                {step.action_type === 'shake' && '👋'}
+                                {step.action_type === 'ai_detect' && '🤖'}
+                                {step.action_type === 'gps' && '📍'}
+                                {step.action_type === 'qr' && '📷'}
+                                {step.action_type === 'manual' && '👆'}
+                                {' '}{step.label}
+                              </span>
+                            ))}
+                            {mission.steps.length > 3 && (
+                              <span style={{ fontSize: 11, color: '#9ca3af' }}>
+                                +{mission.steps.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        background: '#0a84ff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 20
+                      }}>
+                        ▶
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {missions.length === 0 && !loadingMissions && (
+            <div className="card" style={{ textAlign: 'center', padding: '40px 20px' }}>
+              <div style={{ fontSize: 60, marginBottom: 10 }}>🌞</div>
+              <h2 style={{ marginBottom: 10 }}>朝のリレー</h2>
+              <p className="muted" style={{ marginBottom: 20 }}>
+                まずは「ミッション」タブでミッションを作成しましょう
+              </p>
+              <button
+                className="button"
+                style={{ padding: '12px 24px' }}
+                onClick={() => setView('missions')}
+              >
+                ミッションを作成
+              </button>
+            </div>
+          )}
 
           <div style={{ marginTop: 20 }}>
             <SessionManager />
