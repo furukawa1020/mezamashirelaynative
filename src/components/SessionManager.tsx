@@ -135,10 +135,6 @@ export const SessionManager = React.memo(function SessionManager() {
       }
     } catch (e) {
       console.error('Failed to complete step:', e);
-      // If failed, remove from completed set so it can be retried? 
-      // Or keep it to prevent loop? Better to keep it and let user retry manually if needed (though manual button calls this too).
-      // Actually for manual retry we might want to allow it.
-      // For now, let's assume if it fails we shouldn't auto-retry immediately.
     } finally {
       processingStepId.current = null;
     }

@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../services/auth';
 import { useToast } from '../components/Toast';
-import * as localStore from '../services/localStore';
+import { listTodaySessionsByUser, getGroup, listGroupMembers, listTodaySessionsByGroup } from '../services/localStore';
 
 export function RelayNotification() {
   const { user } = useAuth();
@@ -18,20 +18,18 @@ export function RelayNotification() {
 
     const checkRelay = async () => {
       try {
-        const backend = localStore;
-
         // 今日のセッションを取得
-        const sessions = await backend.listTodaySessionsByUser(user.uid);
+        const sessions = await listTodaySessionsByUser(user.uid);
         const completedSession = sessions.find((s: any) => s.status === 'completed' && s.group_id);
 
         if (!completedSession) return;
 
         // グループ情報を取得
-        const group = await backend.getGroup(completedSession.group_id);
+        const group = await getGroup(completedSession.group_id);
         if (!group || group.mode !== 'RACE') return;
 
         // グループメンバーを取得
-        const members = await backend.listGroupMembers(group.id);
+        const members = await listGroupMembers(group.id);
         const memberIds = members.map((m: any) => m.user_id);
         const myIndex = memberIds.indexOf(user.uid);
 
@@ -47,7 +45,7 @@ export function RelayNotification() {
         const nextUserId = memberIds[myIndex + 1];
 
         // 全セッションから次の人のセッションをチェック
-        const allSessions = await backend.listTodaySessionsByGroup?.(group.id) || sessions;
+        const allSessions = await listTodaySessionsByGroup(group.id) || sessions;
         const nextUserSessions = allSessions.filter((s: any) => s.user_id === nextUserId);
         const nextUserCompleted = nextUserSessions.some((s: any) => s.status === 'completed');
 
