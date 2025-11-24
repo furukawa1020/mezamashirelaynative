@@ -1,16 +1,4 @@
-/**
- * AlarmProvider - アラーム音（天国と地獄）の管理
- * セッション開始時にループ再生を開始し、全ステップ完了時に停止
- */
-
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-
-interface AlarmContextValue {
-  isPlaying: boolean;
-  startAlarm: () => void;
-  stopAlarm: () => void;
-  volume: number;
-  setVolume: (v: number) => void;
+setVolume: (v: number) => void;
 }
 
 const AlarmContext = createContext<AlarmContextValue | null>(null);
@@ -60,7 +48,7 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
 
       // 通知API（ユーザーがタップしやすいように）
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('⏰ アラーム！', {
+        new Notification('アラーム！', {
           body: '起きる時間です！タップしてセッションを開始',
           requireInteraction: true,
           vibrate: [200, 100, 200, 100, 200],
@@ -71,7 +59,7 @@ export function AlarmProvider({ children }: { children: React.ReactNode }) {
 
       // フォールバック: 通知またはアラートでユーザーに促す
       if ('Notification' in window && Notification.permission === 'granted') {
-        const notification = new Notification('⏰ アラーム（音声ブロック）', {
+        const notification = new Notification('アラーム（音声ブロック）', {
           body: 'タップして音を有効化してください',
           requireInteraction: true,
         });

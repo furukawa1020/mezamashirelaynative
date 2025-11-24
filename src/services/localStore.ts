@@ -158,7 +158,7 @@ export async function seedSampleData(userId: string) {
   // Create comprehensive sample mission with all sensor types
   const missionId = await createMission(userId, { name: '🌅 朝のルーティン（サンプル）', wake_time: '07:00' })
   await createMissionStep(missionId, {
-    label: '👋 ベッドから出る',
+    label: 'ベッドから出る',
     order: 1,
     action_type: 'shake',
     action_config: { count: 10 }
@@ -176,7 +176,7 @@ export async function seedSampleData(userId: string) {
     action_config: { distance: 10 }
   })
   await createMissionStep(missionId, {
-    label: '✅ 完了！',
+    label: '完了！',
     order: 4,
     action_type: 'manual'
   })

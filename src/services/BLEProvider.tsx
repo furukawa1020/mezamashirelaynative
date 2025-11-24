@@ -103,7 +103,7 @@ export function BLEProvider({ children }: { children: React.ReactNode }) {
         });
 
         console.log(`[BLE] Completed session_step ${targetStep.id}`);
-        showToast(`✅ ${tag.name} で完了しました`);
+        showToast(`${tag.name} で完了しました`);
         if (!muted) playSuccess();
 
         // バイブレーション

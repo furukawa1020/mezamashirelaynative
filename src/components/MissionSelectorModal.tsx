@@ -1,13 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from './Modal';
-import { listMissions, listMissionSteps } from '../services/localStore';
-import { useAuth } from '../services/auth';
-import Skeleton from './Skeleton';
-
-interface MissionSelectorModalProps {
-    open: boolean;
-    onClose: () => void;
-    onSelect: (missionId: string) => void;
+onSelect: (missionId: string) => void;
 }
 
 interface MissionWithSteps {
@@ -228,7 +219,9 @@ function MissionCard({
                             borderRadius: 6,
                             fontWeight: 500
                         }}>
-                            ⏰ {mission.wake_time}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <IconAlarm size={14} /> {mission.wake_time}
+                            </span>
                         </span>
                         <span style={{
                             display: 'flex',

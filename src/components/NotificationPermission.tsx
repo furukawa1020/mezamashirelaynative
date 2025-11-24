@@ -23,7 +23,7 @@ export function NotificationPermission() {
       if (permission === 'granted') {
         setNeedsPermission(false);
         // テスト通知
-        new Notification('✅ 通知が有効になりました', {
+        new Notification('通知が有効になりました', {
           body: 'アラームが正常に動作します',
         });
       }

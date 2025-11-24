@@ -1,11 +1,3 @@
-import React, { useState } from 'react'
-import { useAuth } from '../services/auth'
-import { seedSampleData } from '../services/localStore'
-
-interface OnboardingModalProps {
-  open: boolean
-  onClose: () => void
-}
 
 export default function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   const { user } = useAuth()
@@ -36,19 +28,27 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
         <div>
           <div style={{ display: 'grid', gap: 12 }}>
             <div style={{ padding: 12, background: '#f3f4f6', borderRadius: 8 }}>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>👋 シェイク</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <IconShake size={20} color="#f59e0b" /> シェイク
+              </div>
               <div style={{ fontSize: 14, color: '#6b7280' }}>スマホを振って目を覚ます</div>
             </div>
             <div style={{ padding: 12, background: '#f3f4f6', borderRadius: 8 }}>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>🤖 AI物体検出</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <IconScan size={20} color="#8b5cf6" /> AI物体検出
+              </div>
               <div style={{ fontSize: 14, color: '#6b7280' }}>カメラでコーヒーカップなどを探す</div>
             </div>
             <div style={{ padding: 12, background: '#f3f4f6', borderRadius: 8 }}>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>📍 GPS移動</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <IconMapPin size={20} color="#3b82f6" /> GPS移動
+              </div>
               <div style={{ fontSize: 14, color: '#6b7280' }}>指定した距離を歩く</div>
             </div>
             <div style={{ padding: 12, background: '#f3f4f6', borderRadius: 8 }}>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>📷 QRコード</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <IconQRCode size={20} color="#ec4899" /> QRコード
+              </div>
               <div style={{ fontSize: 14, color: '#6b7280' }}>特定の場所のQRをスキャン</div>
             </div>
           </div>
