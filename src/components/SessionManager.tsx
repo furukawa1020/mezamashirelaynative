@@ -79,9 +79,12 @@ export const SessionManager = React.memo(function SessionManager() {
   // currentSession が変わったらステップを読み込む
   useEffect(() => {
     if (currentSession) {
+      // Reset completedStepIds for new session
+      completedStepIds.current.clear();
       loadSteps(currentSession.id);
     } else {
       setSteps([]);
+      completedStepIds.current.clear();
     }
   }, [currentSession, loadSteps]);
 
