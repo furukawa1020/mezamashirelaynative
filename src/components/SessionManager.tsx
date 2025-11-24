@@ -11,7 +11,7 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { IconShake, IconRunning, IconParty } from './Icons';
 
 export const SessionManager = React.memo(function SessionManager() {
-  console.log('[SessionManager] Render');
+  console.log('[SessionManager] Render v1.1.0');
   const { user } = useAuth();
   const { isPlaying, startAlarm, stopAlarm, volume, setVolume } = useAlarm();
   const [sessions, setSessions] = useState<any[]>([]);

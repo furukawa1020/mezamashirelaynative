@@ -45,7 +45,7 @@ export default function Dashboard() {
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <header style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 24, marginBottom: 4, fontWeight: 700 }}>おはよう、{user?.displayName || 'ゲスト'}</h1>
-        <div style={{ fontSize: 12, color: '#8e8e93' }}>今日の調子はどうですか？</div>
+        <div style={{ fontSize: 12, color: '#8e8e93' }}>今日の調子はどうですか？ (v1.1.0)</div>
       </header>
 
       <div style={{
