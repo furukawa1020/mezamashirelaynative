@@ -4,15 +4,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    sourcemap: true,
     rollupOptions: {
       output: {
-        manualChunks(id){
-          if(id.includes('node_modules')){
-            if(id.includes('react')) return 'vendor_react'
-            if(id.includes('firebase')) return 'vendor_firebase'
-            return 'vendor'
-          }
-        }
+        // Simplified chunking to avoid module resolution issues
+        manualChunks: undefined
       }
     }
   }
