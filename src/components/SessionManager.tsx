@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import * as AuthContextModule from '../services/AuthContext';
+import { useAuth } from '../services/AuthContext';
 import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions, completeSessionStep } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';
@@ -12,7 +12,8 @@ import { IconShake, IconRunning, IconParty } from './Icons';
 
 export const SessionManager = React.memo(function SessionManager() {
   console.log('[SessionManager] Render v1.1.0');
-  const { user } = AuthContextModule.useAuth();
+  const { user } = useAuth();
+  console.log('[SessionManager] useAuth user:', user ? user.uid : 'null');
   const { isPlaying, startAlarm, stopAlarm, volume, setVolume } = useAlarm();
   const [sessions, setSessions] = useState<any[]>([]);
   const [currentSession, setCurrentSession] = useState<any | null>(null);
