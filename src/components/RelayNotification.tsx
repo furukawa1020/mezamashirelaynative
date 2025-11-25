@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import React, { useEffect, useState } from 'react';
+
 import { useToast } from '../components/Toast';
 import { listTodaySessionsByUser, getGroup, listGroupMembers, listTodaySessionsByGroup } from '../services/localStore';
 

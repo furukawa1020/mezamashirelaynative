@@ -1,3 +1,6 @@
+import React, { useState } from 'react'
+import { IconShake, IconScan, IconMapPin, IconQRCode } from './Icons'
+import { seedSampleData } from '../services/localStore'
 
 interface OnboardingModalProps {
   open: boolean;
