@@ -4,14 +4,18 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/AuthContext';
+import React, { useEffect, useState } from 'react';
 import { listMissions, startSession } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import { useToast } from '../components/Toast';
 import { IconBell } from './Icons';
 
-export function ScheduledAlarmManager() {
-  const { user } = useAuth();
+interface ScheduledAlarmManagerProps {
+  user: any;
+}
+
+export function ScheduledAlarmManager({ user }: ScheduledAlarmManagerProps) {
+  // const { user } = useAuth(); // Removed to avoid ReferenceError
   const { startAlarm } = useAlarm();
   const { showToast } = useToast();
   const [nextAlarm, setNextAlarm] = useState<{ time: string; missionId: string; missionName: string } | null>(null);

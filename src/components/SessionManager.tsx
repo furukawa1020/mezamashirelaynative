@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/AuthContext';
 import { listTodaySessionsByUser, listSessionSteps, startSession, listMissions, completeSessionStep } from '../services/localStore';
 import { useAlarm } from '../services/AlarmProvider';
 import StepItem from '../components/StepItem';
@@ -10,10 +9,14 @@ import { useMotion } from '../hooks/useMotion';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { IconShake, IconRunning, IconParty } from './Icons';
 
-export const SessionManager = React.memo(function SessionManager() {
+interface SessionManagerProps {
+  user: any;
+}
+
+export const SessionManager = React.memo(function SessionManager({ user }: SessionManagerProps) {
   console.log('[SessionManager] Render v1.1.0');
-  const { user } = useAuth();
-  console.log('[SessionManager] useAuth user:', user ? user.uid : 'null');
+  // const { user } = useAuth(); // Removed to avoid ReferenceError
+
   const { isPlaying, startAlarm, stopAlarm, volume, setVolume } = useAlarm();
   const [sessions, setSessions] = useState<any[]>([]);
   const [currentSession, setCurrentSession] = useState<any | null>(null);

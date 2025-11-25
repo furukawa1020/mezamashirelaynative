@@ -1,6 +1,12 @@
 
-export default function OnboardingModal({ open, onClose }: OnboardingModalProps) {
-  const { user } = useAuth()
+interface OnboardingModalProps {
+  open: boolean;
+  onClose: () => void;
+  user: any;
+}
+
+export default function OnboardingModal({ open, onClose, user }: OnboardingModalProps) {
+  // const { user } = useAuth() // Removed to avoid ReferenceError
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
 

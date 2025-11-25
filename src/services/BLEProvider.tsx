@@ -6,7 +6,7 @@ import React, { createContext, useContext, useEffect, useCallback } from 'react'
 import { useBLE } from '../hooks/useBLE';
 import { BLEMotionEvent } from '../types/ble';
 import { completeSessionStep, listSessionSteps } from '../services/localStore';
-import { useAuth } from '../services/AuthContext';
+import { completeSessionStep, listSessionSteps } from '../services/localStore';
 import { useToast } from '../components/Toast';
 import { useSound, playSuccess } from '../services/soundProvider';
 
@@ -25,9 +25,9 @@ interface BLEContextValue {
 
 const BLEContext = createContext<BLEContextValue | null>(null);
 
-export function BLEProvider({ children }: { children: React.ReactNode }) {
+export function BLEProvider({ children, user }: { children: React.ReactNode; user: any }) {
   const ble = useBLE();
-  const { user } = useAuth();
+  // const { user } = useAuth(); // Removed to avoid ReferenceError
   const { showToast } = useToast();
   const { muted } = useSound();
 

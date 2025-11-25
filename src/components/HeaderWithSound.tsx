@@ -1,10 +1,14 @@
 import React from 'react'
-import { useAuth } from '../services/AuthContext'
 import IconButton from './IconButton'
 import { useSound } from '../services/soundProvider'
 
-export default function HeaderWithSound() {
-  const { user, signOut } = useAuth()
+interface HeaderWithSoundProps {
+  user: any;
+  signOut: () => void;
+}
+
+export default function HeaderWithSound({ user, signOut }: HeaderWithSoundProps) {
+  // const { user, signOut } = useAuth() // Removed to avoid ReferenceError
   const { muted, setMuted } = useSound()
 
   return (

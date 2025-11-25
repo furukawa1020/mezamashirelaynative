@@ -318,15 +318,15 @@ export default function Dashboard() {
           )}
 
           <div style={{ marginTop: 20 }}>
-            <SessionManager />
-            <RelayNotification />
-            <ScheduledAlarmManager />
+            <SessionManager user={user} />
+            <RelayNotification user={user} />
+            <ScheduledAlarmManager user={user} />
           </div>
         </div>
       )}
 
-      {view === 'missions' && <Missions />}
-      {view === 'groups' && <Groups />}
+      {view === 'missions' && <Missions user={user} />}
+      {view === 'groups' && <Groups user={user} />}
 
       <NotificationPermission />
     </div>

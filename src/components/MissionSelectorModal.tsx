@@ -1,106 +1,85 @@
-onSelect: (missionId: string) => void;
-}
+const missionList = await listMissions(user.uid);
 
-interface MissionWithSteps {
-    id: string;
-    name: string;
-    wake_time: string;
-    stepCount: number;
-}
+// Load step counts for each mission
+const missionsWithSteps = await Promise.all(
+    missionList.map(async (mission: any) => {
+        const steps = await listMissionSteps(mission.id);
+        return {
+            id: mission.id,
+            name: mission.name,
+            wake_time: mission.wake_time,
+            stepCount: steps.length,
+        };
+    })
+);
 
-export function MissionSelectorModal({ open, onClose, onSelect }: MissionSelectorModalProps) {
-    const { user } = useAuth();
-    const [missions, setMissions] = useState<MissionWithSteps[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        if (!open || !user) return;
-
-        const loadMissions = async () => {
-            setLoading(true);
-            try {
-                const missionList = await listMissions(user.uid);
-
-                // Load step counts for each mission
-                const missionsWithSteps = await Promise.all(
-                    missionList.map(async (mission: any) => {
-                        const steps = await listMissionSteps(mission.id);
-                        return {
-                            id: mission.id,
-                            name: mission.name,
-                            wake_time: mission.wake_time,
-                            stepCount: steps.length,
-                        };
-                    })
-                );
-
-                setMissions(missionsWithSteps);
+setMissions(missionsWithSteps);
             } catch (error) {
-                console.error('Failed to load missions:', error);
-            } finally {
-                setLoading(false);
-            }
+    console.error('Failed to load missions:', error);
+} finally {
+    setLoading(false);
+}
         };
 
-        loadMissions();
+loadMissions();
     }, [open, user]);
 
-    const handleSelect = (missionId: string) => {
-        onSelect(missionId);
-        onClose();
-    };
+const handleSelect = (missionId: string) => {
+    onSelect(missionId);
+    onClose();
+};
 
-    return (
-        <Modal open={open} onClose={onClose} title="バトンを受け取る">
-            <div
-                style={{
-                    padding: '16px 24px 24px',
-                    // iOS safe area support
-                    paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
-                    background: 'linear-gradient(180deg, #FFFFFF 0%, #F2F2F7 100%)',
-                    minHeight: '100%',
-                }}
-            >
-                {loading ? (
-                    <div>
-                        <Skeleton lines={3} />
+return (
+    <Modal open={open} onClose={onClose} title="バトンを受け取る">
+        <div
+            style={{
+                padding: '16px 24px 24px',
+                // iOS safe area support
+                paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+                background: 'linear-gradient(180deg, #FFFFFF 0%, #F2F2F7 100%)',
+                minHeight: '100%',
+            }}
+        >
+            {loading ? (
+                <div>
+                    <Skeleton lines={3} />
+                </div>
+            ) : missions.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
+                    <div style={{ fontSize: 64, marginBottom: 16 }}>👟</div>
+                    <p style={{ margin: '0 0 8px 0', fontSize: 18, fontWeight: 700, color: '#1d1d1f' }}>
+                        コースが空っぽです！
+                    </p>
+                    <p style={{ margin: 0, fontSize: 14, color: '#86868b' }}>
+                        まずは「ミッション」タブで<br />新しいコース（ミッション）を作りましょう。
+                    </p>
+                </div>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: '#FF9500',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                        marginBottom: -8,
+                        paddingLeft: 4
+                    }}>
+                        Choose Your Course
                     </div>
-                ) : missions.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px 20px', color: '#666' }}>
-                        <div style={{ fontSize: 64, marginBottom: 16 }}>👟</div>
-                        <p style={{ margin: '0 0 8px 0', fontSize: 18, fontWeight: 700, color: '#1d1d1f' }}>
-                            コースが空っぽです！
-                        </p>
-                        <p style={{ margin: 0, fontSize: 14, color: '#86868b' }}>
-                            まずは「ミッション」タブで<br />新しいコース（ミッション）を作りましょう。
-                        </p>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        <div style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: '#FF9500',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            marginBottom: -8,
-                            paddingLeft: 4
-                        }}>
-                            Choose Your Course
-                        </div>
-                        {missions.map((mission, index) => (
-                            <MissionCard
-                                key={mission.id}
-                                mission={mission}
-                                index={index}
-                                onSelect={handleSelect}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
-        </Modal>
-    );
+                    {missions.map((mission, index) => (
+                        <MissionCard
+                            key={mission.id}
+                            mission={mission}
+                            index={index}
+                            onSelect={handleSelect}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    </Modal>
+);
 }
 
 // Separate component for better performance and touch handling

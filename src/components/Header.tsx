@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useAuth } from '../services/AuthContext'
 import IconButton from './IconButton'
 import { useSound } from '../services/soundProvider'
 import NameModal from './NameModal'
@@ -7,9 +6,15 @@ import { useToast } from './Toast'
 import OfflineIndicator from './OfflineIndicator'
 import InstallPrompt from './InstallPrompt'
 
+interface HeaderProps {
+  user: any;
+  signOut: () => void;
+  updateProfile: (name: string) => Promise<void>;
+}
+
 // Accessible header with sound toggle
-export default function Header() {
-  const { user, signOut, updateProfile } = useAuth()
+export default function Header({ user, signOut, updateProfile }: HeaderProps) {
+  // const { user, signOut, updateProfile } = useAuth() // Removed to avoid ReferenceError
   const { muted, setMuted } = useSound()
   const { showToast } = useToast()
 

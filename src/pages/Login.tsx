@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
-import { useAuth } from '../services/AuthContext'
 
-export default function Login() {
+interface LoginProps {
+  login: () => Promise<void>;
+}
+
+export default function Login({ login }: LoginProps) {
   usePageMeta('ようこそ', 'めざましリレーを始めましょう')
-  const { login } = useAuth()
+  // const { login } = useAuth() // Removed to avoid ReferenceError
 
   return (
     <div style={{

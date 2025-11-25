@@ -4,12 +4,16 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../services/AuthContext';
+import React, { useEffect, useState } from 'react';
 import { useToast } from '../components/Toast';
 import { listTodaySessionsByUser, getGroup, listGroupMembers, listTodaySessionsByGroup } from '../services/localStore';
 
-export function RelayNotification() {
-  const { user } = useAuth();
+interface RelayNotificationProps {
+  user: any;
+}
+
+export function RelayNotification({ user }: RelayNotificationProps) {
+  // const { user } = useAuth(); // Removed to avoid ReferenceError
   const { showToast } = useToast();
   const [relayStatus, setRelayStatus] = useState<string | null>(null);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../services/AuthContext'
+import React, { useEffect, useState } from 'react'
 import { createMission, listMissions, createMissionStep, listMissionSteps, deleteMission, deleteMissionStep } from '../services/localStore'
 import usePageMeta from '../hooks/usePageMeta'
 import Skeleton from '../components/Skeleton'
@@ -7,9 +7,13 @@ import { Modal } from '../components/Modal'
 import { StepTypeSelector } from '../components/StepTypeSelector'
 import { IconShake, IconScan, IconMapPin, IconQRCode, IconTouch, IconAlarm } from '../components/Icons'
 
-export default function Missions() {
+interface MissionsProps {
+  user: any;
+}
+
+export default function Missions({ user }: MissionsProps) {
   usePageMeta('ミッション一覧', 'ミッションを作成・編集して朝のタスクを共有しましょう')
-  const { user } = useAuth()
+  // const { user } = useAuth() // Removed to avoid ReferenceError
   const [missions, setMissions] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [name, setName] = useState('')

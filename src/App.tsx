@@ -8,7 +8,7 @@ import Header from './components/Header'
 import OnboardingModal from './components/OnboardingModal'
 
 export default function App() {
-  const { user, loading } = useAuth()
+  const { user, loading, signOut, updateProfile, login } = useAuth()
   const [showOnboard, setShowOnboard] = useState(false)
 
   useEffect(() => {
@@ -31,11 +31,11 @@ export default function App() {
       <div style={{ fontSize: 12, color: '#8e8e93' }}>読み込み中…</div>
     </div>
   )
-  if (!user) return <Login />
+  if (!user) return <Login login={login} />
 
   return (
     <AlarmProvider>
-      <BLEProvider>
+      <BLEProvider user={user}>
         <div style={{ background: '#121214', minHeight: '100vh', color: '#ffffff' }}>
           <div style={{
             maxWidth: 600,
@@ -44,10 +44,10 @@ export default function App() {
             boxSizing: 'border-box',
             minHeight: '100vh'
           }}>
-            <Header />
+            <Header user={user} signOut={signOut} updateProfile={updateProfile} />
             <Dashboard />
           </div>
-          <OnboardingModal open={showOnboard} onClose={() => { try { localStorage.setItem('mz_seen_onboarding', '1') } catch (e) { }; setShowOnboard(false) }} />
+          <OnboardingModal open={showOnboard} onClose={() => { try { localStorage.setItem('mz_seen_onboarding', '1') } catch (e) { }; setShowOnboard(false) }} user={user} />
         </div>
       </BLEProvider>
     </AlarmProvider>
