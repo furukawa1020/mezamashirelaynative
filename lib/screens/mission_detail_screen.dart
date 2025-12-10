@@ -6,7 +6,8 @@ import '../services/storage_service.dart';
 class MissionDetailScreen extends StatefulWidget {
   final String missionId;
 
-  const MissionDetailScreen({super.key, required this.missionId});  @override
+  const MissionDetailScreen({super.key, required this.missionId});
+  @override
   State<MissionDetailScreen> createState() => _MissionDetailScreenState();
 }
 
@@ -222,7 +223,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).primaryColor.withValues(alpha: 0.1),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -459,7 +462,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
             Navigator.of(context).pop({
               'label': _labelController.text.trim(),
               'actionType': _actionType,
-              'actionConfig': <String, dynamic>{},  // 空のactionConfig
+              'actionConfig': <String, dynamic>{}, // 空のactionConfig
             });
           },
           child: Text(widget.step == null ? '追加' : '更新'),
@@ -539,9 +542,7 @@ class _EditMissionDialogState extends State<_EditMissionDialog> {
               return;
             }
 
-            Navigator.of(context).pop({
-              'name': _nameController.text.trim(),
-            });
+            Navigator.of(context).pop({'name': _nameController.text.trim()});
           },
           child: const Text('更新'),
         ),

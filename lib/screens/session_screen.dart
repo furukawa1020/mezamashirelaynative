@@ -452,18 +452,20 @@ class SessionRunningScreen extends StatelessWidget {
 
   void _snoozeAlarm(BuildContext context) async {
     final alarmService = Provider.of<AlarmService>(context, listen: false);
-    await alarmService.snooze(onAlarmStart: () {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('スヌーズ終了、アラーム再開！')),
-        );
-      }
-    });
+    await alarmService.snooze(
+      onAlarmStart: () {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('スヌーズ終了、アラーム再開！')));
+        }
+      },
+    );
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('5分後にアラームが再開します')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('5分後にアラームが再開します')));
     }
   }
 

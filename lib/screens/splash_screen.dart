@@ -5,7 +5,7 @@ import 'home_screen.dart';
 import '../services/deeplink_service.dart';
 
 /// スプラッシュ画面
-/// 
+///
 /// アプリ起動時に表示され、初期化処理を実行後にホーム画面へ遷移
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,7 +24,10 @@ class _SplashScreenState extends State<SplashScreen> {
   /// 初期化処理
   Future<void> _initialize() async {
     // DeeplinkServiceにBuildContextを設定
-    final deeplinkService = Provider.of<DeeplinkService>(context, listen: false);
+    final deeplinkService = Provider.of<DeeplinkService>(
+      context,
+      listen: false,
+    );
     deeplinkService.setContext(context);
 
     // スプラッシュ表示時間（最低2秒）
@@ -33,9 +36,9 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     // ホーム画面へ遷移
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   @override
@@ -46,11 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.alarm,
-              size: 100,
-              color: Colors.white,
-            ),
+            const Icon(Icons.alarm, size: 100, color: Colors.white),
             const SizedBox(height: 24),
             const Text(
               'めざましリレー',
@@ -63,15 +62,10 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 8),
             const Text(
               '起床リレーで朝活を楽しもう',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 48),
-            const CircularProgressIndicator(
-              color: Colors.white,
-            ),
+            const CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),

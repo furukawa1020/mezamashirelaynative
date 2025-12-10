@@ -6,7 +6,7 @@ import 'storage_service.dart';
 import 'auth_service.dart';
 
 /// ディープリンク処理サービス（グループ招待URL対応）
-/// 
+///
 /// URLスキーマ: mezamashirelay://invite/{inviteCode}
 /// 例: mezamashirelay://invite/ABC123
 class DeeplinkService {
@@ -61,9 +61,8 @@ class DeeplinkService {
 
     // mezamashirelay://invite/{inviteCode}
     if (uri.scheme == 'mezamashirelay' && uri.host == 'invite') {
-      final inviteCode = uri.pathSegments.isNotEmpty 
-          ? uri.pathSegments.first 
-          : null;
+      final inviteCode =
+          uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
 
       if (inviteCode != null) {
         _handleGroupInvite(inviteCode);
@@ -77,7 +76,7 @@ class DeeplinkService {
 
     final storage = Provider.of<StorageService>(_context!, listen: false);
     final auth = Provider.of<AuthService>(_context!, listen: false);
-    
+
     final currentUser = auth.currentUser;
     if (currentUser == null) {
       _showError('ユーザー情報の取得に失敗しました');
@@ -106,7 +105,7 @@ class DeeplinkService {
   /// 成功メッセージ表示
   void _showSuccess(String message) {
     if (_context == null) return;
-    
+
     ScaffoldMessenger.of(_context!).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -119,7 +118,7 @@ class DeeplinkService {
   /// エラーメッセージ表示
   void _showError(String message) {
     if (_context == null) return;
-    
+
     ScaffoldMessenger.of(_context!).showSnackBar(
       SnackBar(
         content: Text(message),

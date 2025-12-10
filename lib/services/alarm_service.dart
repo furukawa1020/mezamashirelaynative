@@ -47,7 +47,9 @@ class AlarmService {
       return;
     }
 
-    debugPrint('AlarmService: アラームを${wakeTime.hour}:${wakeTime.minute}にスケジュールしました');
+    debugPrint(
+      'AlarmService: アラームを${wakeTime.hour}:${wakeTime.minute}にスケジュールしました',
+    );
 
     // 指定時刻まで待機してアラームを開始
     Future.delayed(duration, () async {
@@ -95,7 +97,9 @@ class AlarmService {
     await stopAlarm();
 
     _snoozeTime = DateTime.now().add(const Duration(minutes: 5));
-    debugPrint('AlarmService: スヌーズ - ${_snoozeTime!.hour}:${_snoozeTime!.minute}に再開します');
+    debugPrint(
+      'AlarmService: スヌーズ - ${_snoozeTime!.hour}:${_snoozeTime!.minute}に再開します',
+    );
 
     // 5分後にアラームを再開
     Future.delayed(const Duration(minutes: 5), () async {
