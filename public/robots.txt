@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: /sitemap.xml
-
-# Caution: do not index debug pages
-Disallow: /debug

@@ -18,7 +18,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
   final List<Widget> _screens = [
     const DashboardTab(),
     const MissionsScreen(),
@@ -42,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _handleInviteCode(String inviteCode) async {
     final storage = context.read<StorageService>();
     final auth = context.read<AuthService>();
+<<<<<<< HEAD
 
     final group = await storage.findGroupByInviteCode(inviteCode);
 
@@ -51,13 +56,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('「${group.name}」に参加しました！')));
+=======
+    
+    final group = await storage.findGroupByInviteCode(inviteCode);
+    
+    if (group != null) {
+      await storage.joinGroup(group.groupId, auth.currentUser!.userId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('「${group.name}」に参加しました！')),
+        );
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
         setState(() => _selectedIndex = 2); // グループタブに移動
       }
     } else {
       if (mounted) {
+<<<<<<< HEAD
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('招待コードが無効です')));
+=======
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('招待コードが無効です')),
+        );
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
       }
     }
   }
@@ -147,8 +169,13 @@ class DashboardTab extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Text(
+<<<<<<< HEAD
                             user?.hasProfile ?? false
                                 ? 'プロフィール設定済み'
+=======
+                            user?.hasProfile ?? false 
+                                ? 'プロフィール設定済み' 
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                                 : 'プロフィール未設定',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
@@ -171,9 +198,18 @@ class DashboardTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+<<<<<<< HEAD
 
             // クイックアクション
             Text('クイックアクション', style: Theme.of(context).textTheme.titleMedium),
+=======
+            
+            // クイックアクション
+            Text(
+              'クイックアクション',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             const SizedBox(height: 12),
             GridView.count(
               shrinkWrap: true,
@@ -194,7 +230,13 @@ class DashboardTab extends StatelessWidget {
                   title: 'ミッション作成',
                   onTap: () {
                     Navigator.of(context).push(
+<<<<<<< HEAD
                       MaterialPageRoute(builder: (_) => const MissionsScreen()),
+=======
+                      MaterialPageRoute(
+                        builder: (_) => const MissionsScreen(),
+                      ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                     );
                   },
                 ),
@@ -203,7 +245,13 @@ class DashboardTab extends StatelessWidget {
                   title: 'グループ作成',
                   onTap: () {
                     Navigator.of(context).push(
+<<<<<<< HEAD
                       MaterialPageRoute(builder: (_) => const GroupsScreen()),
+=======
+                      MaterialPageRoute(
+                        builder: (_) => const GroupsScreen(),
+                      ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                     );
                   },
                 ),
@@ -217,14 +265,29 @@ class DashboardTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
+<<<<<<< HEAD
 
             // 最近のアクティビティ
             Text('最近のアクティビティ', style: Theme.of(context).textTheme.titleMedium),
+=======
+            
+            // 最近のアクティビティ
+            Text(
+              '最近のアクティビティ',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             const SizedBox(height: 12),
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
+<<<<<<< HEAD
                 child: Center(child: Text('アクティビティはまだありません')),
+=======
+                child: Center(
+                  child: Text('アクティビティはまだありません'),
+                ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
               ),
             ),
           ],

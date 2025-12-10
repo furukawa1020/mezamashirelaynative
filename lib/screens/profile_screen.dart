@@ -32,9 +32,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await auth.updateProfile(nickname: _nicknameController.text);
     setState(() => _isEditing = false);
     if (mounted) {
+<<<<<<< HEAD
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('プロフィールを更新しました')));
+=======
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('プロフィールを更新しました')),
+      );
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
     }
   }
 
@@ -48,7 +54,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('プロフィール'),
         actions: [
           if (_isEditing)
+<<<<<<< HEAD
             TextButton(onPressed: _saveProfile, child: const Text('保存'))
+=======
+            TextButton(
+              onPressed: _saveProfile,
+              child: const Text('保存'),
+            )
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
           else
             IconButton(
               icon: const Icon(Icons.edit),
@@ -78,10 +91,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         child: IconButton(
+<<<<<<< HEAD
                           icon: const Icon(
                             Icons.camera_alt,
                             color: Colors.white,
                           ),
+=======
+                          icon: const Icon(Icons.camera_alt, color: Colors.white),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                           onPressed: () {
                             // TODO: 画像選択
                           },
@@ -92,7 +109,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 24),
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // ニックネーム
             Card(
               child: Padding(
@@ -123,7 +144,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 16),
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // ユーザーID
             Card(
               child: ListTile(
@@ -138,17 +163,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 16),
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // 登録日
             Card(
               child: ListTile(
                 leading: const Icon(Icons.calendar_today),
                 title: const Text('登録日'),
+<<<<<<< HEAD
                 subtitle: Text(user?.createdAt.toString().split(' ')[0] ?? ''),
               ),
             ),
             const SizedBox(height: 32),
 
+=======
+                subtitle: Text(
+                  user?.createdAt.toString().split(' ')[0] ?? '',
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // その他の設定
             const Divider(),
             ListTile(
@@ -169,12 +208,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   applicationName: 'めざましリレー',
                   applicationVersion: '1.0.0',
                   applicationIcon: const Icon(Icons.alarm, size: 48),
+<<<<<<< HEAD
                   children: const [Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです。')],
+=======
+                  children: const [
+                    Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです。'),
+                  ],
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                 );
               },
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
+<<<<<<< HEAD
               title: const Text(
                 'アカウントリセット',
                 style: TextStyle(color: Colors.red),
@@ -202,6 +248,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                 );
 
+=======
+              title: const Text('アカウントリセット', style: TextStyle(color: Colors.red)),
+              onTap: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('アカウントリセット'),
+                    content: const Text('全てのデータが削除されます。この操作は取り消せません。'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('キャンセル'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
+                        child: const Text('リセット'),
+                      ),
+                    ],
+                  ),
+                );
+                
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                 if (confirmed == true) {
                   await auth.resetAccount();
                   await context.read<StorageService>().clearAll();

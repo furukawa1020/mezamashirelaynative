@@ -20,12 +20,21 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigateToHome() async {
     // 初期化待機（2秒）
     await Future.delayed(const Duration(seconds: 2));
+<<<<<<< HEAD
 
     if (!mounted) return;
 
     Navigator.of(
       context,
     ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
+=======
+    
+    if (!mounted) return;
+    
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
   }
 
   @override
@@ -36,7 +45,15 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+<<<<<<< HEAD
             Icon(Icons.alarm, size: 100, color: Colors.white),
+=======
+            Icon(
+              Icons.alarm,
+              size: 100,
+              color: Colors.white,
+            ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             const SizedBox(height: 24),
             const Text(
               'めざましリレー',
@@ -49,10 +66,22 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 8),
             const Text(
               '起床リレーで朝活を楽しもう',
+<<<<<<< HEAD
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 48),
             const CircularProgressIndicator(color: Colors.white),
+=======
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 48),
+            const CircularProgressIndicator(
+              color: Colors.white,
+            ),
+>>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
           ],
         ),
       ),
