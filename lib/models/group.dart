@@ -19,24 +19,24 @@ class Group {
   });
 
   Map<String, dynamic> toJson() => {
-        'group_id': groupId,
-        'name': name,
-        'invite_code': inviteCode,
-        'mode': mode.name,
-        'owner_id': ownerId,
-        'member_ids': memberIds,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'group_id': groupId,
+    'name': name,
+    'invite_code': inviteCode,
+    'mode': mode.name,
+    'owner_id': ownerId,
+    'member_ids': memberIds,
+    'created_at': createdAt.toIso8601String(),
+  };
 
   factory Group.fromJson(Map<String, dynamic> json) => Group(
-        groupId: json['group_id'] as String,
-        name: json['name'] as String,
-        inviteCode: json['invite_code'] as String,
-        mode: GroupMode.values.byName(json['mode'] as String),
-        ownerId: json['owner_id'] as String,
-        memberIds: List<String>.from(json['member_ids'] as List),
-        createdAt: DateTime.parse(json['created_at'] as String),
-      );
+    groupId: json['group_id'] as String,
+    name: json['name'] as String,
+    inviteCode: json['invite_code'] as String,
+    mode: GroupMode.values.byName(json['mode'] as String),
+    ownerId: json['owner_id'] as String,
+    memberIds: List<String>.from(json['member_ids'] as List),
+    createdAt: DateTime.parse(json['created_at'] as String),
+  );
 
   // ディープリンク生成
   String get deepLink => 'mezamashi://join/$inviteCode';

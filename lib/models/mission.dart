@@ -17,24 +17,25 @@ class Mission {
   });
 
   Map<String, dynamic> toJson() => {
-        'mission_id': missionId,
-        'user_id': userId,
-        'name': name,
-        'wake_time': wakeTime,
-        'steps': steps.map((s) => s.toJson()).toList(),
-        'created_at': createdAt.toIso8601String(),
-      };
+    'mission_id': missionId,
+    'user_id': userId,
+    'name': name,
+    'wake_time': wakeTime,
+    'steps': steps.map((s) => s.toJson()).toList(),
+    'created_at': createdAt.toIso8601String(),
+  };
 
   factory Mission.fromJson(Map<String, dynamic> json) => Mission(
-        missionId: json['mission_id'] as String,
-        userId: json['user_id'] as String,
-        name: json['name'] as String,
-        wakeTime: json['wake_time'] as String,
-        steps: (json['steps'] as List)
+    missionId: json['mission_id'] as String,
+    userId: json['user_id'] as String,
+    name: json['name'] as String,
+    wakeTime: json['wake_time'] as String,
+    steps:
+        (json['steps'] as List)
             .map((s) => MissionStep.fromJson(s as Map<String, dynamic>))
             .toList(),
-        createdAt: DateTime.parse(json['created_at'] as String),
-      );
+    createdAt: DateTime.parse(json['created_at'] as String),
+  );
 }
 
 // ミッションステップ
@@ -56,22 +57,22 @@ class MissionStep {
   });
 
   Map<String, dynamic> toJson() => {
-        'step_id': stepId,
-        'label': label,
-        'order': order,
-        'action_type': actionType.name,
-        'action_config': actionConfig,
-        'ble_event_type': bleEventType,
-      };
+    'step_id': stepId,
+    'label': label,
+    'order': order,
+    'action_type': actionType.name,
+    'action_config': actionConfig,
+    'ble_event_type': bleEventType,
+  };
 
   factory MissionStep.fromJson(Map<String, dynamic> json) => MissionStep(
-        stepId: json['step_id'] as String,
-        label: json['label'] as String,
-        order: json['order'] as int,
-        actionType: StepActionType.values.byName(json['action_type'] as String),
-        actionConfig: Map<String, dynamic>.from(json['action_config'] as Map),
-        bleEventType: json['ble_event_type'] as String?,
-      );
+    stepId: json['step_id'] as String,
+    label: json['label'] as String,
+    order: json['order'] as int,
+    actionType: StepActionType.values.byName(json['action_type'] as String),
+    actionConfig: Map<String, dynamic>.from(json['action_config'] as Map),
+    bleEventType: json['ble_event_type'] as String?,
+  );
 }
 
 enum StepActionType {

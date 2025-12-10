@@ -6,10 +6,7 @@ import '../models/group.dart';
 class ShareService {
   // 汎用共有（OSのシェアシート）
   static Future<void> shareGroup(Group group) async {
-    await Share.share(
-      group.getShareText(),
-      subject: '「${group.name}」に参加しよう！',
-    );
+    await Share.share(group.getShareText(), subject: '「${group.name}」に参加しよう！');
   }
 
   // LINE共有
@@ -36,25 +33,20 @@ class ShareService {
   // Instagram（ストーリーズ共有は制限あり、代わりにクリップボード）
   static Future<void> shareToInstagram(Group group) async {
     // Instagramは直接共有APIがないため、テキストをクリップボードにコピー
-    await Share.share(
-      group.getShareText(),
-      subject: 'Instagramに投稿してください',
-    );
+    await Share.share(group.getShareText(), subject: 'Instagramに投稿してください');
   }
 
   // Slack共有
   static Future<void> shareToSlack(Group group) async {
     final text = Uri.encodeComponent(group.getShareText());
-    final url = 'https://slack.com/intl/ja-jp/share?url=${Uri.encodeComponent(group.deepLink)}&text=$text';
+    final url =
+        'https://slack.com/intl/ja-jp/share?url=${Uri.encodeComponent(group.deepLink)}&text=$text';
     await _launchUrl(url);
   }
 
   // Discord共有（Webhook経由は別途実装が必要、ここではテキスト共有）
   static Future<void> shareToDiscord(Group group) async {
-    await Share.share(
-      group.getShareText(),
-      subject: 'Discordで共有してください',
-    );
+    await Share.share(group.getShareText(), subject: 'Discordで共有してください');
   }
 
   // URL起動ヘルパー
