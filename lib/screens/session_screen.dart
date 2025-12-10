@@ -69,7 +69,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     if (!mounted) return;
     
-    // セチE��ョン実行画面へ遷移
+    // セッション実行画面へ遷移
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => SessionRunningScreen(
@@ -83,12 +83,12 @@ class _SessionScreenState extends State<SessionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('セチE��ョン開姁E),
+        title: const Text('セッション開始'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _group == null || _mission == null
-              ? const Center(child: Text('チE�Eタが見つかりません'))
+              ? const Center(child: Text('データが見つかりません'))
               : Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -102,7 +102,7 @@ class _SessionScreenState extends State<SessionScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'グルーチE,
+                                'グループ',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey,
@@ -132,8 +132,8 @@ class _SessionScreenState extends State<SessionScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                     _group!.mode == GroupMode.race
-                                        ? 'レースモーチE
-                                        : '全員達�EモーチE,
+                                        ? 'レースモード'
+                                        : '全員達成モード',
                                   ),
                                 ],
                               ),
@@ -143,7 +143,7 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // ミッション惁E��
+                      // ミッション情報
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -165,16 +165,12 @@ class _SessionScreenState extends State<SessionScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              if (_mission!.description != null) ...[
-                                const SizedBox(height: 8),
-                                Text(_mission!.description!),
-                              ],
                               const SizedBox(height: 12),
                               Row(
                                 children: [
                                   const Icon(Icons.list_alt, size: 16),
                                   const SizedBox(width: 4),
-                                  Text('${_mission!.steps.length}スチE��チE),
+                                  Text('${_mission!.steps.length}ステップ'),
                                 ],
                               ),
                             ],
@@ -183,9 +179,9 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // ミッションスチE��プ一覧
+                      // ミッションステップ一覧
                       const Text(
-                        'スチE��チE,
+                        'ステップ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -202,7 +198,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                 leading: CircleAvatar(
                                   child: Text('${index + 1}'),
                                 ),
-                                title: Text(step.name),
+                                title: Text(step.label),
                                 subtitle: Text(
                                   _getActionTypeLabel(step.actionType),
                                 ),
@@ -213,7 +209,7 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 開始�Eタン
+                      // 開始ボタン
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -222,7 +218,7 @@ class _SessionScreenState extends State<SessionScreen> {
                             padding: const EdgeInsets.all(16),
                           ),
                           child: const Text(
-                            'セチE��ョン開姁E,
+                            'セッション開始',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
@@ -236,22 +232,22 @@ class _SessionScreenState extends State<SessionScreen> {
   String _getActionTypeLabel(StepActionType type) {
     switch (type) {
       case StepActionType.manual:
-        return '手動確誁E;
+        return '手動確認';
       case StepActionType.shake:
-        return 'シェイク検�E';
+        return 'シェイク検出';
       case StepActionType.ble:
         return 'BLEセンサー';
       case StepActionType.qr:
-        return 'QRコーチE;
+        return 'QRコード';
       case StepActionType.gps:
         return 'GPS位置';
       case StepActionType.aiDetect:
-        return 'AI検�E';
+        return 'AI検出';
     }
   }
 }
 
-// セチE��ョン実行画面
+// セッション実行画面
 class SessionRunningScreen extends StatelessWidget {
   final String sessionId;
 
@@ -267,8 +263,8 @@ class SessionRunningScreen extends StatelessWidget {
 
     if (session == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('セチE��ョン')),
-        body: const Center(child: Text('セチE��ョンが見つかりません')),
+        appBar: AppBar(title: const Text('セッション')),
+        body: const Center(child: Text('セッションが見つかりません')),
       );
     }
 
@@ -276,7 +272,7 @@ class SessionRunningScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('セチE��ョン実行中'),
+        title: const Text('セッション実行中'),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -295,12 +291,12 @@ class SessionRunningScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${session.completedSteps} / ${session.totalSteps} スチE��プ完亁E,
+              '${session.completedSteps} / ${session.totalSteps} ステップ完了',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 24),
 
-            // 現在のスチE��チE
+            // 現在のステップ
             if (currentStep != null) ...[
               Card(
                 child: Padding(
@@ -353,7 +349,7 @@ class SessionRunningScreen extends StatelessWidget {
             ],
             const SizedBox(height: 24),
 
-            // スチE��プ一覧
+            // ステップ一覧
             Expanded(
               child: ListView.builder(
                 itemCount: session.steps.length,
@@ -382,7 +378,7 @@ class SessionRunningScreen extends StatelessWidget {
                       title: Text(step.nickname ?? step.userId),
                       subtitle: step.isCompleted && step.durationMs != null
                           ? Text(
-                              '完亁E ${_formatDuration(step.durationMs!)}',
+                              '完了 ${_formatDuration(step.durationMs!)}',
                             )
                           : null,
                       trailing: step.bleEventType != null
@@ -456,12 +452,12 @@ class SessionRunningScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('セチE��ョンをキャンセル'),
-        content: const Text('本当にセチE��ョンをキャンセルしますか�E�E),
+        title: const Text('セッションをキャンセル'),
+        content: const Text('本当にセッションをキャンセルしますか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('戻めE),
+            child: const Text('戻る'),
           ),
           TextButton(
             onPressed: () {

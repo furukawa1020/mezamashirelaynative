@@ -1,4 +1,4 @@
-// ミッションモチE��
+// ミッションモデル
 class Mission {
   final String missionId;
   final String userId;
@@ -38,7 +38,7 @@ class Mission {
   );
 }
 
-// ミッションスチE��チE
+// ミッションステップ
 class MissionStep {
   final String stepId;
   final String label;
@@ -76,10 +76,10 @@ class MissionStep {
 }
 
 enum StepActionType {
-  manual, // 手動タチE�E
+  manual, // 手動タップ
   shake, // シェイク
   ble, // BLEセンサー
-  qr, // QRコーチE
+  qr, // QRコード
   gps, // GPS
-  aiDetect, // AI物体検�E
+  aiDetect, // AI物体検出
 }

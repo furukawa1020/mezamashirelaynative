@@ -7,7 +7,7 @@ import '../services/storage_service.dart';
 import '../services/share_service.dart';
 import '../models/group.dart';
 
-// グループ管琁E��面
+// グループ管理画面
 class GroupsScreen extends StatefulWidget {
   const GroupsScreen({super.key});
 
@@ -45,73 +45,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
     showDialog(
       context: context,
-      builder:
-          (context) => StatefulBuilder(
-            builder:
-                (context, setDialogState) => AlertDialog(
-                  title: const Text('グループ作�E'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        controller: nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'グループ名',
-                          hintText: '朝活グルーチE,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      SegmentedButton<GroupMode>(
-                        segments: const [
-                          ButtonSegment(
-                            value: GroupMode.race,
-                            label: Text('競争モーチE),
-                            icon: Icon(Icons.speed),
-                          ),
-                          ButtonSegment(
-                            value: GroupMode.all,
-                            label: Text('全員モーチE),
-                            icon: Icon(Icons.group),
-                          ),
-                        ],
-                        selected: {selectedMode},
-                        onSelectionChanged: (Set<GroupMode> newSelection) {
-                          setDialogState(() {
-                            selectedMode = newSelection.first;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('キャンセル'),
-                    ),
-                    FilledButton(
-                      onPressed: () async {
-                        if (nameController.text.isNotEmpty) {
-                          final auth = context.read<AuthService>();
-                          final storage = context.read<StorageService>();
-
-                          await storage.createGroup(
-                            name: nameController.text,
-                            mode: selectedMode,
-                            ownerId: auth.currentUser!.userId,
-                          );
-
-                          Navigator.pop(context);
-                          _loadGroups();
-                        }
-                      },
-                      child: const Text('作�E'),
-                    ),
-                  ],
-                ),
-          ),
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('グループ作�E'),
+          title: const Text('グループ作成'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -119,7 +55,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 controller: nameController,
                 decoration: const InputDecoration(
                   labelText: 'グループ名',
-                  hintText: '朝活グルーチE,
+                  hintText: '朝活グループ',
                 ),
               ),
               const SizedBox(height: 16),
@@ -127,12 +63,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
                 segments: const [
                   ButtonSegment(
                     value: GroupMode.race,
-                    label: Text('競争モーチE),
+                    label: Text('競争モード'),
                     icon: Icon(Icons.speed),
                   ),
                   ButtonSegment(
                     value: GroupMode.all,
-                    label: Text('全員モーチE),
+                    label: Text('全員モード'),
                     icon: Icon(Icons.group),
                   ),
                 ],
@@ -166,7 +102,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   _loadGroups();
                 }
               },
-              child: const Text('作�E'),
+              child: const Text('作成'),
             ),
           ],
         ),
@@ -185,7 +121,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
             content: TextField(
               controller: codeController,
               decoration: const InputDecoration(
-                labelText: '招征E��ーチE,
+                labelText: '招待コード',
                 hintText: 'ABC123',
               ),
               textCapitalization: TextCapitalization.characters,
@@ -216,7 +152,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('招征E��ードが無効でぁE)),
+                        const SnackBar(content: Text('招征E��ードが無効でぁE)),
                       );
                     }
                   }
@@ -230,7 +166,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
         content: TextField(
           controller: codeController,
           decoration: const InputDecoration(
-            labelText: '招征E��ーチE,
+            labelText: '招征E��ーチE,
             hintText: 'ABC123',
           ),
           textCapitalization: TextCapitalization.characters,
@@ -258,7 +194,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('招征E��ードが無効でぁE)),
+                    const SnackBar(content: Text('招征E��ードが無効でぁE)),
                   );
                 }
               }
@@ -301,11 +237,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 招征E��ーチE
+                  // 招征E��ーチE
                   Card(
                     child: ListTile(
                       leading: const Icon(Icons.key),
-                      title: const Text('招征E��ーチE),
+                      title: const Text('招征E��ーチE),
                       subtitle: Text(
                         group.inviteCode,
                         style: const TextStyle(
@@ -321,7 +257,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                             ClipboardData(text: group.inviteCode),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('コピ�Eしました')),
+                            const SnackBar(content: Text('コピ�Eしました')),
                           );
                         },
                       ),
@@ -329,7 +265,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // SNS共有�Eタン
+                  // SNS共有�Eタン
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -391,11 +327,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
               ),
               const SizedBox(height: 16),
               
-              // 招征E��ーチE
+              // 招征E��ーチE
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.key),
-                  title: const Text('招征E��ーチE),
+                  title: const Text('招征E��ーチE),
                   subtitle: Text(
                     group.inviteCode,
                     style: const TextStyle(
@@ -409,7 +345,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: group.inviteCode));
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('コピ�Eしました')),
+                        const SnackBar(content: Text('コピ�Eしました')),
                       );
                     },
                   ),
@@ -417,7 +353,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
               ),
               const SizedBox(height: 16),
               
-              // SNS共有�Eタン
+              // SNS共有�Eタン
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -459,7 +395,7 @@ class _GroupsScreenState extends State<GroupsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('グルーチE),
+        title: const Text('グループ'),
         actions: [
           IconButton(
             icon: const Icon(Icons.group_add),
@@ -487,13 +423,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
                     FilledButton.icon(
                       onPressed: _showCreateGroupDialog,
                       icon: const Icon(Icons.add),
-                      label: const Text('グループ作�E'),
+                      label: const Text('グループ作�E'),
                     ),
                     const SizedBox(height: 8),
                     TextButton.icon(
                       onPressed: _showJoinGroupDialog,
                       icon: const Icon(Icons.login),
-                      label: const Text('招征E��ードで参加'),
+                      label: const Text('招征E��ードで参加'),
                     ),
                   ],
                 ),
@@ -536,13 +472,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       FilledButton.icon(
                         onPressed: _showCreateGroupDialog,
                         icon: const Icon(Icons.add),
-                        label: const Text('グループ作�E'),
+                        label: const Text('グループ作成'),
                       ),
                       const SizedBox(height: 8),
                       TextButton.icon(
                         onPressed: _showJoinGroupDialog,
                         icon: const Icon(Icons.login),
-                        label: const Text('招征E��ードで参加'),
+                        label: const Text('招征E��ードで参加'),
                       ),
                     ],
                   ),

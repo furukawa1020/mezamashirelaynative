@@ -7,7 +7,7 @@ import '../models/user.dart';
 import 'storage_service.dart';
 import 'ble_service.dart';
 
-// セチE��ョンサービス
+// セッションサービス
 class SessionService extends ChangeNotifier {
   final StorageService _storageService;
   final BLEService _bleService;
@@ -32,7 +32,7 @@ class SessionService extends ChangeNotifier {
     });
   }
 
-  // セチE��ョン作�E
+  // セッション作成
   Future<Session> createSession({
     required String groupId,
     required String missionId,
@@ -50,7 +50,7 @@ class SessionService extends ChangeNotifier {
     return session;
   }
 
-  // セチE��ョン開姁E
+  // セッション開始
   Future<void> startSession(String sessionId) async {
     final session = await _storageService.getSession(sessionId);
     if (session == null) {
@@ -67,7 +67,7 @@ class SessionService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // スチE��プ完亁E
+  // スチE��プ完亁E
   Future<void> completeStep({
     required String stepId,
     String? bleEventType,
@@ -91,7 +91,7 @@ class SessionService extends ChangeNotifier {
 
     _currentSession = _currentSession!.copyWith(steps: updatedSteps);
 
-    // 全スチE��プ完亁E��ェチE��
+    // 全スチE��プ完亁E��ェチE��
     if (_currentSession!.completedSteps == _currentSession!.totalSteps) {
       await _completeSession();
     } else {
@@ -101,7 +101,7 @@ class SessionService extends ChangeNotifier {
     }
   }
 
-  // セチE��ョン完亁E
+  // セチE��ョン完亁E
   Future<void> _completeSession() async {
     if (_currentSession == null) return;
 
@@ -121,7 +121,7 @@ class SessionService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // セチE��ョンキャンセル
+  // セチE��ョンキャンセル
   Future<void> cancelSession() async {
     if (_currentSession == null) return;
 
@@ -137,14 +137,14 @@ class SessionService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // BLEイベント�E琁E
+  // BLEイベント�E琁E
   void _handleBLEEvent(String eventType, String tagId) {
     if (_currentSession == null || !hasActiveSession) return;
 
     final currentStep = _currentSession!.currentStep;
     if (currentStep == null) return;
 
-    // イベントタイプに応じて自動的にスチE��プ完亁E
+    // イベントタイプに応じて自動的にスチE��プ完亁E
     if (_shouldCompleteStep(eventType)) {
       completeStep(
         stepId: currentStep.stepId,
@@ -154,11 +154,11 @@ class SessionService extends ChangeNotifier {
   }
 
   bool _shouldCompleteStep(String eventType) {
-    // OPEN, LIFT, SHAKE イベントでスチE��プ完亁E
+    // OPEN, LIFT, SHAKE イベントでスチE��プ完亁E
     return ['OPEN', 'LIFT', 'SHAKE'].contains(eventType);
   }
 
-  // セチE��ョン履歴取征E
+  // セチE��ョン履歴取征E
   Future<List<Session>> getSessionHistory({
     String? groupId,
     int limit = 20,
@@ -169,7 +169,7 @@ class SessionService extends ChangeNotifier {
     );
   }
 
-  // セチE��ョン詳細取征E
+  // セッション詳細取得
   Future<Session?> getSession(String sessionId) async {
     return await _storageService.getSession(sessionId);
   }

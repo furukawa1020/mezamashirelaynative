@@ -1,4 +1,4 @@
-// GRAVITY式匿名ユーザーモチE��
+// GRAVITY式匿名ユーザーモデル
 class AppUser {
   final String userId; // UUID
   String? nickname;
@@ -34,9 +34,9 @@ class AppUser {
             : null,
   );
 
-  // 表示名取得（ニチE��ネ�Eム未設定時は匿名表示�E�E
+  // 表示名取得（ニックネーム未設定時は匿名表示）
   String get displayName => nickname ?? '匿名ユーザー';
 
-  // プロフィール設定済みぁE
+  // プロフィール設定済みか
   bool get hasProfile => nickname != null && nickname!.isNotEmpty;
 }
