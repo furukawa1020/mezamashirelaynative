@@ -6,6 +6,7 @@ import '../models/mission.dart';
 import '../services/session_service.dart';
 import '../services/storage_service.dart';
 import '../services/auth_service.dart';
+import '../services/alarm_service.dart';
 
 class SessionScreen extends StatefulWidget {
   final String groupId;
@@ -318,7 +319,7 @@ class SessionRunningScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 24),
-                      if (!currentStep.isCompleted)
+                      if (!currentStep.isCompleted) ...[
                         ElevatedButton(
                           onPressed: () {
                             sessionService.completeStep(
@@ -336,6 +337,13 @@ class SessionRunningScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 18),
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () => _snoozeAlarm(context),
+                          icon: const Icon(Icons.snooze),
+                          label: const Text('スヌーズ (5分後)'),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -441,6 +449,23 @@ class SessionRunningScreen extends StatelessWidget {
     final minutes = seconds ~/ 60;
     final remainingSeconds = seconds % 60;
     return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  void _snoozeAlarm(BuildContext context) async {
+    final alarmService = Provider.of<AlarmService>(context, listen: false);
+    await alarmService.snooze(onAlarmStart: () {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('スヌーズ終了、アラーム再開！')),
+        );
+      }
+    });
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('5分後にアラームが再開します')),
+      );
+    }
   }
 
   void _showCancelDialog(BuildContext context, SessionService service) {

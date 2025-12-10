@@ -3,11 +3,13 @@ import 'package:flutter/foundation.dart';
 import '../models/session.dart';
 import 'storage_service.dart';
 import 'ble_service.dart';
+import 'alarm_service.dart';
 
 // セッションサービス
 class SessionService extends ChangeNotifier {
   final StorageService _storageService;
   final BLEService _bleService;
+  AlarmService? _alarmService;
 
   Session? _currentSession;
   Timer? _sessionTimer;
@@ -18,6 +20,11 @@ class SessionService extends ChangeNotifier {
 
   SessionService(this._storageService, this._bleService) {
     _initBLEListener();
+  }
+
+  // AlarmServiceを設定（Providerから取得）
+  void setAlarmService(AlarmService alarmService) {
+    _alarmService = alarmService;
   }
 
   void _initBLEListener() {
@@ -59,6 +66,9 @@ class SessionService extends ChangeNotifier {
       startedAt: DateTime.now(),
     );
     _stepStartTime = DateTime.now();
+
+    // アラームを即座に開始
+    await _alarmService?.playAlarm();
 
     await _storageService.saveSession(_currentSession!);
     notifyListeners();
@@ -118,13 +128,16 @@ class SessionService extends ChangeNotifier {
       totalDurationMs: totalDuration,
     );
 
+    // アラームを停止
+    await _alarmService?.stopAlarm();
+
     await _storageService.saveSession(_currentSession!);
     _sessionTimer?.cancel();
     _stepStartTime = null;
     notifyListeners();
   }
 
-  // セチE��ョンキャンセル
+  // セッションキャンセル
   Future<void> cancelSession() async {
     if (_currentSession == null) return;
 
@@ -132,6 +145,9 @@ class SessionService extends ChangeNotifier {
       status: SessionStatus.failed,
       completedAt: DateTime.now(),
     );
+
+    // アラームを停止
+    await _alarmService?.stopAlarm();
 
     await _storageService.saveSession(_currentSession!);
     _sessionTimer?.cancel();

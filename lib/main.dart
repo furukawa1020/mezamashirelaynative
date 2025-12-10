@@ -5,6 +5,7 @@ import 'services/storage_service.dart';
 import 'services/deeplink_service.dart';
 import 'services/ble_service.dart';
 import 'services/session_service.dart';
+import 'services/alarm_service.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -14,9 +15,11 @@ void main() async {
   final storageService = StorageService();
   final deeplinkService = DeeplinkService();
   final bleService = BLEService();
+  final alarmService = AlarmService();
   final sessionService = SessionService(storageService, bleService);
 
   await authService.initialize();
+  await alarmService.initialize();
   deeplinkService.initialize();
 
   runApp(
@@ -25,6 +28,7 @@ void main() async {
       storageService: storageService,
       deeplinkService: deeplinkService,
       bleService: bleService,
+      alarmService: alarmService,
       sessionService: sessionService,
     ),
   );
@@ -35,6 +39,7 @@ class MezamashiRelayApp extends StatelessWidget {
   final StorageService storageService;
   final DeeplinkService deeplinkService;
   final BLEService bleService;
+  final AlarmService alarmService;
   final SessionService sessionService;
 
   const MezamashiRelayApp({
@@ -43,6 +48,7 @@ class MezamashiRelayApp extends StatelessWidget {
     required this.storageService,
     required this.deeplinkService,
     required this.bleService,
+    required this.alarmService,
     required this.sessionService,
   });
 
@@ -54,6 +60,7 @@ class MezamashiRelayApp extends StatelessWidget {
         Provider<StorageService>.value(value: storageService),
         Provider<DeeplinkService>.value(value: deeplinkService),
         Provider<BLEService>.value(value: bleService),
+        Provider<AlarmService>.value(value: alarmService),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(

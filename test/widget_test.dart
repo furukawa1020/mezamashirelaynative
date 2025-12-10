@@ -4,6 +4,7 @@ import 'package:mezamashi_relay/services/auth_service.dart';
 import 'package:mezamashi_relay/services/storage_service.dart';
 import 'package:mezamashi_relay/services/deeplink_service.dart';
 import 'package:mezamashi_relay/services/ble_service.dart';
+import 'package:mezamashi_relay/services/alarm_service.dart';
 import 'package:mezamashi_relay/services/session_service.dart';
 import 'package:mezamashi_relay/main.dart';
 
@@ -14,9 +15,11 @@ void main() {
     final storageService = StorageService();
     final deeplinkService = DeeplinkService();
     final bleService = BLEService();
+    final alarmService = AlarmService();
     final sessionService = SessionService(storageService, bleService);
 
     await authService.initialize();
+    await alarmService.initialize();
 
     // アプリを起動
     await tester.pumpWidget(
@@ -25,6 +28,7 @@ void main() {
         storageService: storageService,
         deeplinkService: deeplinkService,
         bleService: bleService,
+        alarmService: alarmService,
         sessionService: sessionService,
       ),
     );
