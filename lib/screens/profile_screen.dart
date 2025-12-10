@@ -34,44 +34,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await auth.updateProfile(nickname: _nicknameController.text);
     setState(() => _isEditing = false);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('プロフィールを更新しました')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('プロフィールを更新しました')));
     }
   }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    
+
     final source = await showDialog<ImageSource>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('画像を選択'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera),
-              title: const Text('カメラで撮影'),
-              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('画像を選択'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera),
+                  title: const Text('カメラで撮影'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.camera),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('ギャラリーから選択'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('ギャラリーから選択'),
-              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
 
     if (source == null) return;
 
     final image = await picker.pickImage(source: source);
     if (image != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('画像を選択しました: ${image.name}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('画像を選択しました: ${image.name}')));
       // TODO: 画像をStorageServiceに保存
     }
   }
@@ -86,10 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('プロフィール'),
         actions: [
           if (_isEditing)
-            TextButton(
-              onPressed: _saveProfile,
-              child: const Text('保存'),
-            )
+            TextButton(onPressed: _saveProfile, child: const Text('保存'))
           else
             IconButton(
               icon: const Icon(Icons.edit),
@@ -119,7 +117,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         child: IconButton(
-                          icon: const Icon(Icons.camera_alt, color: Colors.white),
+                          icon: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                          ),
                           onPressed: _pickImage,
                         ),
                       ),
@@ -129,7 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            
             // ニックネーム
             Card(
               child: Padding(
@@ -161,7 +161,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            
             // ユーザーID
             Card(
               child: ListTile(
@@ -182,13 +181,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ListTile(
                 leading: const Icon(Icons.calendar_today),
                 title: const Text('登録日'),
-                subtitle: Text(
-                  user?.createdAt.toString().split(' ')[0] ?? '',
-                ),
+                subtitle: Text(user?.createdAt.toString().split(' ')[0] ?? ''),
               ),
             ),
             const SizedBox(height: 32),
-            
+
             // その他の設定
             const Divider(),
             ListTile(
@@ -213,9 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   applicationName: 'めざましリレー',
                   applicationVersion: '1.0.0',
                   applicationIcon: const Icon(Icons.alarm, size: 48),
-                  children: const [
-                    Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです'),
-                  ],
+                  children: const [Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです')],
                 );
               },
             ),
@@ -228,26 +223,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () async {
                 final confirmed = await showDialog<bool>(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('アカウントリセット'),
-                    content: const Text('全てのデータが削除されます。この操作は取り消せません。'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: const Text('キャンセル'),
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('アカウントリセット'),
+                        content: const Text('全てのデータが削除されます。この操作は取り消せません。'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('キャンセル'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                            child: const Text('リセット'),
+                          ),
+                        ],
                       ),
-                      FilledButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                        child: const Text('リセット'),
-                      ),
-                    ],
-                  ),
                 );
-                
+
                 if (confirmed == true) {
                   await auth.resetAccount();
-                  await context.read<StorageService>().clearAll();
+                  final storage = context.read<StorageService>();
+                  await storage.clearAll();
                   if (mounted) {
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   }

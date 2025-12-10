@@ -2,10 +2,10 @@ import 'package:uuid/uuid.dart';
 
 // セッション状態
 enum SessionStatus {
-  waiting,   // 待機中
-  active,    // 実行中
+  waiting, // 待機中
+  active, // 実行中
   completed, // 完了
-  failed,    // 失敗
+  failed, // 失敗
 }
 
 // セッションステップ
@@ -48,9 +48,10 @@ class SessionStep {
       stepOrder: json['stepOrder'] as int,
       userId: json['userId'] as String,
       nickname: json['nickname'] as String?,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'] as String)
+              : null,
       durationMs: json['durationMs'] as int?,
       bleEventType: json['bleEventType'] as String?,
     );
@@ -108,14 +109,15 @@ class Session {
     required Map<String, String> userNicknames,
   }) {
     final uuid = const Uuid();
-    final steps = userIds.asMap().entries.map((entry) {
-      return SessionStep(
-        stepId: uuid.v4(),
-        stepOrder: entry.key,
-        userId: entry.value,
-        nickname: userNicknames[entry.value],
-      );
-    }).toList();
+    final steps =
+        userIds.asMap().entries.map((entry) {
+          return SessionStep(
+            stepId: uuid.v4(),
+            stepOrder: entry.key,
+            userId: entry.value,
+            nickname: userNicknames[entry.value],
+          );
+        }).toList();
 
     return Session(
       sessionId: uuid.v4(),
@@ -132,10 +134,7 @@ class Session {
   double get progress => totalSteps > 0 ? completedSteps / totalSteps : 0;
 
   SessionStep? get currentStep {
-    return steps.firstWhere(
-      (s) => !s.isCompleted,
-      orElse: () => steps.last,
-    );
+    return steps.firstWhere((s) => !s.isCompleted, orElse: () => steps.last);
   }
 
   Map<String, dynamic> toJson() {
@@ -161,16 +160,19 @@ class Session {
         (e) => e.name == json['status'],
         orElse: () => SessionStatus.waiting,
       ),
-      steps: (json['steps'] as List)
-          .map((s) => SessionStep.fromJson(s as Map<String, dynamic>))
-          .toList(),
+      steps:
+          (json['steps'] as List)
+              .map((s) => SessionStep.fromJson(s as Map<String, dynamic>))
+              .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      startedAt: json['startedAt'] != null
-          ? DateTime.parse(json['startedAt'] as String)
-          : null,
-      completedAt: json['completedAt'] != null
-          ? DateTime.parse(json['completedAt'] as String)
-          : null,
+      startedAt:
+          json['startedAt'] != null
+              ? DateTime.parse(json['startedAt'] as String)
+              : null,
+      completedAt:
+          json['completedAt'] != null
+              ? DateTime.parse(json['completedAt'] as String)
+              : null,
       totalDurationMs: json['totalDurationMs'] as int?,
     );
   }

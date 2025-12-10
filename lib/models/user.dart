@@ -1,4 +1,4 @@
-// GRAVITY式匿名ユーザーモデル
+// ユーザーモデル
 class AppUser {
   final String userId; // UUID
   String? nickname;

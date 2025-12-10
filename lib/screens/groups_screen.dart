@@ -28,7 +28,6 @@ class _GroupsScreenState extends State<GroupsScreen> {
     final auth = context.read<AuthService>();
     final storage = context.read<StorageService>();
 
-    
     if (auth.currentUser != null) {
       final groups = await storage.getGroups(auth.currentUser!.userId);
       setState(() {
@@ -44,68 +43,70 @@ class _GroupsScreenState extends State<GroupsScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Text('グループ作成'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'グループ名',
-                  hintText: '朝活グループ',
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setDialogState) => AlertDialog(
+                  title: const Text('グループ作成'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'グループ名',
+                          hintText: '朝活グループ',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SegmentedButton<GroupMode>(
+                        segments: const [
+                          ButtonSegment(
+                            value: GroupMode.race,
+                            label: Text('競争モード'),
+                            icon: Icon(Icons.speed),
+                          ),
+                          ButtonSegment(
+                            value: GroupMode.all,
+                            label: Text('全員モード'),
+                            icon: Icon(Icons.group),
+                          ),
+                        ],
+                        selected: {selectedMode},
+                        onSelectionChanged: (Set<GroupMode> newSelection) {
+                          setDialogState(() {
+                            selectedMode = newSelection.first;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('キャンセル'),
+                    ),
+                    FilledButton(
+                      onPressed: () async {
+                        if (nameController.text.isNotEmpty) {
+                          final auth = context.read<AuthService>();
+                          final storage = context.read<StorageService>();
+
+                          await storage.createGroup(
+                            name: nameController.text,
+                            mode: selectedMode,
+                            ownerId: auth.currentUser!.userId,
+                          );
+
+                          Navigator.pop(context);
+                          _loadGroups();
+                        }
+                      },
+                      child: const Text('作成'),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              SegmentedButton<GroupMode>(
-                segments: const [
-                  ButtonSegment(
-                    value: GroupMode.race,
-                    label: Text('競争モード'),
-                    icon: Icon(Icons.speed),
-                  ),
-                  ButtonSegment(
-                    value: GroupMode.all,
-                    label: Text('全員モード'),
-                    icon: Icon(Icons.group),
-                  ),
-                ],
-                selected: {selectedMode},
-                onSelectionChanged: (Set<GroupMode> newSelection) {
-                  setDialogState(() {
-                    selectedMode = newSelection.first;
-                  });
-                },
-              ),
-            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('キャンセル'),
-            ),
-            FilledButton(
-              onPressed: () async {
-                if (nameController.text.isNotEmpty) {
-                  final auth = context.read<AuthService>();
-                  final storage = context.read<StorageService>();
-                  
-                  await storage.createGroup(
-                    name: nameController.text,
-                    mode: selectedMode,
-                    ownerId: auth.currentUser!.userId,
-                  );
-                  
-                  Navigator.pop(context);
-                  _loadGroups();
-                }
-              },
-              child: const Text('作成'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -154,12 +155,12 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         const SnackBar(content: Text('招待コードが無効です')),
                       );
                     }
-              }
-            },
-            child: const Text('参加'),
+                  }
+                },
+                child: const Text('参加'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -232,7 +233,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         icon: Icons.share,
                         label: '共有',
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: group.getShareText()));
+                          Clipboard.setData(
+                            ClipboardData(text: group.getShareText()),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('共有テキストをコピーしました')),
                           );
@@ -243,9 +246,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         label: 'LINE',
                         color: Colors.green,
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: group.getShareText()));
+                          Clipboard.setData(
+                            ClipboardData(text: group.getShareText()),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('LINEで共有するテキストをコピーしました')),
+                            const SnackBar(
+                              content: Text('LINEで共有するテキストをコピーしました'),
+                            ),
                           );
                         },
                       ),
@@ -254,7 +261,9 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         label: 'X',
                         color: Colors.black,
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: group.getShareText()));
+                          Clipboard.setData(
+                            ClipboardData(text: group.getShareText()),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Xで共有するテキストをコピーしました')),
                           );
@@ -265,9 +274,13 @@ class _GroupsScreenState extends State<GroupsScreen> {
                         label: 'Facebook',
                         color: Colors.blue,
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: group.getShareText()));
+                          Clipboard.setData(
+                            ClipboardData(text: group.getShareText()),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Facebookで共有するテキストをコピーしました')),
+                            const SnackBar(
+                              content: Text('Facebookで共有するテキストをコピーしました'),
+                            ),
                           );
                         },
                       ),
@@ -293,9 +306,10 @@ class _GroupsScreenState extends State<GroupsScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _groups.isEmpty
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _groups.isEmpty
               ? _buildEmptyState()
               : ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -352,33 +366,6 @@ class _GroupsScreenState extends State<GroupsScreen> {
       ),
     );
   }
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _groups.length,
-                  itemBuilder: (context, index) {
-                    final group = _groups[index];
-                    return Card(
-                      child: ListTile(
-                        leading: Icon(
-                          group.mode == GroupMode.race ? Icons.speed : Icons.group,
-                        ),
-                        title: Text(group.name),
-                        subtitle: Text(
-                          '${group.memberIds.length}人 · ${group.mode == GroupMode.race ? "競争モード" : "全員モード"}',
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.share),
-                          onPressed: () => _showShareDialog(group),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateGroupDialog,
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
 }
 
 class _ShareButton extends StatelessWidget {
@@ -402,9 +389,6 @@ class _ShareButton extends StatelessWidget {
       label: Text(label),
       style:
           color != null ? FilledButton.styleFrom(backgroundColor: color) : null,
-      style: color != null
-          ? FilledButton.styleFrom(backgroundColor: color)
-          : null,
     );
   }
 }

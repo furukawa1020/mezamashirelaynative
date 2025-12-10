@@ -25,7 +25,7 @@ class SessionService extends ChangeNotifier {
 
   void _initBLEListener() {
     _bleService.eventStream.listen((event) {
-      if (_currentSession != null && 
+      if (_currentSession != null &&
           _currentSession!.status == SessionStatus.active) {
         _handleBLEEvent(event.eventType, event.tagId);
       }
@@ -74,13 +74,16 @@ class SessionService extends ChangeNotifier {
   }) async {
     if (_currentSession == null) return;
 
-    final stepIndex = _currentSession!.steps.indexWhere((s) => s.stepId == stepId);
+    final stepIndex = _currentSession!.steps.indexWhere(
+      (s) => s.stepId == stepId,
+    );
     if (stepIndex == -1) return;
 
     final now = DateTime.now();
-    final duration = _stepStartTime != null
-        ? now.difference(_stepStartTime!).inMilliseconds
-        : 0;
+    final duration =
+        _stepStartTime != null
+            ? now.difference(_stepStartTime!).inMilliseconds
+            : 0;
 
     final updatedSteps = List<SessionStep>.from(_currentSession!.steps);
     updatedSteps[stepIndex] = updatedSteps[stepIndex].copyWith(
@@ -105,9 +108,12 @@ class SessionService extends ChangeNotifier {
   Future<void> _completeSession() async {
     if (_currentSession == null) return;
 
-    final totalDuration = _currentSession!.startedAt != null
-        ? DateTime.now().difference(_currentSession!.startedAt!).inMilliseconds
-        : 0;
+    final totalDuration =
+        _currentSession!.startedAt != null
+            ? DateTime.now()
+                .difference(_currentSession!.startedAt!)
+                .inMilliseconds
+            : 0;
 
     _currentSession = _currentSession!.copyWith(
       status: SessionStatus.completed,
@@ -146,10 +152,7 @@ class SessionService extends ChangeNotifier {
 
     // イベントタイプに応じて自動的にスチE��プ完亁E
     if (_shouldCompleteStep(eventType)) {
-      completeStep(
-        stepId: currentStep.stepId,
-        bleEventType: eventType,
-      );
+      completeStep(stepId: currentStep.stepId, bleEventType: eventType);
     }
   }
 
@@ -163,10 +166,7 @@ class SessionService extends ChangeNotifier {
     String? groupId,
     int limit = 20,
   }) async {
-    return await _storageService.getSessions(
-      groupId: groupId,
-      limit: limit,
-    );
+    return await _storageService.getSessions(groupId: groupId, limit: limit);
   }
 
   // セッション詳細取得

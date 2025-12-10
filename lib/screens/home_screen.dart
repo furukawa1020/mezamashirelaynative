@@ -75,45 +75,46 @@ class _DashboardTabState extends State<_DashboardTab> {
   Future<void> _startQuickSession() async {
     final storage = context.read<StorageService>();
     final auth = context.read<AuthService>();
-    
+
     // グループとミッションを取得
     final groups = await storage.getGroups(auth.currentUser!.userId);
     final missions = await storage.getMissions(auth.currentUser!.userId);
-    
+
     if (groups.isEmpty || missions.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('先にグループとミッションを作成してください')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('先にグループとミッションを作成してください')));
       return;
     }
-    
+
     // 最初のグループとミッションでセッション開始
     if (!mounted) return;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => SessionScreen(
-          groupId: groups.first.groupId,
-          missionId: missions.first.missionId,
-        ),
+        builder:
+            (_) => SessionScreen(
+              groupId: groups.first.groupId,
+              missionId: missions.first.missionId,
+            ),
       ),
     );
   }
 
   Future<void> _showBLESettings() async {
     final bleService = BLEService();
-    
+
     final isAvailable = await bleService.isAvailable();
-    
+
     if (!mounted) return;
-    
+
     if (!isAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bluetoothが利用できません')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Bluetoothが利用できません')));
       return;
     }
-    
+
     showModalBottomSheet(
       context: context,
       builder: (context) => const _BLESettingsSheet(),
@@ -133,9 +134,7 @@ class _DashboardTabState extends State<_DashboardTab> {
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
               );
             },
           ),
@@ -195,10 +194,7 @@ class _DashboardTabState extends State<_DashboardTab> {
             const SizedBox(height: 24),
 
             // クイックアクション
-            Text(
-              'クイックアクション',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('クイックアクション', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             GridView.count(
               shrinkWrap: true,
@@ -217,9 +213,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                   title: 'ミッション作成',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const MissionsScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const MissionsScreen()),
                     );
                   },
                 ),
@@ -228,9 +222,7 @@ class _DashboardTabState extends State<_DashboardTab> {
                   title: 'グループ作成',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const GroupsScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const GroupsScreen()),
                     );
                   },
                 ),
@@ -244,17 +236,12 @@ class _DashboardTabState extends State<_DashboardTab> {
             const SizedBox(height: 24),
 
             // 最近のアクティビティ
-            Text(
-              '最近のアクティビティ',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('最近のアクティビティ', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: Center(
-                  child: Text('アクティビティはまだありません'),
-                ),
+                child: Center(child: Text('アクティビティはまだありません')),
               ),
             ),
           ],
@@ -343,10 +330,7 @@ class _BLESettingsSheetState extends State<_BLESettingsSheet> {
             children: [
               const Text(
                 'BLEデバイス',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               if (_isScanning)
@@ -364,9 +348,7 @@ class _BLESettingsSheetState extends State<_BLESettingsSheet> {
               stream: _bleService.scanResults,
               builder: (context, snapshot) {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text('デバイスが見つかりません'),
-                  );
+                  return const Center(child: Text('デバイスが見つかりません'));
                 }
 
                 return ListView.builder(
@@ -375,9 +357,11 @@ class _BLESettingsSheetState extends State<_BLESettingsSheet> {
                     final result = snapshot.data![index];
                     return ListTile(
                       leading: const Icon(Icons.bluetooth),
-                      title: Text(result.device.platformName.isEmpty
-                          ? '不明なデバイス'
-                          : result.device.platformName),
+                      title: Text(
+                        result.device.platformName.isEmpty
+                            ? '不明なデバイス'
+                            : result.device.platformName,
+                      ),
                       subtitle: Text(result.device.remoteId.toString()),
                       trailing: Text('${result.rssi} dBm'),
                       onTap: () async {
