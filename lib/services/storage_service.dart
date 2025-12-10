@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/group.dart';
 import '../models/mission.dart';
+import '../models/session.dart';
 
 // ローカルストレージサービス（SharedPreferences wrapper）
 class StorageService {
   static const String _groupsKey = 'mz_groups';
   static const String _missionsKey = 'mz_missions';
   static const String _groupMembersKey = 'mz_group_members';
+  static const String _sessionsKey = 'mz_sessions';
 
   // シングルトン
   static final StorageService _instance = StorageService._internal();
@@ -23,7 +25,7 @@ class StorageService {
     required String ownerId,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     final group = Group(
       groupId: _generateId('g'),
       name: name,
@@ -37,7 +39,7 @@ class StorageService {
     // 既存グループ取得
     final groups = await getGroups(ownerId);
     groups.add(group);
-    
+
     // 保存
     final groupsJson = groups.map((g) => g.toJson()).toList();
     await prefs.setString(_groupsKey, jsonEncode(groupsJson));
@@ -152,13 +154,79 @@ class StorageService {
     final random = DateTime.now().millisecondsSinceEpoch;
     String code = '';
     int seed = random;
-    
+
     for (int i = 0; i < 6; i++) {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;
       code += chars[seed % chars.length];
     }
-    
+
     return code;
+  }
+
+  // === セッション操作 ===
+
+  // セッション保存
+  Future<void> saveSession(Session session) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessions = await getSessions();
+
+    // 既存セッションを更新または追加
+    final index = sessions.indexWhere((s) => s.sessionId == session.sessionId);
+    if (index >= 0) {
+      sessions[index] = session;
+    } else {
+      sessions.add(session);
+    }
+
+    final sessionsJson = sessions.map((s) => s.toJson()).toList();
+    await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
+  }
+
+  // セッション取得
+  Future<Session?> getSession(String sessionId) async {
+    final sessions = await getSessions();
+    return sessions.firstWhere(
+      (s) => s.sessionId == sessionId,
+      orElse: () => throw Exception('Session not found'),
+    );
+  }
+
+  // セッション一覧取得
+  Future<List<Session>> getSessions({
+    String? groupId,
+    int limit = 20,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionsString = prefs.getString(_sessionsKey);
+
+    if (sessionsString == null) return [];
+
+    final sessionsList = jsonDecode(sessionsString) as List;
+    var sessions = sessionsList
+        .map((json) => Session.fromJson(json as Map<String, dynamic>))
+        .toList();
+
+    // グループIDでフィルター
+    if (groupId != null) {
+      sessions = sessions.where((s) => s.groupId == groupId).toList();
+    }
+
+    // 作成日時降順でソート
+    sessions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    // 制限
+    return sessions.take(limit).toList();
+  }
+
+  // セッション削除
+  Future<void> deleteSession(String sessionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessions = await getSessions();
+
+    sessions.removeWhere((s) => s.sessionId == sessionId);
+
+    final sessionsJson = sessions.map((s) => s.toJson()).toList();
+    await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
   // 全データクリア（デバッグ用）
