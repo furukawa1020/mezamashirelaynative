@@ -8,7 +8,6 @@ import '../models/session.dart';
 class StorageService {
   static const String _groupsKey = 'mz_groups';
   static const String _missionsKey = 'mz_missions';
-  static const String _groupMembersKey = 'mz_group_members';
   static const String _sessionsKey = 'mz_sessions';
 
   // シングルトン

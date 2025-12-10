@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
-import '../models/group.dart';
 import 'storage_service.dart';
 import 'auth_service.dart';
 

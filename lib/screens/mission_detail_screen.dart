@@ -6,10 +6,7 @@ import '../services/storage_service.dart';
 class MissionDetailScreen extends StatefulWidget {
   final String missionId;
 
-  const MissionDetailScreen({Key? key, required this.missionId})
-    : super(key: key);
-
-  @override
+  const MissionDetailScreen({super.key, required this.missionId});  @override
   State<MissionDetailScreen> createState() => _MissionDetailScreenState();
 }
 
@@ -225,7 +222,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

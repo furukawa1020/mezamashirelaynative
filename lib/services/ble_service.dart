@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 // BLEモーションイベンチE
@@ -56,7 +57,7 @@ class BLEService {
       final adapterState = await FlutterBluePlus.adapterState.first;
       return adapterState == BluetoothAdapterState.on;
     } catch (e) {
-      print('BLE availability check error: $e');
+      debugPrint('BLE availability check error: $e');
       return false;
     }
   }
@@ -85,7 +86,7 @@ class BLEService {
         androidUsesFineLocation: true,
       );
     } catch (e) {
-      print('Scan start error: $e');
+      debugPrint('Scan start error: $e');
       _isScanning = false;
     }
   }
@@ -95,7 +96,7 @@ class BLEService {
       await FlutterBluePlus.stopScan();
       _isScanning = false;
     } catch (e) {
-      print('Scan stop error: $e');
+      debugPrint('BLE stopScan error: $e');
     }
   }
 
@@ -132,7 +133,7 @@ class BLEService {
       _connectedDevices.add(device);
       return true;
     } catch (e) {
-      print('Connect error: $e');
+      debugPrint('Connect error: $e');
       return false;
     }
   }
@@ -142,7 +143,7 @@ class BLEService {
       await device.disconnect();
       _connectedDevices.remove(device);
     } catch (e) {
-      print('Disconnect error: $e');
+      debugPrint('Disconnect error: $e');
     }
   }
 
@@ -160,7 +161,7 @@ class BLEService {
       final event = BLEMotionEvent.fromJson(jsonData);
       _eventController.add(event);
     } catch (e) {
-      print('BLE data parse error: $e');
+      debugPrint('BLE data parse error: $e');
     }
   }
 

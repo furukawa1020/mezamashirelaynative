@@ -13,10 +13,10 @@ class SessionScreen extends StatefulWidget {
   final String missionId;
 
   const SessionScreen({
-    Key? key,
+    super.key,
     required this.groupId,
     required this.missionId,
-  }) : super(key: key);
+  });
 
   @override
   State<SessionScreen> createState() => _SessionScreenState();
@@ -251,8 +251,7 @@ class _SessionScreenState extends State<SessionScreen> {
 class SessionRunningScreen extends StatelessWidget {
   final String sessionId;
 
-  const SessionRunningScreen({Key? key, required this.sessionId})
-    : super(key: key);
+  const SessionRunningScreen({super.key, required this.sessionId});
 
   @override
   Widget build(BuildContext context) {
