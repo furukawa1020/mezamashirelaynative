@@ -5,6 +5,7 @@ import '../models/group.dart';
 import '../models/mission.dart';
 import '../services/session_service.dart';
 import '../services/storage_service.dart';
+import '../services/auth_service.dart';
 
 class SessionScreen extends StatefulWidget {
   final String groupId;
@@ -48,13 +49,13 @@ class _SessionScreenState extends State<SessionScreen> {
     if (_group == null || _mission == null) return;
 
     final sessionService = Provider.of<SessionService>(context, listen: false);
-    final storage = Provider.of<StorageService>(context, listen: false);
+    final auth = Provider.of<AuthService>(context, listen: false);
 
-    // メンバ�E惁E��取征E
+    // メンバー情報取得
     final userNicknames = <String, String>{};
     for (final userId in _group!.memberIds) {
-      // TODO: ユーザー惁E��取得（現状は仮実裁E��E
-      userNicknames[userId] = 'ユーザー${userId.substring(0, 6)}';
+      final user = await auth.getUser(userId);
+      userNicknames[userId] = user?.displayName ?? 'ユーザー${userId.substring(0, 6)}';
     }
 
     final session = await sessionService.createSession(
@@ -68,7 +69,7 @@ class _SessionScreenState extends State<SessionScreen> {
 
     if (!mounted) return;
     
-    // セチE��ョン実行画面へ遷移
+    // セチE��ョン実行画面へ遷移
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => SessionRunningScreen(
@@ -82,12 +83,12 @@ class _SessionScreenState extends State<SessionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('セチE��ョン開姁E),
+        title: const Text('セチE��ョン開姁E),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _group == null || _mission == null
-              ? const Center(child: Text('チE�Eタが見つかりません'))
+              ? const Center(child: Text('チE�Eタが見つかりません'))
               : Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -132,7 +133,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                   Text(
                                     _group!.mode == GroupMode.race
                                         ? 'レースモーチE
-                                        : '全員達�EモーチE,
+                                        : '全員達�EモーチE,
                                   ),
                                 ],
                               ),
@@ -142,7 +143,7 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // ミッション惁E��
+                      // ミッション惁E��
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -173,7 +174,7 @@ class _SessionScreenState extends State<SessionScreen> {
                                 children: [
                                   const Icon(Icons.list_alt, size: 16),
                                   const SizedBox(width: 4),
-                                  Text('${_mission!.steps.length}スチE��チE),
+                                  Text('${_mission!.steps.length}スチE��チE),
                                 ],
                               ),
                             ],
@@ -182,9 +183,9 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // ミッションスチE��プ一覧
+                      // ミッションスチE��プ一覧
                       const Text(
-                        'スチE��チE,
+                        'スチE��チE,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -212,7 +213,7 @@ class _SessionScreenState extends State<SessionScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 開始�Eタン
+                      // 開始�Eタン
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -221,7 +222,7 @@ class _SessionScreenState extends State<SessionScreen> {
                             padding: const EdgeInsets.all(16),
                           ),
                           child: const Text(
-                            'セチE��ョン開姁E,
+                            'セチE��ョン開姁E,
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
@@ -237,7 +238,7 @@ class _SessionScreenState extends State<SessionScreen> {
       case StepActionType.manual:
         return '手動確誁E;
       case StepActionType.shake:
-        return 'シェイク検�E';
+        return 'シェイク検�E';
       case StepActionType.ble:
         return 'BLEセンサー';
       case StepActionType.qr:
@@ -245,12 +246,12 @@ class _SessionScreenState extends State<SessionScreen> {
       case StepActionType.gps:
         return 'GPS位置';
       case StepActionType.aiDetect:
-        return 'AI検�E';
+        return 'AI検�E';
     }
   }
 }
 
-// セチE��ョン実行画面
+// セチE��ョン実行画面
 class SessionRunningScreen extends StatelessWidget {
   final String sessionId;
 
@@ -266,8 +267,8 @@ class SessionRunningScreen extends StatelessWidget {
 
     if (session == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('セチE��ョン')),
-        body: const Center(child: Text('セチE��ョンが見つかりません')),
+        appBar: AppBar(title: const Text('セチE��ョン')),
+        body: const Center(child: Text('セチE��ョンが見つかりません')),
       );
     }
 
@@ -275,7 +276,7 @@ class SessionRunningScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('セチE��ョン実行中'),
+        title: const Text('セチE��ョン実行中'),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
@@ -294,12 +295,12 @@ class SessionRunningScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${session.completedSteps} / ${session.totalSteps} スチE��プ完亁E,
+              '${session.completedSteps} / ${session.totalSteps} スチE��プ完亁E,
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 24),
 
-            // 現在のスチE��チE
+            // 現在のスチE��チE
             if (currentStep != null) ...[
               Card(
                 child: Padding(
@@ -323,7 +324,7 @@ class SessionRunningScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       const Text(
-                        'の頁E��でぁE,
+                        'の頁E��でぁE,
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                       const SizedBox(height: 24),
@@ -352,7 +353,7 @@ class SessionRunningScreen extends StatelessWidget {
             ],
             const SizedBox(height: 24),
 
-            // スチE��プ一覧
+            // スチE��プ一覧
             Expanded(
               child: ListView.builder(
                 itemCount: session.steps.length,
@@ -396,7 +397,7 @@ class SessionRunningScreen extends StatelessWidget {
               ),
             ),
 
-            // セチE��ョン完亁E
+            // セチE��ョン完亁E
             if (session.status == SessionStatus.completed) ...[
               const SizedBox(height: 16),
               Card(
@@ -412,7 +413,7 @@ class SessionRunningScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       const Text(
-                        'セチE��ョン完亁E��E,
+                        'セチE��ョン完亁E��E,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -431,7 +432,7 @@ class SessionRunningScreen extends StatelessWidget {
                             (route) => route.isFirst,
                           );
                         },
-                        child: const Text('ホ�Eムへ戻めE),
+                        child: const Text('ホ�Eムへ戻めE),
                       ),
                     ],
                   ),
@@ -455,8 +456,8 @@ class SessionRunningScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('セチE��ョンをキャンセル'),
-        content: const Text('本当にセチE��ョンをキャンセルしますか�E�E),
+        title: const Text('セチE��ョンをキャンセル'),
+        content: const Text('本当にセチE��ョンをキャンセルしますか�E�E),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),

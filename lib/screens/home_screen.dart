@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
-import '../services/deeplink_service.dart';
-import '../models/group.dart';
+import '../services/ble_service.dart';
 import 'missions_screen.dart';
-import 'groups_screen.dart';
 import 'profile_screen.dart';
+import 'notifications_screen.dart';
+import 'session_screen.dart';
 
-// ホ�Eム画面�E�メインダチE��ュボ�Eド！E
+// ホーム画面（メインダッシュボード）
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,61 +19,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  
   final List<Widget> _screens = [
-    const DashboardTab(),
+    const _DashboardTab(),
     const MissionsScreen(),
-    const GroupsScreen(),
+    const Center(child: Text('グループ画面（未実装）')),
     const ProfileScreen(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _setupDeeplink();
-  }
-
-  void _setupDeeplink() {
-    final deeplinkService = context.read<DeeplinkService>();
-    deeplinkService.onInviteCodeReceived = (inviteCode) {
-      _handleInviteCode(inviteCode);
-    };
-  }
-
-  Future<void> _handleInviteCode(String inviteCode) async {
-    final storage = context.read<StorageService>();
-    final auth = context.read<AuthService>();
-
-    final group = await storage.findGroupByInviteCode(inviteCode);
-
-    if (group != null) {
-      await storage.joinGroup(group.groupId, auth.currentUser!.userId);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('、E{group.name}」に参加しました�E�E)));
-    
-    final group = await storage.findGroupByInviteCode(inviteCode);
-    
-    if (group != null) {
-      await storage.joinGroup(group.groupId, auth.currentUser!.userId);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('、E{group.name}」に参加しました�E�E)),
-        );
-        setState(() => _selectedIndex = 2); // グループタブに移勁E
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('招征E��ードが無効でぁE)));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('招征E��ードが無効でぁE)),
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'ホ�Eム',
+            label: 'ホーム',
           ),
           NavigationDestination(
             icon: Icon(Icons.task_outlined),
@@ -98,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.group_outlined),
             selectedIcon: Icon(Icons.group),
-            label: 'グルーチE,
+            label: 'グループ',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -111,9 +62,62 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ダチE��ュボ�EドタチE
-class DashboardTab extends StatelessWidget {
-  const DashboardTab({super.key});
+// ダッシュボードタブ
+class _DashboardTab extends StatefulWidget {
+  const _DashboardTab();
+
+  @override
+  State<_DashboardTab> createState() => _DashboardTabState();
+}
+
+class _DashboardTabState extends State<_DashboardTab> {
+  Future<void> _startQuickSession() async {
+    final storage = context.read<StorageService>();
+    final auth = context.read<AuthService>();
+    
+    // グループとミッションを取得
+    final groups = await storage.getGroups(auth.currentUser!.userId);
+    final missions = await storage.getMissions(auth.currentUser!.userId);
+    
+    if (groups.isEmpty || missions.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('先にグループとミッションを作成してください')),
+      );
+      return;
+    }
+    
+    // 最初のグループとミッションでセッション開始
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SessionScreen(
+          groupId: groups.first.groupId,
+          missionId: missions.first.missionId,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showBLESettings() async {
+    final bleService = BLEService();
+    
+    final isAvailable = await bleService.isAvailable();
+    
+    if (!mounted) return;
+    
+    if (!isAvailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bluetoothが利用できません')),
+      );
+      return;
+    }
+    
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => const _BLESettingsSheet(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +131,11 @@ class DashboardTab extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
-              // TODO: 通知画面
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const NotificationsScreen(),
+                ),
+              );
             },
           ),
         ],
@@ -137,7 +145,7 @@ class DashboardTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ユーザー惁E��カーチE
+            // ユーザー情報カード
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -162,9 +170,7 @@ class DashboardTab extends StatelessWidget {
                           Text(
                             user?.hasProfile ?? false
                                 ? 'プロフィール設定済み'
-                            user?.hasProfile ?? false 
-                                ? 'プロフィール設定済み' 
-                                : 'プロフィール未設宁E,
+                                : 'プロフィール未設定',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -179,7 +185,7 @@ class DashboardTab extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('設宁E),
+                        child: const Text('設定'),
                       ),
                   ],
                 ),
@@ -187,12 +193,9 @@ class DashboardTab extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // クイチE��アクション
-            Text('クイチE��アクション', style: Theme.of(context).textTheme.titleMedium),
-            
-            // クイチE��アクション
+            // クイックアクション
             Text(
-              'クイチE��アクション',
+              'クイックアクション',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -205,17 +208,14 @@ class DashboardTab extends StatelessWidget {
               children: [
                 _QuickActionCard(
                   icon: Icons.play_arrow,
-                  title: 'セチE��ョン開姁E,
-                  onTap: () {
-                    // TODO: セチE��ョン開姁E
-                  },
+                  title: 'セッション開始',
+                  onTap: _startQuickSession,
                 ),
                 _QuickActionCard(
                   icon: Icons.add,
-                  title: 'ミッション作�E',
+                  title: 'ミッション作成',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const MissionsScreen()),
                       MaterialPageRoute(
                         builder: (_) => const MissionsScreen(),
                       ),
@@ -224,10 +224,9 @@ class DashboardTab extends StatelessWidget {
                 ),
                 _QuickActionCard(
                   icon: Icons.group_add,
-                  title: 'グループ作�E',
+                  title: 'グループ作成',
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const GroupsScreen()),
                       MaterialPageRoute(
                         builder: (_) => const GroupsScreen(),
                       ),
@@ -236,30 +235,24 @@ class DashboardTab extends StatelessWidget {
                 ),
                 _QuickActionCard(
                   icon: Icons.bluetooth,
-                  title: 'BLE設宁E,
-                  onTap: () {
-                    // TODO: BLE設定画面
-                  },
+                  title: 'BLE設定',
+                  onTap: _showBLESettings,
                 ),
               ],
             ),
             const SizedBox(height: 24),
 
-            // 最近�EアクチE��ビティ
-            Text('最近�EアクチE��ビティ', style: Theme.of(context).textTheme.titleMedium),
-            
-            // 最近�EアクチE��ビティ
+            // 最近のアクティビティ
             Text(
-              '最近�EアクチE��ビティ',
+              '最近のアクティビティ',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: Center(child: Text('アクチE��ビティはまだありません')),
                 child: Center(
-                  child: Text('アクチE��ビティはまだありません'),
+                  child: Text('アクティビティはまだありません'),
                 ),
               ),
             ),
@@ -302,6 +295,109 @@ class _QuickActionCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// BLE設定シート
+class _BLESettingsSheet extends StatefulWidget {
+  const _BLESettingsSheet();
+
+  @override
+  State<_BLESettingsSheet> createState() => _BLESettingsSheetState();
+}
+
+class _BLESettingsSheetState extends State<_BLESettingsSheet> {
+  final BLEService _bleService = BLEService();
+  bool _isScanning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startScan();
+  }
+
+  Future<void> _startScan() async {
+    setState(() {
+      _isScanning = true;
+    });
+    await _bleService.startScan();
+  }
+
+  @override
+  void dispose() {
+    _bleService.stopScan();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'BLEデバイス',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              if (_isScanning)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 300,
+            child: StreamBuilder(
+              stream: _bleService.scanResults,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Text('デバイスが見つかりません'),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final result = snapshot.data![index];
+                    return ListTile(
+                      leading: const Icon(Icons.bluetooth),
+                      title: Text(result.device.platformName.isEmpty
+                          ? '不明なデバイス'
+                          : result.device.platformName),
+                      subtitle: Text(result.device.remoteId.toString()),
+                      trailing: Text('${result.rssi} dBm'),
+                      onTap: () async {
+                        await _bleService.connectDevice(result.device);
+                        if (!mounted) return;
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${result.device.platformName}に接続しました',
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

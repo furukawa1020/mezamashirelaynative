@@ -29,10 +29,11 @@ class BLEMotionEvent {
   }
 }
 
-// BLEサービス�E�EIAO ESP32C3 + MPU6050連携�E�E
+// BLEサービス�E�EIAO ESP32C3 + MPU6050連携�E�E
 class BLEService {
   static const String serviceUuid = '0000180f-0000-1000-8000-00805f9b34fb';
-  static const String characteristicUuid = '00002a19-0000-1000-8000-00805f9b34fb';
+  static const String characteristicUuid =
+      '00002a19-0000-1000-8000-00805f9b34fb';
 
   final _eventController = StreamController<BLEMotionEvent>.broadcast();
   Stream<BLEMotionEvent> get eventStream => _eventController.stream;
@@ -60,19 +61,22 @@ class BLEService {
     }
   }
 
-  Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
+  Future<void> startScan({
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
     if (_isScanning) return;
 
     try {
       _isScanning = true;
-      
+
       FlutterBluePlus.scanResults.listen((results) {
-        final filteredResults = results.where((r) {
-          final name = r.device.platformName;
-          return name.toLowerCase().contains('xiao') || 
-                 name.toLowerCase().contains('mezamashi');
-        }).toList();
-        
+        final filteredResults =
+            results.where((r) {
+              final name = r.device.platformName;
+              return name.toLowerCase().contains('xiao') ||
+                  name.toLowerCase().contains('mezamashi');
+            }).toList();
+
         _scanResultsController.add(filteredResults);
       });
 
@@ -107,14 +111,15 @@ class BLEService {
       );
 
       final services = await device.discoverServices();
-      
+
       for (var service in services) {
-        if (service.uuid.toString().toLowerCase() == serviceUuid.toLowerCase()) {
+        if (service.uuid.toString().toLowerCase() ==
+            serviceUuid.toLowerCase()) {
           for (var characteristic in service.characteristics) {
-            if (characteristic.uuid.toString().toLowerCase() == 
+            if (characteristic.uuid.toString().toLowerCase() ==
                 characteristicUuid.toLowerCase()) {
               await characteristic.setNotifyValue(true);
-              
+
               characteristic.lastValueStream.listen((value) {
                 _handleBLEData(device, value);
               });
@@ -150,7 +155,7 @@ class BLEService {
     try {
       final jsonString = utf8.decode(data);
       final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
-      
+
       final event = BLEMotionEvent.fromJson(jsonData);
       _eventController.add(event);
     } catch (e) {
@@ -158,7 +163,8 @@ class BLEService {
     }
   }
 
-  List<BluetoothDevice> get connectedDevices => List.unmodifiable(_connectedDevices);
+  List<BluetoothDevice> get connectedDevices =>
+      List.unmodifiable(_connectedDevices);
 
   void dispose() {
     disconnectAll();

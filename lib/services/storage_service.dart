@@ -4,7 +4,7 @@ import '../models/group.dart';
 import '../models/mission.dart';
 import '../models/session.dart';
 
-// ローカルストレージサービス�E�EharedPreferences wrapper�E�E
+// ローカルストレージサービス�E�EharedPreferences wrapper�E�E
 class StorageService {
   static const String _groupsKey = 'mz_groups';
   static const String _missionsKey = 'mz_missions';
@@ -18,7 +18,7 @@ class StorageService {
 
   // === グループ操佁E===
 
-  // グループ作�E
+  // グループ作�E
   Future<Group> createGroup({
     required String name,
     required GroupMode mode,
@@ -47,7 +47,7 @@ class StorageService {
     return group;
   }
 
-  // 招征E��ードでグループ検索
+  // 招征E��ードでグループ検索
   Future<Group?> findGroupByInviteCode(String inviteCode) async {
     final prefs = await SharedPreferences.getInstance();
     final groupsStr = prefs.getString(_groupsKey);
@@ -89,7 +89,23 @@ class StorageService {
     }
   }
 
-  // ユーザーのグループ一覧取征E
+  // グループ取得
+  Future<Group?> getGroup(String groupId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final groupsStr = prefs.getString(_groupsKey);
+    if (groupsStr == null) return null;
+
+    final List<dynamic> groupsJson = jsonDecode(groupsStr);
+    final groups = groupsJson.map((j) => Group.fromJson(j)).toList();
+
+    try {
+      return groups.firstWhere((g) => g.groupId == groupId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ユーザーのグループ一覧取得
   Future<List<Group>> getGroups(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final groupsStr = prefs.getString(_groupsKey);
@@ -103,7 +119,7 @@ class StorageService {
 
   // === ミッション操佁E===
 
-  // ミッション作�E
+  // ミッション作�E
   Future<Mission> createMission({
     required String userId,
     required String name,
@@ -194,16 +210,16 @@ class StorageService {
     await prefs.setString(_missionsKey, jsonEncode(updatedJson));
   }
 
-  // === ユーチE��リチE�� ===
+  // === ユーチE��リチE�� ===
 
-  // ID生�E
+  // ID生�E
   String _generateId(String prefix) {
     return '$prefix${DateTime.now().millisecondsSinceEpoch}';
   }
 
-  // 6桁招征E��ード生戁E
+  // 6桁招征E��ード生戁E
   String _generateInviteCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 紛らわしぁE��字除夁E
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 紛らわしぁE��字除夁E
     final random = DateTime.now().millisecondsSinceEpoch;
     String code = '';
     int seed = random;
@@ -216,14 +232,14 @@ class StorageService {
     return code;
   }
 
-  // === セチE��ョン操佁E===
+  // === セチE��ョン操佁E===
 
-  // セチE��ョン保孁E
+  // セチE��ョン保孁E
   Future<void> saveSession(Session session) async {
     final prefs = await SharedPreferences.getInstance();
     final sessions = await getSessions();
 
-    // 既存セチE��ョンを更新また�E追加
+    // 既存セチE��ョンを更新また�E追加
     final index = sessions.indexWhere((s) => s.sessionId == session.sessionId);
     if (index >= 0) {
       sessions[index] = session;
@@ -235,7 +251,7 @@ class StorageService {
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
-  // セチE��ョン取征E
+  // セチE��ョン取征E
   Future<Session?> getSession(String sessionId) async {
     final sessions = await getSessions();
     return sessions.firstWhere(
@@ -244,7 +260,7 @@ class StorageService {
     );
   }
 
-  // セチE��ョン一覧取征E
+  // セチE��ョン一覧取征E
   Future<List<Session>> getSessions({String? groupId, int limit = 20}) async {
     final prefs = await SharedPreferences.getInstance();
     final sessionsString = prefs.getString(_sessionsKey);
@@ -262,14 +278,14 @@ class StorageService {
       sessions = sessions.where((s) => s.groupId == groupId).toList();
     }
 
-    // 作�E日時降頁E��ソーチE
+    // 作�E日時降頁E��ソーチE
     sessions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     // 制陁E
     return sessions.take(limit).toList();
   }
 
-  // セチE��ョン削除
+  // セチE��ョン削除
   Future<void> deleteSession(String sessionId) async {
     final prefs = await SharedPreferences.getInstance();
     final sessions = await getSessions();
@@ -280,7 +296,7 @@ class StorageService {
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
-  // 全チE�Eタクリア�E�デバッグ用�E�E
+  // 全チE�Eタクリア�E�デバッグ用�E�E
   Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

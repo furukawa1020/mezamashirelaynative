@@ -5,7 +5,7 @@ import '../services/storage_service.dart';
 import '../models/mission.dart';
 import 'mission_detail_screen.dart';
 
-// ミッション管琁E��面
+// ミッション管琁E��面
 class MissionsScreen extends StatefulWidget {
   const MissionsScreen({super.key});
 
@@ -45,7 +45,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('ミッション作�E'),
+            title: const Text('ミッション作�E'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -53,7 +53,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                   controller: nameController,
                   decoration: const InputDecoration(
                     labelText: 'ミッション吁E,
-                    hintText: '朝�EルーチE��ン',
+                    hintText: '朝�EルーチE��ン',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -87,12 +87,12 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     _loadMissions();
                   }
                 },
-                child: const Text('作�E'),
+                child: const Text('作�E'),
               ),
             ],
           ),
       builder: (context) => AlertDialog(
-        title: const Text('ミッション作�E'),
+        title: const Text('ミッション作�E'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -100,7 +100,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
               controller: nameController,
               decoration: const InputDecoration(
                 labelText: 'ミッション吁E,
-                hintText: '朝�EルーチE��ン',
+                hintText: '朝�EルーチE��ン',
               ),
             ),
             const SizedBox(height: 16),
@@ -134,7 +134,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                 _loadMissions();
               }
             },
-            child: const Text('作�E'),
+            child: const Text('作�E'),
           ),
         ],
       ),
@@ -164,7 +164,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                     FilledButton.icon(
                       onPressed: _showCreateMissionDialog,
                       icon: const Icon(Icons.add),
-                      label: const Text('ミッション作�E'),
+                      label: const Text('ミッション作�E'),
                     ),
                   ],
                 ),
@@ -179,7 +179,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                       leading: const Icon(Icons.alarm),
                       title: Text(mission.name),
                       subtitle: Text('起床時刻: ${mission.wakeTime}'),
-                      trailing: Text('${mission.steps.length}スチE��チE),
+                      trailing: Text('${mission.steps.length}スチE��チE),
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -210,7 +210,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                       FilledButton.icon(
                         onPressed: _showCreateMissionDialog,
                         icon: const Icon(Icons.add),
-                        label: const Text('ミッション作�E'),
+                        label: const Text('ミッション作�E'),
                       ),
                     ],
                   ),
@@ -225,9 +225,15 @@ class _MissionsScreenState extends State<MissionsScreen> {
                         leading: const Icon(Icons.alarm),
                         title: Text(mission.name),
                         subtitle: Text('起床時刻: ${mission.wakeTime}'),
-                        trailing: Text('${mission.steps.length}スチE��チE),
+                        trailing: Text('${mission.steps.length}ステップ'),
                         onTap: () {
-                          // TODO: ミッション詳細画面
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MissionDetailScreen(
+                                missionId: mission.missionId,
+                              ),
+                            ),
+                          ).then((_) => _loadMissions());
                         },
                       ),
                     );
