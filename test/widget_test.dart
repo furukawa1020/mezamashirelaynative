@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:mezamashi_relay/services/auth_service.dart';
+import 'package:mezamashi_relay/services/storage_service.dart';
+import 'package:mezamashi_relay/services/deeplink_service.dart';
+import 'package:mezamashi_relay/services/ble_service.dart';
+import 'package:mezamashi_relay/services/session_service.dart';
 import 'package:mezamashi_relay/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App smoke test', (WidgetTester tester) async {
+    // サービスを初期化
+    final authService = AuthService();
+    final storageService = StorageService();
+    final deeplinkService = DeeplinkService();
+    final bleService = BLEService();
+    final sessionService = SessionService(storageService, bleService);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await authService.initialize();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // アプリを起動
+    await tester.pumpWidget(
+      MezamashiRelayApp(
+        authService: authService,
+        storageService: storageService,
+        deeplinkService: deeplinkService,
+        bleService: bleService,
+        sessionService: sessionService,
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // スプラッシュ画面が表示されることを確認
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('めざましリレー'), findsOneWidget);
   });
 }

@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/session.dart';
-import '../models/group.dart';
-import '../models/mission.dart';
-import '../models/user.dart';
 import 'storage_service.dart';
 import 'ble_service.dart';
 

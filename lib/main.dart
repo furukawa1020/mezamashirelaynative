@@ -5,7 +5,6 @@ import 'services/storage_service.dart';
 import 'services/deeplink_service.dart';
 import 'services/ble_service.dart';
 import 'services/session_service.dart';
-import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -51,14 +50,14 @@ class MezamashiRelayApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthService>.value(value: authService),
+        Provider<AuthService>.value(value: authService),
         Provider<StorageService>.value(value: storageService),
         Provider<DeeplinkService>.value(value: deeplinkService),
         Provider<BLEService>.value(value: bleService),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(
-        title: 'ÇﬂÇ¥Ç‹ÇµÉäÉåÅ[',
+        title: '„ÇÅ„Åñ„Åæ„Åó„É™„É¨„Éº',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: true,

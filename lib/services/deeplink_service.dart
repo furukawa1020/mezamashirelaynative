@@ -1,81 +1,140 @@
-import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
-import '../services/storage_service.dart';
+import 'dart:async';
+import 'package:provider/provider.dart';
+import '../models/group.dart';
+import 'storage_service.dart';
+import 'auth_service.dart';
 
-// チE��ープリンク処琁E��ービス
+/// ディープリンク処理サービス（グループ招待URL対応）
+/// 
+/// URLスキーマ: mezamashirelay://invite/{inviteCode}
+/// 例: mezamashirelay://invite/ABC123
 class DeeplinkService {
   StreamSubscription? _linkSubscription;
-  final StorageService _storageService = StorageService();
+  BuildContext? _context;
+  bool _initialized = false;
 
-  
-  // チE��ープリンクハンドラ�E�EI側で設定！E
-  Function(String inviteCode)? onInviteCodeReceived;
-
-  // 初期匁E
+  /// サービス初期化
   void initialize() {
+    if (_initialized) return;
+    _initialized = true;
+
+    // アプリ起動時の初期リンクを処理
     _handleInitialLink();
-    _handleIncomingLinks();
-  }
 
-  // 初回起動時のリンク処琁E
-  Future<void> _handleInitialLink() async {
-    try {
-      final initialLink = await getInitialLink();
-      if (initialLink != null) {
-        _processLink(initialLink);
-      }
-    } catch (e) {
-      print('Initial link error: $e');
-    }
-  }
-
-  // アプリ実行中のリンク処琁E
-  void _handleIncomingLinks() {
-    _linkSubscription = linkStream.listen(
-      (String? link) {
-        if (link != null) {
-          _processLink(link);
+    // アプリ実行中のリンクを監視
+    _linkSubscription = uriLinkStream.listen(
+      (Uri? uri) {
+        if (uri != null) {
+          _handleDeeplink(uri);
         }
       },
       onError: (err) {
-        print('Link stream error: $err');
+        debugPrint('Deeplink error: $err');
       },
     );
-    _linkSubscription = linkStream.listen((String? link) {
-      if (link != null) {
-        _processLink(link);
-      }
-    }, onError: (err) {
-      print('Link stream error: $err');
-    });
   }
 
-  // リンク解析と処琁E
-  void _processLink(String link) {
-    final uri = Uri.parse(link);
+  /// BuildContextを設定（Navigatorアクセス用）
+  void setContext(BuildContext context) {
+    _context = context;
+  }
 
-    // mezamashi://join/{inviteCode}
-    if (uri.scheme == 'mezamashi' && uri.host == 'join') {
-      final inviteCode =
-          uri.pathSegments.isNotEmpty
-              ? uri.pathSegments[0]
-              : uri.queryParameters['code'];
+  /// 初期リンク処理（コールドスタート時）
+  Future<void> _handleInitialLink() async {
+    try {
+      final initialUri = await getInitialUri();
+      if (initialUri != null) {
+        _handleDeeplink(initialUri);
+      }
+    } catch (e) {
+      debugPrint('Failed to get initial link: $e');
+    }
+  }
 
-    
-    // mezamashi://join/{inviteCode}
-    if (uri.scheme == 'mezamashi' && uri.host == 'join') {
+  /// ディープリンク処理
+  void _handleDeeplink(Uri uri) {
+    if (_context == null) {
+      debugPrint('Context not set, cannot handle deeplink: $uri');
+      return;
+    }
+
+    // mezamashirelay://invite/{inviteCode}
+    if (uri.scheme == 'mezamashirelay' && uri.host == 'invite') {
       final inviteCode = uri.pathSegments.isNotEmpty 
-          ? uri.pathSegments[0] 
-          : uri.queryParameters['code'];
-      
-      if (inviteCode != null && inviteCode.isNotEmpty) {
-        onInviteCodeReceived?.call(inviteCode);
+          ? uri.pathSegments.first 
+          : null;
+
+      if (inviteCode != null) {
+        _handleGroupInvite(inviteCode);
       }
     }
   }
 
-  // クリーンアチE�E
+  /// グループ招待処理
+  Future<void> _handleGroupInvite(String inviteCode) async {
+    if (_context == null) return;
+
+    final storage = Provider.of<StorageService>(_context!, listen: false);
+    final auth = Provider.of<AuthService>(_context!, listen: false);
+    
+    final currentUser = auth.currentUser;
+    if (currentUser == null) {
+      _showError('ユーザー情報の取得に失敗しました');
+      return;
+    }
+
+    // 招待コードでグループを検索
+    final targetGroup = await storage.findGroupByInviteCode(inviteCode);
+
+    if (targetGroup == null) {
+      _showError('招待コード「$inviteCode」のグループが見つかりません');
+      return;
+    }
+
+    // 既に参加済みかチェック
+    if (targetGroup.memberIds.contains(currentUser.userId)) {
+      _showSuccess('既にグループ「${targetGroup.name}」に参加しています');
+      return;
+    }
+
+    // グループに参加
+    await storage.joinGroup(targetGroup.groupId, currentUser.userId);
+    _showSuccess('グループ「${targetGroup.name}」に参加しました！');
+  }
+
+  /// 成功メッセージ表示
+  void _showSuccess(String message) {
+    if (_context == null) return;
+    
+    ScaffoldMessenger.of(_context!).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// エラーメッセージ表示
+  void _showError(String message) {
+    if (_context == null) return;
+    
+    ScaffoldMessenger.of(_context!).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  /// サービス破棄
   void dispose() {
     _linkSubscription?.cancel();
+    _linkSubscription = null;
+    _context = null;
+    _initialized = false;
   }
 }
