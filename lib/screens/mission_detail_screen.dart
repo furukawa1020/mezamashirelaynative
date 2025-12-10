@@ -109,7 +109,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       builder:
           (context) => AlertDialog(
             title: const Text('繧ｹ繝・ャ繝励ｒ蜑企勁'),
-            content: Text('縲・{step.name}縲阪ｒ蜑企勁縺励∪縺吶°・・),
+            content: Text('縲・{step.name}縲阪ｒ蜑企勁縺励∪縺吶°?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -129,7 +129,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     final updatedSteps =
         _mission!.steps.where((s) => s.stepId != step.stepId).toList();
 
-    // 繧ｹ繝・ャ繝励・鬆・ｺ上ｒ蜀崎ｨｭ螳・
+    // 繧ｹ繝・ャ繝励・逡ｪ蜿ｷ繧貞・險ｭ螳・
     for (int i = 0; i < updatedSteps.length; i++) {
       updatedSteps[i] = MissionStep(
         stepId: updatedSteps[i].stepId,
@@ -168,7 +168,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     final step = steps.removeAt(oldIndex);
     steps.insert(newIndex, step);
 
-    // 鬆・ｺ上ｒ譖ｴ譁ｰ
+    // 逡ｪ蜿ｷ繧呈峩譁ｰ
     for (int i = 0; i < steps.length; i++) {
       steps[i] = MissionStep(
         stepId: steps[i].stepId,
@@ -214,7 +214,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
               ? const Center(child: Text('繝溘ャ繧ｷ繝ｧ繝ｳ縺瑚ｦ九▽縺九ｊ縺ｾ縺帙ｓ'))
               : Column(
                 children: [
-                  // 繝溘ャ繧ｷ繝ｧ繝ｳ諠・ｱ
+                  // 繝溘ャ繧ｷ繝ｧ繝ｳ諠・・ｽ・ｽ
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -248,7 +248,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                     ),
                   ),
 
-                  // 繧ｹ繝・ャ繝励Μ繧ｹ繝・
+                  // 繧ｹ繝・・ｽ・ｽ繝励Μ繧ｹ繝・
                   Expanded(
                     child:
                         _mission!.steps.isEmpty
@@ -342,7 +342,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       case StepActionType.manual:
         return '謇句虚遒ｺ隱・;
       case StepActionType.shake:
-        return '繧ｷ繧ｧ繧､繧ｯ讀懷・';
+        return '繧ｷ繧ｧ繧､繧ｯ讀懶ｿｽE';
       case StepActionType.ble:
         return 'BLE繧ｻ繝ｳ繧ｵ繝ｼ';
       case StepActionType.qr:
@@ -350,7 +350,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       case StepActionType.gps:
         return 'GPS菴咲ｽｮ';
       case StepActionType.aiDetect:
-        return 'AI讀懷・';
+        return 'AI讀懶ｿｽE';
     }
   }
 
@@ -381,7 +381,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   }
 }
 
-// 繧ｹ繝・ャ繝苓ｿｽ蜉/邱ｨ髮・ム繧､繧｢繝ｭ繧ｰ
+// 繧ｹ繝・・ｽ・ｽ繝苓ｿｽ蜉/邱ｨ髮・・ｽ・ｽ繧､繧｢繝ｭ繧ｰ
 class _AddStepDialog extends StatefulWidget {
   final MissionStep? step;
 
@@ -416,7 +416,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.step == null ? '繧ｹ繝・ャ繝励ｒ霑ｽ蜉' : '繧ｹ繝・ャ繝励ｒ邱ｨ髮・),
+      title: Text(widget.step == null ? '繧ｹ繝・・ｽ・ｽ繝励ｒ霑ｽ蜉' : '繧ｹ繝・・ｽ・ｽ繝励ｒ邱ｨ髮・),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -424,7 +424,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
-                labelText: '繧ｹ繝・ャ繝怜錐',
+                labelText: '繧ｹ繝・・ｽ・ｽ繝怜錐',
                 hintText: '萓・ 繧｢繝ｩ繝ｼ繝繧呈ｭ｢繧√ｋ',
               ),
               autofocus: true,
@@ -453,7 +453,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
               controller: _descriptionController,
               decoration: const InputDecoration(
                 labelText: '隱ｬ譏趣ｼ井ｻｻ諢擾ｼ・,
-                hintText: '萓・ XIAO繧ｻ繝ｳ繧ｵ繝ｼ縺ｧ繧ｷ繧ｧ繧､繧ｯ繧呈､懷・',
+                hintText: '萓・ XIAO繧ｻ繝ｳ繧ｵ繝ｼ縺ｧ繧ｷ繧ｧ繧､繧ｯ繧呈､懶ｿｽE',
               ),
               maxLines: 3,
             ),
@@ -470,7 +470,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
             if (_nameController.text.trim().isEmpty) {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('繧ｹ繝・ャ繝怜錐繧貞・蜉帙＠縺ｦ縺上□縺輔＞')));
+              ).showSnackBar(const SnackBar(content: Text('繧ｹ繝・・ｽ・ｽ繝怜錐繧抵ｿｽE蜉帙＠縺ｦ縺上□縺輔＞')));
               return;
             }
 
@@ -494,7 +494,7 @@ class _AddStepDialogState extends State<_AddStepDialog> {
       case StepActionType.manual:
         return '謇句虚遒ｺ隱・;
       case StepActionType.shake:
-        return '繧ｷ繧ｧ繧､繧ｯ讀懷・';
+        return '繧ｷ繧ｧ繧､繧ｯ讀懶ｿｽE';
       case StepActionType.ble:
         return 'BLE繧ｻ繝ｳ繧ｵ繝ｼ';
       case StepActionType.qr:
@@ -502,12 +502,12 @@ class _AddStepDialogState extends State<_AddStepDialog> {
       case StepActionType.gps:
         return 'GPS菴咲ｽｮ';
       case StepActionType.aiDetect:
-        return 'AI讀懷・';
+        return 'AI讀懶ｿｽE';
     }
   }
 }
 
-// 繝溘ャ繧ｷ繝ｧ繝ｳ邱ｨ髮・ム繧､繧｢繝ｭ繧ｰ
+// 繝溘ャ繧ｷ繝ｧ繝ｳ邱ｨ髮・・ｽ・ｽ繧､繧｢繝ｭ繧ｰ
 class _EditMissionDialog extends StatefulWidget {
   final Mission mission;
 
