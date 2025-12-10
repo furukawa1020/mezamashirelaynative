@@ -4,7 +4,7 @@ import '../models/group.dart';
 import '../models/mission.dart';
 import '../models/session.dart';
 
-// ローカルストレージサービス（SharedPreferences wrapper）
+// ローカルストレージサービス�E�EharedPreferences wrapper�E�E
 class StorageService {
   static const String _groupsKey = 'mz_groups';
   static const String _missionsKey = 'mz_missions';
@@ -16,9 +16,9 @@ class StorageService {
   factory StorageService() => _instance;
   StorageService._internal();
 
-  // === グループ操作 ===
+  // === グループ操佁E===
 
-  // グループ作成
+  // グループ作�E
   Future<Group> createGroup({
     required String name,
     required GroupMode mode,
@@ -36,18 +36,18 @@ class StorageService {
       createdAt: DateTime.now(),
     );
 
-    // 既存グループ取得
+    // 既存グループ取征E
     final groups = await getGroups(ownerId);
     groups.add(group);
 
-    // 保存
+    // 保孁E
     final groupsJson = groups.map((g) => g.toJson()).toList();
     await prefs.setString(_groupsKey, jsonEncode(groupsJson));
 
     return group;
   }
 
-  // 招待コードでグループ検索
+  // 招征E��ードでグループ検索
   Future<Group?> findGroupByInviteCode(String inviteCode) async {
     final prefs = await SharedPreferences.getInstance();
     final groupsStr = prefs.getString(_groupsKey);
@@ -89,7 +89,7 @@ class StorageService {
     }
   }
 
-  // ユーザーのグループ一覧取得
+  // ユーザーのグループ一覧取征E
   Future<List<Group>> getGroups(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final groupsStr = prefs.getString(_groupsKey);
@@ -101,9 +101,9 @@ class StorageService {
     return groups.where((g) => g.memberIds.contains(userId)).toList();
   }
 
-  // === ミッション操作 ===
+  // === ミッション操佁E===
 
-  // ミッション作成
+  // ミッション作�E
   Future<Mission> createMission({
     required String userId,
     required String name,
@@ -129,7 +129,7 @@ class StorageService {
     return mission;
   }
 
-  // ユーザーのミッション一覧取得
+  // ユーザーのミッション一覧取征E
   Future<List<Mission>> getMissions(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final missionsStr = prefs.getString(_missionsKey);
@@ -141,7 +141,7 @@ class StorageService {
     return missions.where((m) => m.userId == userId).toList();
   }
 
-  // ミッション取得
+  // ミッション取征E
   Future<Mission?> getMission(String missionId) async {
     final prefs = await SharedPreferences.getInstance();
     final missionsStr = prefs.getString(_missionsKey);
@@ -161,7 +161,7 @@ class StorageService {
   Future<void> updateMission(Mission mission) async {
     final prefs = await SharedPreferences.getInstance();
     final missionsStr = prefs.getString(_missionsKey);
-    
+
     List<Mission> missions = [];
     if (missionsStr != null) {
       final List<dynamic> missionsJson = jsonDecode(missionsStr);
@@ -194,16 +194,16 @@ class StorageService {
     await prefs.setString(_missionsKey, jsonEncode(updatedJson));
   }
 
-  // === ユーティリティ ===
+  // === ユーチE��リチE�� ===
 
-  // ID生成
+  // ID生�E
   String _generateId(String prefix) {
     return '$prefix${DateTime.now().millisecondsSinceEpoch}';
   }
 
-  // 6桁招待コード生成
+  // 6桁招征E��ード生戁E
   String _generateInviteCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 紛らわしい文字除外
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 紛らわしぁE��字除夁E
     final random = DateTime.now().millisecondsSinceEpoch;
     String code = '';
     int seed = random;
@@ -216,14 +216,14 @@ class StorageService {
     return code;
   }
 
-  // === セッション操作 ===
+  // === セチE��ョン操佁E===
 
-  // セッション保存
+  // セチE��ョン保孁E
   Future<void> saveSession(Session session) async {
     final prefs = await SharedPreferences.getInstance();
     final sessions = await getSessions();
 
-    // 既存セッションを更新または追加
+    // 既存セチE��ョンを更新また�E追加
     final index = sessions.indexWhere((s) => s.sessionId == session.sessionId);
     if (index >= 0) {
       sessions[index] = session;
@@ -235,7 +235,7 @@ class StorageService {
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
-  // セッション取得
+  // セチE��ョン取征E
   Future<Session?> getSession(String sessionId) async {
     final sessions = await getSessions();
     return sessions.firstWhere(
@@ -244,34 +244,32 @@ class StorageService {
     );
   }
 
-  // セッション一覧取得
-  Future<List<Session>> getSessions({
-    String? groupId,
-    int limit = 20,
-  }) async {
+  // セチE��ョン一覧取征E
+  Future<List<Session>> getSessions({String? groupId, int limit = 20}) async {
     final prefs = await SharedPreferences.getInstance();
     final sessionsString = prefs.getString(_sessionsKey);
 
     if (sessionsString == null) return [];
 
     final sessionsList = jsonDecode(sessionsString) as List;
-    var sessions = sessionsList
-        .map((json) => Session.fromJson(json as Map<String, dynamic>))
-        .toList();
+    var sessions =
+        sessionsList
+            .map((json) => Session.fromJson(json as Map<String, dynamic>))
+            .toList();
 
     // グループIDでフィルター
     if (groupId != null) {
       sessions = sessions.where((s) => s.groupId == groupId).toList();
     }
 
-    // 作成日時降順でソート
+    // 作�E日時降頁E��ソーチE
     sessions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    // 制限
+    // 制陁E
     return sessions.take(limit).toList();
   }
 
-  // セッション削除
+  // セチE��ョン削除
   Future<void> deleteSession(String sessionId) async {
     final prefs = await SharedPreferences.getInstance();
     final sessions = await getSessions();
@@ -282,7 +280,7 @@ class StorageService {
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
-  // 全データクリア（デバッグ用）
+  // 全チE�Eタクリア�E�デバッグ用�E�E
   Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

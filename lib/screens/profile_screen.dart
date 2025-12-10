@@ -32,15 +32,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await auth.updateProfile(nickname: _nicknameController.text);
     setState(() => _isEditing = false);
     if (mounted) {
-<<<<<<< HEAD
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('プロフィールを更新しました')));
-=======
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('プロフィールを更新しました')),
       );
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
     }
   }
 
@@ -54,14 +51,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text('プロフィール'),
         actions: [
           if (_isEditing)
-<<<<<<< HEAD
-            TextButton(onPressed: _saveProfile, child: const Text('保存'))
-=======
+            TextButton(onPressed: _saveProfile, child: const Text('保孁E))
             TextButton(
               onPressed: _saveProfile,
-              child: const Text('保存'),
+              child: const Text('保孁E),
             )
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
           else
             IconButton(
               icon: const Icon(Icons.edit),
@@ -91,16 +85,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         child: IconButton(
-<<<<<<< HEAD
                           icon: const Icon(
                             Icons.camera_alt,
                             color: Colors.white,
                           ),
-=======
                           icon: const Icon(Icons.camera_alt, color: Colors.white),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                           onPressed: () {
-                            // TODO: 画像選択
+                            // TODO: 画像選抁E
                           },
                         ),
                       ),
@@ -109,12 +100,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 24),
-<<<<<<< HEAD
 
-=======
             
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
-            // ニックネーム
+            // ニックネ�Eム
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -122,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'ニックネーム',
+                      'ニックネ�Eム',
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     const SizedBox(height: 8),
@@ -130,13 +118,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TextField(
                         controller: _nicknameController,
                         decoration: const InputDecoration(
-                          hintText: 'ニックネームを入力',
+                          hintText: 'ニックネ�Eムを�E劁E,
                           border: OutlineInputBorder(),
                         ),
                       )
                     else
                       Text(
-                        user?.displayName ?? '未設定',
+                        user?.displayName ?? '未設宁E,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                   ],
@@ -144,11 +132,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 16),
-<<<<<<< HEAD
 
-=======
             
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // ユーザーID
             Card(
               child: ListTile(
@@ -163,23 +148,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 16),
-<<<<<<< HEAD
 
-=======
             
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             // 登録日
             Card(
               child: ListTile(
                 leading: const Icon(Icons.calendar_today),
                 title: const Text('登録日'),
-<<<<<<< HEAD
                 subtitle: Text(user?.createdAt.toString().split(' ')[0] ?? ''),
               ),
             ),
             const SizedBox(height: 32),
 
-=======
                 subtitle: Text(
                   user?.createdAt.toString().split(' ')[0] ?? '',
                 ),
@@ -187,12 +167,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 32),
             
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
-            // その他の設定
+            // そ�E他�E設宁E
             const Divider(),
             ListTile(
               leading: const Icon(Icons.notifications),
-              title: const Text('通知設定'),
+              title: const Text('通知設宁E),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 // TODO: 通知設定画面
@@ -200,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.info),
-              title: const Text('アプリについて'),
+              title: const Text('アプリにつぁE��'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 showAboutDialog(
@@ -208,21 +187,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   applicationName: 'めざましリレー',
                   applicationVersion: '1.0.0',
                   applicationIcon: const Icon(Icons.alarm, size: 48),
-<<<<<<< HEAD
-                  children: const [Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです。')],
-=======
+                  children: const [Text('GRAVITY式匿名アカウントシスチE��を採用した起床リレーアプリです、E)],
                   children: const [
-                    Text('GRAVITY式匿名アカウントシステムを採用した起床リレーアプリです。'),
+                    Text('GRAVITY式匿名アカウントシスチE��を採用した起床リレーアプリです、E),
                   ],
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                 );
               },
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
-<<<<<<< HEAD
               title: const Text(
-                'アカウントリセット',
+                'アカウントリセチE��',
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () async {
@@ -230,8 +205,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context: context,
                   builder:
                       (context) => AlertDialog(
-                        title: const Text('アカウントリセット'),
-                        content: const Text('全てのデータが削除されます。この操作は取り消せません。'),
+                        title: const Text('アカウントリセチE��'),
+                        content: const Text('全てのチE�Eタが削除されます。この操作�E取り消せません、E),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context, false),
@@ -242,20 +217,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: FilledButton.styleFrom(
                               backgroundColor: Colors.red,
                             ),
-                            child: const Text('リセット'),
+                            child: const Text('リセチE��'),
                           ),
                         ],
                       ),
                 );
 
-=======
-              title: const Text('アカウントリセット', style: TextStyle(color: Colors.red)),
+              title: const Text('アカウントリセチE��', style: TextStyle(color: Colors.red)),
               onTap: () async {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('アカウントリセット'),
-                    content: const Text('全てのデータが削除されます。この操作は取り消せません。'),
+                    title: const Text('アカウントリセチE��'),
+                    content: const Text('全てのチE�Eタが削除されます。この操作�E取り消せません、E),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
@@ -264,13 +238,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       FilledButton(
                         onPressed: () => Navigator.pop(context, true),
                         style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                        child: const Text('リセット'),
+                        child: const Text('リセチE��'),
                       ),
                     ],
                   ),
                 );
                 
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                 if (confirmed == true) {
                   await auth.resetAccount();
                   await context.read<StorageService>().clearAll();

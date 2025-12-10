@@ -8,7 +8,7 @@ import 'missions_screen.dart';
 import 'groups_screen.dart';
 import 'profile_screen.dart';
 
-// ホーム画面（メインダッシュボード）
+// ホ�Eム画面�E�メインダチE��ュボ�Eド！E
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,11 +18,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-<<<<<<< HEAD
 
-=======
   
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
   final List<Widget> _screens = [
     const DashboardTab(),
     const MissionsScreen(),
@@ -46,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _handleInviteCode(String inviteCode) async {
     final storage = context.read<StorageService>();
     final auth = context.read<AuthService>();
-<<<<<<< HEAD
 
     final group = await storage.findGroupByInviteCode(inviteCode);
 
@@ -55,8 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('「${group.name}」に参加しました！')));
-=======
+        ).showSnackBar(SnackBar(content: Text('、E{group.name}」に参加しました�E�E)));
     
     final group = await storage.findGroupByInviteCode(inviteCode);
     
@@ -64,22 +59,18 @@ class _HomeScreenState extends State<HomeScreen> {
       await storage.joinGroup(group.groupId, auth.currentUser!.userId);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('「${group.name}」に参加しました！')),
+          SnackBar(content: Text('、E{group.name}」に参加しました�E�E)),
         );
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
-        setState(() => _selectedIndex = 2); // グループタブに移動
+        setState(() => _selectedIndex = 2); // グループタブに移勁E
       }
     } else {
       if (mounted) {
-<<<<<<< HEAD
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('招待コードが無効です')));
-=======
+        ).showSnackBar(const SnackBar(content: Text('招征E��ードが無効でぁE)));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('招待コードが無効です')),
+          const SnackBar(content: Text('招征E��ードが無効でぁE)),
         );
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
       }
     }
   }
@@ -97,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label: 'ホーム',
+            label: 'ホ�Eム',
           ),
           NavigationDestination(
             icon: Icon(Icons.task_outlined),
@@ -107,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(
             icon: Icon(Icons.group_outlined),
             selectedIcon: Icon(Icons.group),
-            label: 'グループ',
+            label: 'グルーチE,
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -120,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ダッシュボードタブ
+// ダチE��ュボ�EドタチE
 class DashboardTab extends StatelessWidget {
   const DashboardTab({super.key});
 
@@ -146,7 +137,7 @@ class DashboardTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ユーザー情報カード
+            // ユーザー惁E��カーチE
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -169,14 +160,11 @@ class DashboardTab extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Text(
-<<<<<<< HEAD
                             user?.hasProfile ?? false
                                 ? 'プロフィール設定済み'
-=======
                             user?.hasProfile ?? false 
                                 ? 'プロフィール設定済み' 
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
-                                : 'プロフィール未設定',
+                                : 'プロフィール未設宁E,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
@@ -191,25 +179,22 @@ class DashboardTab extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('設定'),
+                        child: const Text('設宁E),
                       ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-<<<<<<< HEAD
 
-            // クイックアクション
-            Text('クイックアクション', style: Theme.of(context).textTheme.titleMedium),
-=======
+            // クイチE��アクション
+            Text('クイチE��アクション', style: Theme.of(context).textTheme.titleMedium),
             
-            // クイックアクション
+            // クイチE��アクション
             Text(
-              'クイックアクション',
+              'クイチE��アクション',
               style: Theme.of(context).textTheme.titleMedium,
             ),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             const SizedBox(height: 12),
             GridView.count(
               shrinkWrap: true,
@@ -220,44 +205,38 @@ class DashboardTab extends StatelessWidget {
               children: [
                 _QuickActionCard(
                   icon: Icons.play_arrow,
-                  title: 'セッション開始',
+                  title: 'セチE��ョン開姁E,
                   onTap: () {
-                    // TODO: セッション開始
+                    // TODO: セチE��ョン開姁E
                   },
                 ),
                 _QuickActionCard(
                   icon: Icons.add,
-                  title: 'ミッション作成',
+                  title: 'ミッション作�E',
                   onTap: () {
                     Navigator.of(context).push(
-<<<<<<< HEAD
                       MaterialPageRoute(builder: (_) => const MissionsScreen()),
-=======
                       MaterialPageRoute(
                         builder: (_) => const MissionsScreen(),
                       ),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                     );
                   },
                 ),
                 _QuickActionCard(
                   icon: Icons.group_add,
-                  title: 'グループ作成',
+                  title: 'グループ作�E',
                   onTap: () {
                     Navigator.of(context).push(
-<<<<<<< HEAD
                       MaterialPageRoute(builder: (_) => const GroupsScreen()),
-=======
                       MaterialPageRoute(
                         builder: (_) => const GroupsScreen(),
                       ),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
                     );
                   },
                 ),
                 _QuickActionCard(
                   icon: Icons.bluetooth,
-                  title: 'BLE設定',
+                  title: 'BLE設宁E,
                   onTap: () {
                     // TODO: BLE設定画面
                   },
@@ -265,29 +244,23 @@ class DashboardTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 24),
-<<<<<<< HEAD
 
-            // 最近のアクティビティ
-            Text('最近のアクティビティ', style: Theme.of(context).textTheme.titleMedium),
-=======
+            // 最近�EアクチE��ビティ
+            Text('最近�EアクチE��ビティ', style: Theme.of(context).textTheme.titleMedium),
             
-            // 最近のアクティビティ
+            // 最近�EアクチE��ビティ
             Text(
-              '最近のアクティビティ',
+              '最近�EアクチE��ビティ',
               style: Theme.of(context).textTheme.titleMedium,
             ),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
             const SizedBox(height: 12),
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
-<<<<<<< HEAD
-                child: Center(child: Text('アクティビティはまだありません')),
-=======
+                child: Center(child: Text('アクチE��ビティはまだありません')),
                 child: Center(
-                  child: Text('アクティビティはまだありません'),
+                  child: Text('アクチE��ビティはまだありません'),
                 ),
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
               ),
             ),
           ],

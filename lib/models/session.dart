@@ -1,14 +1,14 @@
 import 'package:uuid/uuid.dart';
 
-// セッション状態
+// セチE��ョン状慁E
 enum SessionStatus {
-  waiting,   // 待機中
+  waiting,   // 征E��中
   active,    // 実行中
-  completed, // 完了
-  failed,    // 失敗
+  completed, // 完亁E
+  failed,    // 失敁E
 }
 
-// セッションステップ
+// セチE��ョンスチE��チE
 class SessionStep {
   final String stepId;
   final int stepOrder;
@@ -16,7 +16,7 @@ class SessionStep {
   final String? nickname;
   final DateTime? completedAt;
   final int? durationMs;
-  final String? bleEventType; // OPEN, LIFT, SHAKE, CLOSE等
+  final String? bleEventType; // OPEN, LIFT, SHAKE, CLOSE筁E
 
   SessionStep({
     required this.stepId,
@@ -77,7 +77,7 @@ class SessionStep {
   }
 }
 
-// セッション
+// セチE��ョン
 class Session {
   final String sessionId;
   final String groupId;

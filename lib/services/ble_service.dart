@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-// BLEモーションイベント
+// BLEモーションイベンチE
 class BLEMotionEvent {
   final String tagId;
   final String eventType; // OPEN, LIFT, SHAKE, CLOSE, FALSE
@@ -29,7 +29,7 @@ class BLEMotionEvent {
   }
 }
 
-// BLEサービス（XIAO ESP32C3 + MPU6050連携）
+// BLEサービス�E�EIAO ESP32C3 + MPU6050連携�E�E
 class BLEService {
   static const String serviceUuid = '0000180f-0000-1000-8000-00805f9b34fb';
   static const String characteristicUuid = '00002a19-0000-1000-8000-00805f9b34fb';

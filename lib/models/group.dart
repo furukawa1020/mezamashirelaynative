@@ -1,8 +1,8 @@
-// グループモデル
+// グループモチE��
 class Group {
   final String groupId;
   final String name;
-  final String inviteCode; // 6桁招待コード
+  final String inviteCode; // 6桁招征E��ーチE
   final GroupMode mode;
   final String ownerId;
   final List<String> memberIds;
@@ -38,19 +38,19 @@ class Group {
     createdAt: DateTime.parse(json['created_at'] as String),
   );
 
-  // ディープリンク生成
+  // チE��ープリンク生�E
   String get deepLink => 'mezamashi://join/$inviteCode';
 
-  // SNS共有用テキスト生成
+  // SNS共有用チE��スト生戁E
   String getShareText() {
-    return '「$name」に参加しよう！\n'
-        '招待コード: $inviteCode\n'
-        'またはこのリンクをタップ: $deepLink\n'
+    return '、Ename」に参加しよぁE��\n'
+        '招征E��ーチE $inviteCode\n'
+        'また�Eこ�EリンクをタチE�E: $deepLink\n'
         '#めざましリレー';
   }
 }
 
 enum GroupMode {
-  race, // 競争モード（最速を競う）
-  all, // 全員クリアモード（全員完了で成功）
+  race, // 競争モード（最速を競ぁE��E
+  all, // 全員クリアモード（�E員完亁E��成功�E�E
 }

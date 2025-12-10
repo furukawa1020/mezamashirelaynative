@@ -15,10 +15,10 @@ class AuthService {
 
   AppUser? _currentUser;
 
-  // 現在のユーザー取得
+  // 現在のユーザー取征E
   AppUser? get currentUser => _currentUser;
 
-  // 初期化（アプリ起動時に呼ぶ）
+  // 初期化（アプリ起動時に呼ぶ�E�E
   Future<AppUser> initialize() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(_userKey);
@@ -26,7 +26,7 @@ class AuthService {
     if (userJson != null) {
       // 既存ユーザー読み込み
       _currentUser = AppUser.fromJson(_parseJson(userJson));
-      // 最終アクティブ時刻更新
+      // 最終アクチE��ブ時刻更新
       _currentUser = AppUser(
         userId: _currentUser!.userId,
         nickname: _currentUser!.nickname,
@@ -36,7 +36,7 @@ class AuthService {
       );
       await _saveUser(_currentUser!);
     } else {
-      // 新規ユーザー作成（匿名）
+      // 新規ユーザー作�E�E�匿名！E
       _currentUser = AppUser(
         userId: _uuid.v4(),
         createdAt: DateTime.now(),
@@ -63,20 +63,20 @@ class AuthService {
     await _saveUser(_currentUser!);
   }
 
-  // ユーザーデータ保存
+  // ユーザーチE�Eタ保孁E
   Future<void> _saveUser(AppUser user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, _jsonEncode(user.toJson()));
   }
 
-  // アカウントリセット（デバッグ用）
+  // アカウントリセチE���E�デバッグ用�E�E
   Future<void> resetAccount() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userKey);
     _currentUser = null;
   }
 
-  // JSON処理
+  // JSON処琁E
   Map<String, dynamic> _parseJson(String json) {
     return jsonDecode(json) as Map<String, dynamic>;
   }

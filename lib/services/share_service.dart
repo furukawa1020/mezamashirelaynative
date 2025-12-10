@@ -4,39 +4,39 @@ import '../models/group.dart';
 
 // SNS共有サービス
 class ShareService {
-  // 汎用共有（OSのシェアシート）
+  // 汎用共有！ESのシェアシート！E
   static Future<void> shareGroup(Group group) async {
-    await Share.share(group.getShareText(), subject: '「${group.name}」に参加しよう！');
+    await Share.share(group.getShareText(), subject: '、E{group.name}」に参加しよぁE��E);
   }
 
-  // LINE共有
+  // LINE共朁E
   static Future<void> shareToLine(Group group) async {
     final text = Uri.encodeComponent(group.getShareText());
     final url = 'https://line.me/R/msg/text/?$text';
     await _launchUrl(url);
   }
 
-  // X (Twitter)共有
+  // X (Twitter)共朁E
   static Future<void> shareToX(Group group) async {
     final text = Uri.encodeComponent(group.getShareText());
     final url = 'https://twitter.com/intent/tweet?text=$text';
     await _launchUrl(url);
   }
 
-  // Facebook共有
+  // Facebook共朁E
   static Future<void> shareToFacebook(Group group) async {
     final url = Uri.encodeComponent(group.deepLink);
     final fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=$url';
     await _launchUrl(fbUrl);
   }
 
-  // Instagram（ストーリーズ共有は制限あり、代わりにクリップボード）
+  // Instagram�E�スト�Eリーズ共有�E制限あり、代わりにクリチE�Eボ�Eド！E
   static Future<void> shareToInstagram(Group group) async {
-    // Instagramは直接共有APIがないため、テキストをクリップボードにコピー
+    // Instagramは直接共有APIがなぁE��め、テキストをクリチE�Eボ�Eドにコピ�E
     await Share.share(group.getShareText(), subject: 'Instagramに投稿してください');
   }
 
-  // Slack共有
+  // Slack共朁E
   static Future<void> shareToSlack(Group group) async {
     final text = Uri.encodeComponent(group.getShareText());
     final url =
@@ -44,12 +44,12 @@ class ShareService {
     await _launchUrl(url);
   }
 
-  // Discord共有（Webhook経由は別途実装が必要、ここではテキスト共有）
+  // Discord共有！Eebhook経由は別途実裁E��忁E��、ここではチE��スト�E有！E
   static Future<void> shareToDiscord(Group group) async {
     await Share.share(group.getShareText(), subject: 'Discordで共有してください');
   }
 
-  // URL起動ヘルパー
+  // URL起動�Eルパ�E
   static Future<void> _launchUrl(String urlString) async {
     final uri = Uri.parse(urlString);
     if (await canLaunchUrl(uri)) {
@@ -59,7 +59,7 @@ class ShareService {
     }
   }
 
-  // QRコード表示用のデータ取得
+  // QRコード表示用のチE�Eタ取征E
   static String getQrData(Group group) {
     return group.deepLink;
   }

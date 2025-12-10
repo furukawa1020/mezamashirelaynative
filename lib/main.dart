@@ -1,4 +1,4 @@
-Ôªøimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/auth_service.dart';
 import 'services/storage_service.dart';
@@ -10,23 +10,25 @@ import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   final authService = AuthService();
   final storageService = StorageService();
   final deeplinkService = DeeplinkService();
   final bleService = BLEService();
   final sessionService = SessionService(storageService, bleService);
-  
+
   await authService.initialize();
   deeplinkService.initialize();
-  
-  runApp(MezamashiRelayApp(
-    authService: authService,
-    storageService: storageService,
-    deeplinkService: deeplinkService,
-    bleService: bleService,
-    sessionService: sessionService,
-  ));
+
+  runApp(
+    MezamashiRelayApp(
+      authService: authService,
+      storageService: storageService,
+      deeplinkService: deeplinkService,
+      bleService: bleService,
+      sessionService: sessionService,
+    ),
+  );
 }
 
 class MezamashiRelayApp extends StatelessWidget {
@@ -56,7 +58,7 @@ class MezamashiRelayApp extends StatelessWidget {
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(
-        title: '„ÇÅ„Åñ„Åæ„Åó„É™„É¨„Éº',
+        title: 'ÇﬂÇ¥Ç‹ÇµÉäÉåÅ[',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: true,
