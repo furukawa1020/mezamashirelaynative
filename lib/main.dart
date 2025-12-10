@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'services/auth_service.dart';
 import 'services/storage_service.dart';
 import 'services/deeplink_service.dart';
+import 'services/ble_service.dart';
+import 'services/session_service.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
 
@@ -12,6 +14,8 @@ void main() async {
   final authService = AuthService();
   final storageService = StorageService();
   final deeplinkService = DeeplinkService();
+  final bleService = BLEService();
+  final sessionService = SessionService(storageService, bleService);
   
   await authService.initialize();
   deeplinkService.initialize();
@@ -20,6 +24,8 @@ void main() async {
     authService: authService,
     storageService: storageService,
     deeplinkService: deeplinkService,
+    bleService: bleService,
+    sessionService: sessionService,
   ));
 }
 
@@ -27,21 +33,27 @@ class MezamashiRelayApp extends StatelessWidget {
   final AuthService authService;
   final StorageService storageService;
   final DeeplinkService deeplinkService;
+  final BLEService bleService;
+  final SessionService sessionService;
 
   const MezamashiRelayApp({
     super.key,
     required this.authService,
     required this.storageService,
     required this.deeplinkService,
+    required this.bleService,
+    required this.sessionService,
   });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AuthService>.value(value: authService),
+        ChangeNotifierProvider<AuthService>.value(value: authService),
         Provider<StorageService>.value(value: storageService),
         Provider<DeeplinkService>.value(value: deeplinkService),
+        Provider<BLEService>.value(value: bleService),
+        ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(
         title: 'めざましリレー',
