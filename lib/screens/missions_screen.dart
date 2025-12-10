@@ -5,7 +5,7 @@ import '../services/storage_service.dart';
 import '../models/mission.dart';
 import 'mission_detail_screen.dart';
 
-// ミッション管琁E��面
+// ミッション管理画面
 class MissionsScreen extends StatefulWidget {
   const MissionsScreen({super.key});
 
@@ -43,64 +43,16 @@ class _MissionsScreenState extends State<MissionsScreen> {
 
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('ミッション作�E'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'ミッション吁E,
-                    hintText: '朝�EルーチE��ン',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: timeController,
-                  decoration: const InputDecoration(
-                    labelText: '起床時刻',
-                    hintText: 'HH:MM',
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('キャンセル'),
-              ),
-              FilledButton(
-                onPressed: () async {
-                  if (nameController.text.isNotEmpty) {
-                    final auth = context.read<AuthService>();
-                    final storage = context.read<StorageService>();
-
-                    await storage.createMission(
-                      userId: auth.currentUser!.userId,
-                      name: nameController.text,
-                      wakeTime: timeController.text,
-                    );
-
-                    Navigator.pop(context);
-                    _loadMissions();
-                  }
-                },
-                child: const Text('作�E'),
-              ),
-            ],
-          ),
       builder: (context) => AlertDialog(
-        title: const Text('ミッション作�E'),
+        title: const Text('ミッション作成'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
               decoration: const InputDecoration(
-                labelText: 'ミッション吁E,
-                hintText: '朝�EルーチE��ン',
+                labelText: 'ミッション名',
+                hintText: '朝のルーティーン',
               ),
             ),
             const SizedBox(height: 16),
@@ -130,11 +82,12 @@ class _MissionsScreenState extends State<MissionsScreen> {
                   wakeTime: timeController.text,
                 );
                 
+                if (!mounted) return;
                 Navigator.pop(context);
                 _loadMissions();
               }
             },
-            child: const Text('作�E'),
+            child: const Text('作成'),
           ),
         ],
       ),
@@ -144,55 +97,6 @@ class _MissionsScreenState extends State<MissionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ミッション')),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _missions.isEmpty
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.task_outlined,
-                      size: 64,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('ミッションがありません'),
-                    const SizedBox(height: 8),
-                    FilledButton.icon(
-                      onPressed: _showCreateMissionDialog,
-                      icon: const Icon(Icons.add),
-                      label: const Text('ミッション作�E'),
-                    ),
-                  ],
-                ),
-              )
-              : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _missions.length,
-                itemBuilder: (context, index) {
-                  final mission = _missions[index];
-                  return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.alarm),
-                      title: Text(mission.name),
-                      subtitle: Text('起床時刻: ${mission.wakeTime}'),
-                      trailing: Text('${mission.steps.length}スチE��チE),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => MissionDetailScreen(
-                              missionId: mission.missionId,
-                            ),
-                          ),
-                        ).then((_) => _loadMissions());
-                      },
-                    ),
-                  );
-                },
-              ),
       appBar: AppBar(
         title: const Text('ミッション'),
       ),
@@ -210,7 +114,7 @@ class _MissionsScreenState extends State<MissionsScreen> {
                       FilledButton.icon(
                         onPressed: _showCreateMissionDialog,
                         icon: const Icon(Icons.add),
-                        label: const Text('ミッション作�E'),
+                        label: const Text('ミッション作成'),
                       ),
                     ],
                   ),

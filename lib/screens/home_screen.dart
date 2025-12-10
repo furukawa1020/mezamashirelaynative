@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../services/ble_service.dart';
 import 'missions_screen.dart';
+import 'groups_screen.dart';
 import 'profile_screen.dart';
 import 'notifications_screen.dart';
 import 'session_screen.dart';
@@ -22,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const _DashboardTab(),
     const MissionsScreen(),
-    const Center(child: Text('グループ画面（未実装）')),
+    const GroupsScreen(),
     const ProfileScreen(),
   ];
 
