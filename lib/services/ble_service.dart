@@ -32,12 +32,7 @@ class BLEMotionEvent {
 // BLEサービス（XIAO ESP32C3 + MPU6050連携）
 class BLEService {
   static const String serviceUuid = '0000180f-0000-1000-8000-00805f9b34fb';
-<<<<<<< HEAD
-  static const String characteristicUuid =
-      '00002a19-0000-1000-8000-00805f9b34fb';
-=======
   static const String characteristicUuid = '00002a19-0000-1000-8000-00805f9b34fb';
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
 
   final _eventController = StreamController<BLEMotionEvent>.broadcast();
   Stream<BLEMotionEvent> get eventStream => _eventController.stream;
@@ -65,28 +60,11 @@ class BLEService {
     }
   }
 
-<<<<<<< HEAD
-  Future<void> startScan({
-    Duration timeout = const Duration(seconds: 10),
-  }) async {
-=======
   Future<void> startScan({Duration timeout = const Duration(seconds: 10)}) async {
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
     if (_isScanning) return;
 
     try {
       _isScanning = true;
-<<<<<<< HEAD
-
-      FlutterBluePlus.scanResults.listen((results) {
-        final filteredResults =
-            results.where((r) {
-              final name = r.device.platformName;
-              return name.toLowerCase().contains('xiao') ||
-                  name.toLowerCase().contains('mezamashi');
-            }).toList();
-
-=======
       
       FlutterBluePlus.scanResults.listen((results) {
         final filteredResults = results.where((r) {
@@ -95,7 +73,6 @@ class BLEService {
                  name.toLowerCase().contains('mezamashi');
         }).toList();
         
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
         _scanResultsController.add(filteredResults);
       });
 
@@ -130,17 +107,6 @@ class BLEService {
       );
 
       final services = await device.discoverServices();
-<<<<<<< HEAD
-
-      for (var service in services) {
-        if (service.uuid.toString().toLowerCase() ==
-            serviceUuid.toLowerCase()) {
-          for (var characteristic in service.characteristics) {
-            if (characteristic.uuid.toString().toLowerCase() ==
-                characteristicUuid.toLowerCase()) {
-              await characteristic.setNotifyValue(true);
-
-=======
       
       for (var service in services) {
         if (service.uuid.toString().toLowerCase() == serviceUuid.toLowerCase()) {
@@ -149,7 +115,6 @@ class BLEService {
                 characteristicUuid.toLowerCase()) {
               await characteristic.setNotifyValue(true);
               
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
               characteristic.lastValueStream.listen((value) {
                 _handleBLEData(device, value);
               });
@@ -185,11 +150,7 @@ class BLEService {
     try {
       final jsonString = utf8.decode(data);
       final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
-<<<<<<< HEAD
-
-=======
       
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
       final event = BLEMotionEvent.fromJson(jsonData);
       _eventController.add(event);
     } catch (e) {
@@ -197,12 +158,7 @@ class BLEService {
     }
   }
 
-<<<<<<< HEAD
-  List<BluetoothDevice> get connectedDevices =>
-      List.unmodifiable(_connectedDevices);
-=======
   List<BluetoothDevice> get connectedDevices => List.unmodifiable(_connectedDevices);
->>>>>>> 1e46074db814be4439fd1dd749b81dbe9b3dd55b
 
   void dispose() {
     disconnectAll();
