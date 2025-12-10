@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../models/mission.dart';
+import 'mission_detail_screen.dart';
 
 // ミッション管理画面
 class MissionsScreen extends StatefulWidget {
@@ -187,7 +188,13 @@ class _MissionsScreenState extends State<MissionsScreen> {
                       subtitle: Text('起床時刻: ${mission.wakeTime}'),
                       trailing: Text('${mission.steps.length}ステップ'),
                       onTap: () {
-                        // TODO: ミッション詳細画面
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MissionDetailScreen(
+                              missionId: mission.missionId,
+                            ),
+                          ),
+                        ).then((_) => _loadMissions());
                       },
                     ),
                   );

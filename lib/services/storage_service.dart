@@ -141,6 +141,59 @@ class StorageService {
     return missions.where((m) => m.userId == userId).toList();
   }
 
+  // ミッション取得
+  Future<Mission?> getMission(String missionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final missionsStr = prefs.getString(_missionsKey);
+    if (missionsStr == null) return null;
+
+    final List<dynamic> missionsJson = jsonDecode(missionsStr);
+    final missions = missionsJson.map((j) => Mission.fromJson(j)).toList();
+
+    try {
+      return missions.firstWhere((m) => m.missionId == missionId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ミッション更新
+  Future<void> updateMission(Mission mission) async {
+    final prefs = await SharedPreferences.getInstance();
+    final missionsStr = prefs.getString(_missionsKey);
+    
+    List<Mission> missions = [];
+    if (missionsStr != null) {
+      final List<dynamic> missionsJson = jsonDecode(missionsStr);
+      missions = missionsJson.map((j) => Mission.fromJson(j)).toList();
+    }
+
+    final index = missions.indexWhere((m) => m.missionId == mission.missionId);
+    if (index >= 0) {
+      missions[index] = mission;
+    } else {
+      missions.add(mission);
+    }
+
+    final missionsJson = missions.map((m) => m.toJson()).toList();
+    await prefs.setString(_missionsKey, jsonEncode(missionsJson));
+  }
+
+  // ミッション削除
+  Future<void> deleteMission(String missionId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final missionsStr = prefs.getString(_missionsKey);
+    if (missionsStr == null) return;
+
+    final List<dynamic> missionsJson = jsonDecode(missionsStr);
+    final missions = missionsJson.map((j) => Mission.fromJson(j)).toList();
+
+    missions.removeWhere((m) => m.missionId == missionId);
+
+    final updatedJson = missions.map((m) => m.toJson()).toList();
+    await prefs.setString(_missionsKey, jsonEncode(updatedJson));
+  }
+
   // === ユーティリティ ===
 
   // ID生成
