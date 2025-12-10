@@ -44,15 +44,16 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     final newStep = MissionStep(
       stepId: 'step_${DateTime.now().millisecondsSinceEpoch}',
       order: _mission!.steps.length,
-      name: result['name'] as String,
+      label: result['label'] as String,
       actionType: result['actionType'] as StepActionType,
-      description: result['description'] as String?,
+      actionConfig: result['actionConfig'] as Map<String, dynamic>,
     );
 
     final updatedMission = Mission(
       missionId: _mission!.missionId,
+      userId: _mission!.userId,
       name: _mission!.name,
-      description: _mission!.description,
+      wakeTime: _mission!.wakeTime,
       steps: [..._mission!.steps, newStep],
       createdAt: _mission!.createdAt,
     );
@@ -79,9 +80,10 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
             return MissionStep(
               stepId: s.stepId,
               order: s.order,
-              name: result['name'] as String,
+              label: result['label'] as String,
               actionType: result['actionType'] as StepActionType,
-              description: result['description'] as String?,
+              actionConfig: result['actionConfig'] as Map<String, dynamic>,
+              bleEventType: s.bleEventType,
             );
           }
           return s;
@@ -89,8 +91,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
 
     final updatedMission = Mission(
       missionId: _mission!.missionId,
+      userId: _mission!.userId,
       name: _mission!.name,
-      description: _mission!.description,
+      wakeTime: _mission!.wakeTime,
       steps: updatedSteps,
       createdAt: _mission!.createdAt,
     );
@@ -108,8 +111,8 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('スチE��プを削除'),
-            content: Text('、E{step.name}」を削除しますか?'),
+            title: const Text('ステップを削除'),
+            content: Text('「${step.label}」を削除しますか?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -129,21 +132,23 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
     final updatedSteps =
         _mission!.steps.where((s) => s.stepId != step.stepId).toList();
 
-    // スチE��プ�E番号を�E設宁E
+    // ステップの番号を再設定
     for (int i = 0; i < updatedSteps.length; i++) {
       updatedSteps[i] = MissionStep(
         stepId: updatedSteps[i].stepId,
         order: i,
-        name: updatedSteps[i].name,
+        label: updatedSteps[i].label,
         actionType: updatedSteps[i].actionType,
-        description: updatedSteps[i].description,
+        actionConfig: updatedSteps[i].actionConfig,
+        bleEventType: updatedSteps[i].bleEventType,
       );
     }
 
     final updatedMission = Mission(
       missionId: _mission!.missionId,
+      userId: _mission!.userId,
       name: _mission!.name,
-      description: _mission!.description,
+      wakeTime: _mission!.wakeTime,
       steps: updatedSteps,
       createdAt: _mission!.createdAt,
     );
@@ -173,16 +178,18 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
       steps[i] = MissionStep(
         stepId: steps[i].stepId,
         order: i,
-        name: steps[i].name,
+        label: steps[i].label,
         actionType: steps[i].actionType,
-        description: steps[i].description,
+        actionConfig: steps[i].actionConfig,
+        bleEventType: steps[i].bleEventType,
       );
     }
 
     final updatedMission = Mission(
       missionId: _mission!.missionId,
+      userId: _mission!.userId,
       name: _mission!.name,
-      description: _mission!.description,
+      wakeTime: _mission!.wakeTime,
       steps: steps,
       createdAt: _mission!.createdAt,
     );
@@ -214,7 +221,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
               ? const Center(child: Text('ミッションが見つかりません'))
               : Column(
                 children: [
-                  // ミッション惁E�E��E�
+                  // ミッション情報
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
@@ -229,26 +236,19 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (_mission!.description != null) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            _mission!.description!,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
                         const SizedBox(height: 8),
                         Row(
                           children: [
                             const Icon(Icons.list_alt, size: 16),
                             const SizedBox(width: 4),
-                            Text('${_mission!.steps.length}スチE��チE),
+                            Text('${_mission!.steps.length}ステップ'),
                           ],
                         ),
                       ],
                     ),
                   ),
 
-                  // スチE�E��E�プリスチE
+                  // ステップリスト
                   Expanded(
                     child:
                         _mission!.steps.isEmpty
@@ -263,7 +263,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'スチE��プがありません',
+                                    'ステップがありません',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey[600],
@@ -273,7 +273,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                   TextButton.icon(
                                     onPressed: _addStep,
                                     icon: const Icon(Icons.add),
-                                    label: const Text('最初�EスチE��プを追加'),
+                                    label: const Text('最初のステップを追加'),
                                   ),
                                 ],
                               ),
@@ -294,7 +294,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                     leading: CircleAvatar(
                                       child: Text('${index + 1}'),
                                     ),
-                                    title: Text(step.name),
+                                    title: Text(step.label),
                                     subtitle: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -302,8 +302,6 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
                                         Text(
                                           _getActionTypeLabel(step.actionType),
                                         ),
-                                        if (step.description != null)
-                                          Text(step.description!),
                                       ],
                                     ),
                                     trailing: Row(
@@ -340,17 +338,17 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   String _getActionTypeLabel(StepActionType type) {
     switch (type) {
       case StepActionType.manual:
-        return '手動確誁E;
+        return '手動確認';
       case StepActionType.shake:
-        return 'シェイク検�E';
+        return 'シェイク検出';
       case StepActionType.ble:
         return 'BLEセンサー';
       case StepActionType.qr:
-        return 'QRコーチE;
+        return 'QRコード';
       case StepActionType.gps:
         return 'GPS位置';
       case StepActionType.aiDetect:
-        return 'AI検�E';
+        return 'AI検出';
     }
   }
 
@@ -366,8 +364,9 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
 
     final updatedMission = Mission(
       missionId: _mission!.missionId,
+      userId: _mission!.userId,
       name: result['name']!,
-      description: result['description'],
+      wakeTime: _mission!.wakeTime,
       steps: _mission!.steps,
       createdAt: _mission!.createdAt,
     );
@@ -381,7 +380,7 @@ class _MissionDetailScreenState extends State<MissionDetailScreen> {
   }
 }
 
-// スチE�E��E�プ追加/編雁E�E��E�イアログ
+// スチE�E��E�プ追加/編雁E�E��E�イアログ
 class _AddStepDialog extends StatefulWidget {
   final MissionStep? step;
 
@@ -392,47 +391,42 @@ class _AddStepDialog extends StatefulWidget {
 }
 
 class _AddStepDialogState extends State<_AddStepDialog> {
-  late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
+  late TextEditingController _labelController;
   late StepActionType _actionType;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.step?.name);
-    _descriptionController = TextEditingController(
-      text: widget.step?.description,
-    );
+    _labelController = TextEditingController(text: widget.step?.label);
     _actionType = widget.step?.actionType ?? StepActionType.manual;
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
+    _labelController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.step == null ? 'スチE�E��E�プを追加' : 'スチE�E��E�プを編雁E),
+      title: Text(widget.step == null ? 'ステップを追加' : 'ステップを編集'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: _nameController,
+              controller: _labelController,
               decoration: const InputDecoration(
-                labelText: 'スチE�E��E�プ名',
-                hintText: '侁E アラームを止める',
+                labelText: 'ステップラベル',
+                hintText: '例: アラームを止める',
               ),
               autofocus: true,
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<StepActionType>(
               value: _actionType,
-              decoration: const InputDecoration(labelText: 'アクションタイチE),
+              decoration: const InputDecoration(labelText: 'アクションタイプ'),
               items:
                   StepActionType.values.map((type) {
                     return DropdownMenuItem(
@@ -448,15 +442,6 @@ class _AddStepDialogState extends State<_AddStepDialog> {
                 }
               },
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: '説明（任意！E,
-                hintText: '侁E XIAOセンサーでシェイクを検�E',
-              ),
-              maxLines: 3,
-            ),
           ],
         ),
       ),
@@ -467,20 +452,17 @@ class _AddStepDialogState extends State<_AddStepDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (_nameController.text.trim().isEmpty) {
+            if (_labelController.text.trim().isEmpty) {
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('スチE�E��E�プ名を�E力してください')));
+              ).showSnackBar(const SnackBar(content: Text('ステップラベルを入力してください')));
               return;
             }
 
             Navigator.of(context).pop({
-              'name': _nameController.text.trim(),
+              'label': _labelController.text.trim(),
               'actionType': _actionType,
-              'description':
-                  _descriptionController.text.trim().isEmpty
-                      ? null
-                      : _descriptionController.text.trim(),
+              'actionConfig': <String, dynamic>{},  // 空のactionConfig
             });
           },
           child: Text(widget.step == null ? '追加' : '更新'),
@@ -492,22 +474,22 @@ class _AddStepDialogState extends State<_AddStepDialog> {
   String _getActionTypeLabel(StepActionType type) {
     switch (type) {
       case StepActionType.manual:
-        return '手動確誁E;
+        return '手動確認';
       case StepActionType.shake:
-        return 'シェイク検�E';
+        return 'シェイク検出';
       case StepActionType.ble:
         return 'BLEセンサー';
       case StepActionType.qr:
-        return 'QRコーチE;
+        return 'QRコード';
       case StepActionType.gps:
         return 'GPS位置';
       case StepActionType.aiDetect:
-        return 'AI検�E';
+        return 'AI検出';
     }
   }
 }
 
-// ミッション編雁E�E��E�イアログ
+// ミッション編集ダイアログ
 class _EditMissionDialog extends StatefulWidget {
   final Mission mission;
 
@@ -519,41 +501,30 @@ class _EditMissionDialog extends StatefulWidget {
 
 class _EditMissionDialogState extends State<_EditMissionDialog> {
   late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.mission.name);
-    _descriptionController = TextEditingController(
-      text: widget.mission.description,
-    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('ミッションを編雁E),
+      title: const Text('ミッションを編集'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
-            decoration: const InputDecoration(labelText: 'ミッション吁E),
+            decoration: const InputDecoration(labelText: 'ミッション名'),
             autofocus: true,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(labelText: '説明（任意！E),
-            maxLines: 3,
           ),
         ],
       ),
@@ -573,10 +544,6 @@ class _EditMissionDialogState extends State<_EditMissionDialog> {
 
             Navigator.of(context).pop({
               'name': _nameController.text.trim(),
-              'description':
-                  _descriptionController.text.trim().isEmpty
-                      ? null
-                      : _descriptionController.text.trim(),
             });
           },
           child: const Text('更新'),
