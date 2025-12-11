@@ -44,6 +44,7 @@ dependencies:
   app_links: ^6.4.0
   image_picker: ^1.1.2
   audioplayers: ^6.1.0
+  device_info_plus: ^12.3.0
 
 dev_dependencies:
   flutter_test:
