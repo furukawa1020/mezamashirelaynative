@@ -5,6 +5,11 @@
 -keep class io.flutter.view.**  { *; }
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
+-keep class io.flutter.embedding.** { *; }
+
+# Google Play Core（deferred components用）
+-keep class com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**
 
 # Kotlin関連
 -keep class kotlin.** { *; }
