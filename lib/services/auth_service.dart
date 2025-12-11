@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../models/user.dart';
 
-// GRAVITY式匿名認証サービス + デバイスID強化
+// 匿名認証サービス（デバイスID強化版）
 class AuthService {
   static const String _userKey = 'mz_user';
   static const String _deviceIdKey = 'mz_device_id';
