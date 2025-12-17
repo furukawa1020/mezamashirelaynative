@@ -32,8 +32,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
 
   Future<void> _loadData() async {
     final auth = Provider.of<AuthService>(context, listen: false);
-    final statsService =
-        Provider.of<StatisticsService>(context, listen: false);
+    final statsService = Provider.of<StatisticsService>(context, listen: false);
 
     if (auth.currentUser != null) {
       await statsService.loadStatistics(auth.currentUser!.userId);
@@ -58,16 +57,17 @@ class _StatisticsScreenState extends State<StatisticsScreen>
           ],
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: const [
-                _OverviewTab(),
-                _AchievementsTab(),
-                _ChartsTab(),
-              ],
-            ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                controller: _tabController,
+                children: const [
+                  _OverviewTab(),
+                  _AchievementsTab(),
+                  _ChartsTab(),
+                ],
+              ),
     );
   }
 }
@@ -154,9 +154,10 @@ class _OverviewTab extends StatelessWidget {
   }
 
   Widget _buildSummaryCard(BuildContext context, statistics) {
-    final streakColor = statistics.currentStreak >= 7
-        ? Colors.amber
-        : statistics.currentStreak >= 3
+    final streakColor =
+        statistics.currentStreak >= 7
+            ? Colors.amber
+            : statistics.currentStreak >= 3
             ? Colors.orange
             : Colors.grey;
 
@@ -166,23 +167,16 @@ class _OverviewTab extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Icon(
-              Icons.local_fire_department,
-              size: 64,
-              color: streakColor,
-            ),
+            Icon(Icons.local_fire_department, size: 64, color: streakColor),
             const SizedBox(height: 16),
-            Text(
-              '現在の連続記録',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('現在の連続記録', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
               '${statistics.currentStreak}日',
               style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: streakColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: streakColor,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
             if (statistics.lastWakeUpDate != null)
@@ -213,9 +207,9 @@ class _OverviewTab extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -234,10 +228,7 @@ class _OverviewTab extends StatelessWidget {
 
     if (recentRecords.isEmpty) {
       return const Card(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text('まだ記録がありません'),
-        ),
+        child: Padding(padding: EdgeInsets.all(16), child: Text('まだ記録がありません')),
       );
     }
 
@@ -247,10 +238,7 @@ class _OverviewTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '最近の記録',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('最近の記録', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             ...recentRecords.map((record) {
               return Padding(
@@ -258,11 +246,8 @@ class _OverviewTab extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      record.wakeUpSuccess
-                          ? Icons.check_circle
-                          : Icons.cancel,
-                      color:
-                          record.wakeUpSuccess ? Colors.green : Colors.red,
+                      record.wakeUpSuccess ? Icons.check_circle : Icons.cancel,
+                      color: record.wakeUpSuccess ? Colors.green : Colors.red,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -328,9 +313,10 @@ class _AchievementsTab extends StatelessWidget {
           itemBuilder: (context, index) {
             final definition = AchievementDefinition.allDefinitions[index];
             final isUnlocked = unlockedTypes.contains(definition.type);
-            final achievement = isUnlocked
-                ? achievements.firstWhere((a) => a.type == definition.type)
-                : null;
+            final achievement =
+                isUnlocked
+                    ? achievements.firstWhere((a) => a.type == definition.type)
+                    : null;
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
@@ -365,9 +351,10 @@ class _AchievementsTab extends StatelessWidget {
                     ],
                   ],
                 ),
-                trailing: isUnlocked
-                    ? const Icon(Icons.check_circle, color: Colors.green)
-                    : const Icon(Icons.lock, color: Colors.grey),
+                trailing:
+                    isUnlocked
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : const Icon(Icons.lock, color: Colors.grey),
               ),
             );
           },
@@ -414,15 +401,17 @@ class _ChartsTab extends StatelessWidget {
                           children: [
                             Text(
                               '第${week.weekNumber}週',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Text(
                               '${(week.successRate * 100).toStringAsFixed(0)}%',
                               style: TextStyle(
-                                color: week.successRate >= 0.8
-                                    ? Colors.green
-                                    : Colors.orange,
+                                color:
+                                    week.successRate >= 0.8
+                                        ? Colors.green
+                                        : Colors.orange,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

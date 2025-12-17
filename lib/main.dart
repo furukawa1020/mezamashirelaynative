@@ -68,7 +68,9 @@ class MezamashiRelayApp extends StatelessWidget {
         Provider<DeeplinkService>.value(value: deeplinkService),
         Provider<BLEService>.value(value: bleService),
         Provider<AlarmService>.value(value: alarmService),
-        ChangeNotifierProvider<NotificationService>.value(value: notificationService),
+        ChangeNotifierProvider<NotificationService>.value(
+          value: notificationService,
+        ),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(
