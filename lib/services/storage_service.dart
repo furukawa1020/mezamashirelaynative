@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/group.dart';
 import '../models/mission.dart';
 import '../models/session.dart';
@@ -295,12 +297,58 @@ class StorageService {
     await prefs.setString(_sessionsKey, jsonEncode(sessionsJson));
   }
 
-  // 全チE�Eタクリア�E�デバッグ用�E�E
+  // 全データクリア（デバッグ用）
   Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
+
+  // === 画像保存機能 ===
+
+  // 画像を保存してパスを返す
+  Future<String> saveImage(String sourcePath, String userId) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final imagesDir = Directory('${appDir.path}/images/$userId');
+    
+    // ディレクトリがなければ作成
+    if (!await imagesDir.exists()) {
+      await imagesDir.create(recursive: true);
+    }
+
+    // ユニークなファイル名を生成
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final extension = sourcePath.split('.').last;
+    final filename = 'profile_$timestamp.$extension';
+    final targetPath = '${imagesDir.path}/$filename';
+
+    // ファイルをコピー
+    final sourceFile = File(sourcePath);
+    await sourceFile.copy(targetPath);
+
+    return targetPath;
+  }
+
+  // 画像を削除
+  Future<void> deleteImage(String imagePath) async {
+    final file = File(imagePath);
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+
+  // ユーザーの画像パスを保存
+  Future<void> saveUserImagePath(String userId, String imagePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mz_user_image_$userId', imagePath);
+  }
+
+  // ユーザーの画像パスを取得
+  Future<String?> getUserImagePath(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('mz_user_image_$userId');
+  }
 }
+
 
 // Dart 2.x互換用extension
 extension FirstWhereOrNullExtension<E> on Iterable<E> {

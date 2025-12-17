@@ -3,3 +3,8 @@ dist
 .env
 .vscode
 .DS_Store
+
+# Build files
+Makefile
+makefile
+*.make
