@@ -107,23 +107,20 @@ class _RankingScreenState extends State<RankingScreen>
         title: Text('${widget.groupName} ランキング'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: '週間'),
-            Tab(text: '月間'),
-            Tab(text: '全期間'),
-          ],
+          tabs: const [Tab(text: '週間'), Tab(text: '月間'), Tab(text: '全期間')],
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildRankingList(_weeklyRanking, currentUserId),
-                _buildRankingList(_monthlyRanking, currentUserId),
-                _buildRankingList(_allTimeRanking, currentUserId),
-              ],
-            ),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildRankingList(_weeklyRanking, currentUserId),
+                  _buildRankingList(_monthlyRanking, currentUserId),
+                  _buildRankingList(_allTimeRanking, currentUserId),
+                ],
+              ),
     );
   }
 
@@ -170,9 +167,10 @@ class _RankingScreenState extends State<RankingScreen>
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
-        color: isCurrentUser
-            ? Theme.of(context).colorScheme.primaryContainer
-            : null,
+        color:
+            isCurrentUser
+                ? Theme.of(context).colorScheme.primaryContainer
+                : null,
         child: ListTile(
           contentPadding: const EdgeInsets.all(12),
           leading: Stack(
@@ -181,16 +179,17 @@ class _RankingScreenState extends State<RankingScreen>
               CircleAvatar(
                 radius: 28,
                 backgroundColor: rankColor ?? Colors.grey[300],
-                child: rankIcon != null
-                    ? Icon(rankIcon, color: Colors.white, size: 32)
-                    : Text(
-                        '${entry.rank}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                child:
+                    rankIcon != null
+                        ? Icon(rankIcon, color: Colors.white, size: 32)
+                        : Text(
+                          '${entry.rank}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
               ),
             ],
           ),
@@ -207,10 +206,7 @@ class _RankingScreenState extends State<RankingScreen>
               ),
               if (isCurrentUser)
                 Chip(
-                  label: const Text(
-                    'あなた',
-                    style: TextStyle(fontSize: 12),
-                  ),
+                  label: const Text('あなた', style: TextStyle(fontSize: 12)),
                   padding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -218,8 +214,11 @@ class _RankingScreenState extends State<RankingScreen>
           ),
           subtitle: Row(
             children: [
-              Icon(Icons.local_fire_department,
-                  size: 16, color: Colors.orange[700]),
+              Icon(
+                Icons.local_fire_department,
+                size: 16,
+                color: Colors.orange[700],
+              ),
               const SizedBox(width: 4),
               Text('${entry.streak}日連続'),
               const SizedBox(width: 16),
@@ -228,13 +227,10 @@ class _RankingScreenState extends State<RankingScreen>
               Text('${entry.score}pt'),
             ],
           ),
-          trailing: entry.rank <= 3
-              ? Icon(
-                  Icons.trending_up,
-                  color: rankColor,
-                  size: 32,
-                )
-              : null,
+          trailing:
+              entry.rank <= 3
+                  ? Icon(Icons.trending_up, color: rankColor, size: 32)
+                  : null,
         ),
       ),
     );

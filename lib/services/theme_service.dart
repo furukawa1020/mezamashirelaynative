@@ -15,7 +15,8 @@ class ThemeService extends ChangeNotifier {
 
   // 現在のThemeDataを取得
   ThemeData getTheme(Brightness systemBrightness) {
-    final isDark = _themeMode == AppThemeMode.dark ||
+    final isDark =
+        _themeMode == AppThemeMode.dark ||
         (_themeMode == AppThemeMode.system &&
             systemBrightness == Brightness.dark);
 

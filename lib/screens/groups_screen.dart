@@ -338,10 +338,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => RankingScreen(
-                                    groupId: group.groupId,
-                                    groupName: group.name,
-                                  ),
+                                  builder:
+                                      (context) => RankingScreen(
+                                        groupId: group.groupId,
+                                        groupName: group.name,
+                                      ),
                                 ),
                               );
                             },
@@ -353,10 +354,11 @@ class _GroupsScreenState extends State<GroupsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => GroupChatScreen(
-                                    groupId: group.groupId,
-                                    groupName: group.name,
-                                  ),
+                                  builder:
+                                      (context) => GroupChatScreen(
+                                        groupId: group.groupId,
+                                        groupName: group.name,
+                                      ),
                                 ),
                               );
                             },

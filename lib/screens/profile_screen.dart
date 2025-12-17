@@ -82,68 +82,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showThemeSettings() {
     final themeService = context.read<ThemeService>();
-    
+
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'テーマ設定',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'テーマ設定',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '明るさ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children:
+                      AppThemeMode.values.map((mode) {
+                        final isSelected = themeService.themeMode == mode;
+                        return ChoiceChip(
+                          label: Text(themeService.getThemeModeName(mode)),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            themeService.setThemeMode(mode);
+                            Navigator.pop(context);
+                          },
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'カラーテーマ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children:
+                      AppColorTheme.values.map((colorTheme) {
+                        final isSelected =
+                            themeService.colorTheme == colorTheme;
+                        return ChoiceChip(
+                          label: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                size: 16,
+                                color: themeService.getColorThemeColor(
+                                  colorTheme,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(themeService.getColorThemeName(colorTheme)),
+                            ],
+                          ),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            themeService.setColorTheme(colorTheme);
+                            Navigator.pop(context);
+                          },
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
-            const SizedBox(height: 16),
-            const Text('明るさ', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: AppThemeMode.values.map((mode) {
-                final isSelected = themeService.themeMode == mode;
-                return ChoiceChip(
-                  label: Text(themeService.getThemeModeName(mode)),
-                  selected: isSelected,
-                  onSelected: (_) {
-                    themeService.setThemeMode(mode);
-                    Navigator.pop(context);
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            const Text('カラーテーマ', style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: AppColorTheme.values.map((colorTheme) {
-                final isSelected = themeService.colorTheme == colorTheme;
-                return ChoiceChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.circle,
-                        size: 16,
-                        color: themeService.getColorThemeColor(colorTheme),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(themeService.getColorThemeName(colorTheme)),
-                    ],
-                  ),
-                  selected: isSelected,
-                  onSelected: (_) {
-                    themeService.setColorTheme(colorTheme);
-                    Navigator.pop(context);
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
