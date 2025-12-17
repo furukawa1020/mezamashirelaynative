@@ -8,3 +8,6 @@ dist
 Makefile
 makefile
 *.make
+CMakeCache.txt
+CMakeFiles/
+.cmake/
