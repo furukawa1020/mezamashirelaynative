@@ -111,68 +111,73 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: Consumer<ChatService>(
-                    builder: (context, chatService, _) {
-                      final messages =
-                          chatService.getMessages(widget.group.groupId);
-
-                      if (messages.isEmpty) {
-                        return const Center(
-                          child: Text('まだメッセージがありません\n最初のメッセージを送信しましょう！'),
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                children: [
+                  Expanded(
+                    child: Consumer<ChatService>(
+                      builder: (context, chatService, _) {
+                        final messages = chatService.getMessages(
+                          widget.group.groupId,
                         );
-                      }
 
-                      return ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-                          final isCurrentUser = Provider.of<AuthService>(
-                            context,
-                            listen: false,
-                          ).currentUser?.userId == message.userId;
-
-                          return _MessageBubble(
-                            message: message,
-                            isCurrentUser: isCurrentUser,
-                            onCheer: () => _sendCheer(
-                              message.userId,
-                              message.nickname ?? 'ユーザー',
-                            ),
-                            onReaction: (emoji) async {
-                              final auth = Provider.of<AuthService>(
-                                context,
-                                listen: false,
-                              );
-                              final chatService = Provider.of<ChatService>(
-                                context,
-                                listen: false,
-                              );
-
-                              if (auth.currentUser != null) {
-                                await chatService.addReaction(
-                                  widget.group.groupId,
-                                  message.messageId,
-                                  auth.currentUser!.userId,
-                                  emoji,
-                                );
-                              }
-                            },
+                        if (messages.isEmpty) {
+                          return const Center(
+                            child: Text('まだメッセージがありません\n最初のメッセージを送信しましょう！'),
                           );
-                        },
-                      );
-                    },
+                        }
+
+                        return ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.all(16),
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final message = messages[index];
+                            final isCurrentUser =
+                                Provider.of<AuthService>(
+                                  context,
+                                  listen: false,
+                                ).currentUser?.userId ==
+                                message.userId;
+
+                            return _MessageBubble(
+                              message: message,
+                              isCurrentUser: isCurrentUser,
+                              onCheer:
+                                  () => _sendCheer(
+                                    message.userId,
+                                    message.nickname ?? 'ユーザー',
+                                  ),
+                              onReaction: (emoji) async {
+                                final auth = Provider.of<AuthService>(
+                                  context,
+                                  listen: false,
+                                );
+                                final chatService = Provider.of<ChatService>(
+                                  context,
+                                  listen: false,
+                                );
+
+                                if (auth.currentUser != null) {
+                                  await chatService.addReaction(
+                                    widget.group.groupId,
+                                    message.messageId,
+                                    auth.currentUser!.userId,
+                                    emoji,
+                                  );
+                                }
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-                _buildInputArea(),
-              ],
-            ),
+                  _buildInputArea(),
+                ],
+              ),
     );
   }
 
@@ -264,9 +269,10 @@ class _MessageBubble extends StatelessWidget {
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment: isCurrentUser
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isCurrentUser
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
               children: [
                 if (!isCurrentUser && message.nickname != null)
                   Padding(
@@ -361,19 +367,20 @@ class _MessageBubble extends StatelessWidget {
 
     return Wrap(
       spacing: 4,
-      children: reactionCounts.entries.map((entry) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Text(
-            '${entry.key} ${entry.value}',
-            style: const TextStyle(fontSize: 12),
-          ),
-        );
-      }).toList(),
+      children:
+          reactionCounts.entries.map((entry) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${entry.key} ${entry.value}',
+                style: const TextStyle(fontSize: 12),
+              ),
+            );
+          }).toList(),
     );
   }
 

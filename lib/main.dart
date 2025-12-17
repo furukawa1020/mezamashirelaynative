@@ -8,6 +8,7 @@ import 'services/session_service.dart';
 import 'services/alarm_service.dart';
 import 'services/notification_service.dart';
 import 'services/statistics_service.dart';
+import 'services/chat_service.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -20,6 +21,7 @@ void main() async {
   final alarmService = AlarmService();
   final notificationService = NotificationService();
   final statisticsService = StatisticsService();
+  final chatService = ChatService();
   final sessionService = SessionService(storageService, bleService);
 
   await authService.initialize();
