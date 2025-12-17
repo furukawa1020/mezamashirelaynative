@@ -20,7 +20,7 @@ class ChatService extends ChangeNotifier {
   Future<void> loadMessages(String groupId) async {
     final prefs = await SharedPreferences.getInstance();
     final messagesStr = prefs.getString('$_messagesKeyPrefix\_$groupId');
-    
+
     if (messagesStr != null) {
       final List<dynamic> messagesJson = jsonDecode(messagesStr);
       _messagesByGroup[groupId] =
@@ -62,10 +62,7 @@ class ChatService extends ChangeNotifier {
   }
 
   // システムメッセージを送信（メンバー参加等）
-  Future<void> sendSystemMessage(
-    String groupId,
-    String content,
-  ) async {
+  Future<void> sendSystemMessage(String groupId, String content) async {
     await sendMessage(
       groupId: groupId,
       userId: 'system',
@@ -132,8 +129,7 @@ class ChatService extends ChangeNotifier {
     final messages = _messagesByGroup[groupId];
     if (messages == null) return;
 
-    final messageIndex =
-        messages.indexWhere((m) => m.messageId == messageId);
+    final messageIndex = messages.indexWhere((m) => m.messageId == messageId);
     if (messageIndex == -1) return;
 
     final message = messages[messageIndex];
