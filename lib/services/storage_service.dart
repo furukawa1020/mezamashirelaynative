@@ -6,8 +6,9 @@ import '../models/group.dart';
 import '../models/mission.dart';
 import '../models/session.dart';
 import '../models/user.dart';
+import 'api_service.dart';
 
-// ローカルストレージサービス�E�EharedPreferences wrapper�E�E
+// ストレージサービス - API連携 + ローカルキャッシュ
 class StorageService {
   static const String _groupsKey = 'mz_groups';
   static const String _missionsKey = 'mz_missions';
@@ -20,33 +21,55 @@ class StorageService {
 
   // === グループ操佁E===
 
-  // グループ作�E
+  // グループ作成（API連携）
   Future<Group> createGroup({
     required String name,
     required GroupMode mode,
     required String ownerId,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      // API呼び出し
+      final response = await ApiService.createGroup(
+        name: name,
+        ownerId: ownerId,
+        mode: mode.index,
+      );
 
-    final group = Group(
-      groupId: _generateId('g'),
-      name: name,
-      inviteCode: _generateInviteCode(),
-      mode: mode,
-      ownerId: ownerId,
-      memberIds: [ownerId],
-      createdAt: DateTime.now(),
-    );
+      final groupData = response['group'];
+      final group = Group(
+        groupId: groupData['group_id'],
+        name: groupData['name'],
+        inviteCode: groupData['invite_code'],
+        mode: mode,
+        ownerId: groupData['owner_id'],
+        memberIds: [ownerId],
+        createdAt: DateTime.parse(groupData['created_at']),
+      );
 
-    // 既存グループ取征E
-    final groups = await getGroups(ownerId);
-    groups.add(group);
+      // ローカルキャッシュに保存
+      await _cacheGroup(group);
 
-    // 保孁E
-    final groupsJson = groups.map((g) => g.toJson()).toList();
-    await prefs.setString(_groupsKey, jsonEncode(groupsJson));
+      return group;
+    } catch (e) {
+      // API失敗時はローカルのみで作成
+      final prefs = await SharedPreferences.getInstance();
+      final group = Group(
+        groupId: _generateId('g'),
+        name: name,
+        inviteCode: _generateInviteCode(),
+        mode: mode,
+        ownerId: ownerId,
+        memberIds: [ownerId],
+        createdAt: DateTime.now(),
+      );
 
-    return group;
+      final groups = await getGroups(ownerId);
+      groups.add(group);
+      final groupsJson = groups.map((g) => g.toJson()).toList();
+      await prefs.setString(_groupsKey, jsonEncode(groupsJson));
+
+      return group;
+    }
   }
 
   // 招征E��ードでグループ検索
@@ -61,8 +84,35 @@ class StorageService {
     return groups.where((g) => g.inviteCode == inviteCode).firstOrNull;
   }
 
-  // グループに参加
-  Future<void> joinGroup(String groupId, String userId) async {
+  // グループに参加（招待コード経由、API連携）
+  Future<void> joinGroupByInviteCode(String inviteCode, String userId) async {
+    try {
+      // API呼び出し
+      final response = await ApiService.joinGroup(
+        inviteCode: inviteCode,
+        userId: userId,
+      );
+
+      // 成功時、グループデータをローカルにキャッシュ
+      final groupData = response['group'];
+      final group = Group(
+        groupId: groupData['group_id'],
+        name: groupData['name'],
+        inviteCode: groupData['invite_code'],
+        mode: GroupMode.values[groupData['mode'] ?? 0],
+        ownerId: groupData['owner_id'],
+        memberIds: [userId], // メンバー一覧は別途取得
+        createdAt: DateTime.parse(groupData['created_at']),
+      );
+      await _cacheGroup(group);
+    } catch (e) {
+      // API失敗時はローカルで処理
+      await _joinGroupLocal(inviteCode, userId);
+    }
+  }
+
+  // ローカルでのグループ参加（フォールバック）
+  Future<void> _joinGroupLocal(String inviteCode, String userId) async {
     final prefs = await SharedPreferences.getInstance();
     final groupsStr = prefs.getString(_groupsKey);
     if (groupsStr == null) return;
@@ -70,7 +120,7 @@ class StorageService {
     final List<dynamic> groupsJson = jsonDecode(groupsStr);
     final groups = groupsJson.map((j) => Group.fromJson(j)).toList();
 
-    final groupIndex = groups.indexWhere((g) => g.groupId == groupId);
+    final groupIndex = groups.indexWhere((g) => g.inviteCode == inviteCode);
     if (groupIndex == -1) return;
 
     final group = groups[groupIndex];
@@ -89,6 +139,29 @@ class StorageService {
       final groupsJsonUpdated = groups.map((g) => g.toJson()).toList();
       await prefs.setString(_groupsKey, jsonEncode(groupsJsonUpdated));
     }
+  }
+
+  // グループキャッシュ保存
+  Future<void> _cacheGroup(Group group) async {
+    final prefs = await SharedPreferences.getInstance();
+    final groupsStr = prefs.getString(_groupsKey);
+    List<Group> groups = [];
+
+    if (groupsStr != null) {
+      final List<dynamic> groupsJson = jsonDecode(groupsStr);
+      groups = groupsJson.map((j) => Group.fromJson(j)).toList();
+    }
+
+    // 既存グループを更新または追加
+    final index = groups.indexWhere((g) => g.groupId == group.groupId);
+    if (index != -1) {
+      groups[index] = group;
+    } else {
+      groups.add(group);
+    }
+
+    final groupsJson = groups.map((g) => g.toJson()).toList();
+    await prefs.setString(_groupsKey, jsonEncode(groupsJson));
   }
 
   // グループ取得

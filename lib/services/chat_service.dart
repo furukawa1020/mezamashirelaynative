@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/chat_message.dart';
+import 'api_service.dart';
 
-// チャットサービス
+// チャットサービス - API連携 + ローカルキャッシュ
 class ChatService extends ChangeNotifier {
   static const String _messagesKeyPrefix = 'mz_chat_messages';
   final Uuid _uuid = const Uuid();
@@ -16,21 +17,61 @@ class ChatService extends ChangeNotifier {
     return _messagesByGroup[groupId] ?? [];
   }
 
-  // メッセージ読み込み
+  // メッセージ読み込み（API連携）
   Future<void> loadMessages(String groupId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final messagesStr = prefs.getString('$_messagesKeyPrefix\_$groupId');
-
-    if (messagesStr != null) {
-      final List<dynamic> messagesJson = jsonDecode(messagesStr);
-      _messagesByGroup[groupId] =
-          messagesJson.map((j) => ChatMessage.fromJson(j)).toList()
-            ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+    try {
+      // APIからメッセージ取得
+      final messages = await ApiService.getMessages(groupId: groupId);
+      
+      _messagesByGroup[groupId] = messages.map((m) => ChatMessage(
+        messageId: m['message_id'],
+        groupId: groupId,
+        userId: m['sender_user_id'],
+        nickname: m['sender_user_id'], // TODO: ユーザー情報から取得
+        content: m['content'],
+        sentAt: DateTime.parse(m['created_at']),
+        type: _parseMessageType(m['message_type']),
+        reactions: _parseReactions(m['reactions']),
+      )).toList()
+        ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+      
+      // ローカルキャッシュに保存
+      await _saveMessages(groupId);
       notifyListeners();
+    } catch (e) {
+      // API失敗時はローカルから読み込み
+      final prefs = await SharedPreferences.getInstance();
+      final messagesStr = prefs.getString('$_messagesKeyPrefix\_$groupId');
+
+      if (messagesStr != null) {
+        final List<dynamic> messagesJson = jsonDecode(messagesStr);
+        _messagesByGroup[groupId] =
+            messagesJson.map((j) => ChatMessage.fromJson(j)).toList()
+              ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+        notifyListeners();
+      }
     }
   }
 
-  // メッセージ送信
+  ChatMessageType _parseMessageType(String? type) {
+    switch (type) {
+      case 'system':
+        return ChatMessageType.system;
+      case 'wakeup':
+        return ChatMessageType.wakeup;
+      case 'image':
+        return ChatMessageType.image;
+      default:
+        return ChatMessageType.text;
+    }
+  }
+
+  Map<String, int> _parseReactions(Map<String, dynamic>? reactions) {
+    if (reactions == null) return {};
+    return reactions.map((key, value) => MapEntry(key, value as int));
+  }
+
+  // メッセージ送信（API連携）
   Future<void> sendMessage({
     required String groupId,
     required String userId,
@@ -39,26 +80,57 @@ class ChatService extends ChangeNotifier {
     ChatMessageType type = ChatMessageType.text,
     Map<String, dynamic>? metadata,
   }) async {
-    final message = ChatMessage(
-      messageId: _uuid.v4(),
-      groupId: groupId,
-      userId: userId,
-      nickname: nickname,
-      content: content,
-      sentAt: DateTime.now(),
-      type: type,
-      metadata: metadata,
-    );
+    try {
+      // API呼び出し
+      final response = await ApiService.createMessage(
+        groupId: groupId,
+        content: content,
+        senderUserId: userId,
+        messageType: type.name,
+      );
 
-    // メッセージをリストに追加
-    if (!_messagesByGroup.containsKey(groupId)) {
-      _messagesByGroup[groupId] = [];
+      final messageData = response['message'];
+      final message = ChatMessage(
+        messageId: messageData['message_id'],
+        groupId: groupId,
+        userId: userId,
+        nickname: nickname,
+        content: content,
+        sentAt: DateTime.parse(messageData['created_at']),
+        type: type,
+        metadata: metadata,
+      );
+
+      // メッセージをリストに追加
+      if (!_messagesByGroup.containsKey(groupId)) {
+        _messagesByGroup[groupId] = [];
+      }
+      _messagesByGroup[groupId]!.add(message);
+
+      // ローカルキャッシュに保存
+      await _saveMessages(groupId);
+      notifyListeners();
+    } catch (e) {
+      // API失敗時はローカルのみで処理
+      final message = ChatMessage(
+        messageId: _uuid.v4(),
+        groupId: groupId,
+        userId: userId,
+        nickname: nickname,
+        content: content,
+        sentAt: DateTime.now(),
+        type: type,
+        metadata: metadata,
+      );
+
+      if (!_messagesByGroup.containsKey(groupId)) {
+        _messagesByGroup[groupId] = [];
+      }
+      _messagesByGroup[groupId]!.add(message);
+
+      await _saveMessages(groupId);
+      notifyListeners();
     }
-    _messagesByGroup[groupId]!.add(message);
-
-    // 保存
-    await _saveMessages(groupId);
-    notifyListeners();
   }
 
   // システムメッセージを送信（メンバー参加等）
