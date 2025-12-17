@@ -19,7 +19,7 @@ class StatisticsService extends ChangeNotifier {
   // 統計データを読み込み
   Future<void> loadStatistics(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // 統計データ
     final statsStr = prefs.getString('$_statisticsKey\_$userId');
     if (statsStr != null) {
@@ -67,7 +67,10 @@ class StatisticsService extends ChangeNotifier {
         wakeUpSuccess: existingRecord.wakeUpSuccess || success,
         missionsCompleted: existingRecord.missionsCompleted + (success ? 1 : 0),
         missionsAttempted: existingRecord.missionsAttempted + 1,
-        wakeUpTime: success ? Duration(hours: now.hour, minutes: now.minute) : existingRecord.wakeUpTime,
+        wakeUpTime:
+            success
+                ? Duration(hours: now.hour, minutes: now.minute)
+                : existingRecord.wakeUpTime,
       );
       _statistics!.dailyRecords[existingRecordIndex] = updatedRecord;
     } else {
@@ -78,7 +81,8 @@ class StatisticsService extends ChangeNotifier {
           wakeUpSuccess: success,
           missionsCompleted: success ? 1 : 0,
           missionsAttempted: 1,
-          wakeUpTime: success ? Duration(hours: now.hour, minutes: now.minute) : null,
+          wakeUpTime:
+              success ? Duration(hours: now.hour, minutes: now.minute) : null,
         ),
       );
     }
@@ -102,18 +106,24 @@ class StatisticsService extends ChangeNotifier {
     _statistics!.dailyRecords.sort((a, b) => a.date.compareTo(b.date));
 
     // 総起床回数
-    final totalWakeUps = _statistics!.dailyRecords
-        .where((record) => record.wakeUpSuccess)
-        .length;
+    final totalWakeUps =
+        _statistics!.dailyRecords
+            .where((record) => record.wakeUpSuccess)
+            .length;
 
     // 総ミッション数と完了数
-    final totalMissions =
-        _statistics!.dailyRecords.fold(0, (sum, r) => sum + r.missionsAttempted);
-    final completedMissions =
-        _statistics!.dailyRecords.fold(0, (sum, r) => sum + r.missionsCompleted);
+    final totalMissions = _statistics!.dailyRecords.fold(
+      0,
+      (sum, r) => sum + r.missionsAttempted,
+    );
+    final completedMissions = _statistics!.dailyRecords.fold(
+      0,
+      (sum, r) => sum + r.missionsCompleted,
+    );
 
     // 成功率
-    final successRate = totalMissions > 0 ? completedMissions / totalMissions : 0.0;
+    final successRate =
+        totalMissions > 0 ? completedMissions / totalMissions : 0.0;
 
     // 連続記録を計算
     int currentStreak = 0;
@@ -125,13 +135,13 @@ class StatisticsService extends ChangeNotifier {
 
     for (int i = _statistics!.dailyRecords.length - 1; i >= 0; i--) {
       final record = _statistics!.dailyRecords[i];
-      
+
       if (record.wakeUpSuccess) {
         tempStreak++;
         if (tempStreak > longestStreak) {
           longestStreak = tempStreak;
         }
-        
+
         // 最新の連続記録を計算
         final daysDiff = today.difference(record.date).inDays;
         if (daysDiff == currentStreak) {
@@ -181,89 +191,106 @@ class StatisticsService extends ChangeNotifier {
     // 初めての起床
     if (_statistics!.totalWakeUps >= 1 &&
         !unlockedTypes.contains(AchievementType.firstWakeUp)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.firstWakeUp,
-        _statistics!.totalWakeUps,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.firstWakeUp,
+          _statistics!.totalWakeUps,
+        ),
+      );
     }
 
     // 連続記録
     if (_statistics!.currentStreak >= 3 &&
         !unlockedTypes.contains(AchievementType.streak3)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.streak3,
-        _statistics!.currentStreak,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.streak3,
+          _statistics!.currentStreak,
+        ),
+      );
     }
 
     if (_statistics!.currentStreak >= 7 &&
         !unlockedTypes.contains(AchievementType.streak7)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.streak7,
-        _statistics!.currentStreak,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.streak7,
+          _statistics!.currentStreak,
+        ),
+      );
     }
 
     if (_statistics!.currentStreak >= 30 &&
         !unlockedTypes.contains(AchievementType.streak30)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.streak30,
-        _statistics!.currentStreak,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.streak30,
+          _statistics!.currentStreak,
+        ),
+      );
     }
 
     // 累計起床回数
     if (_statistics!.totalWakeUps >= 50 &&
         !unlockedTypes.contains(AchievementType.totalWakeUps50)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.totalWakeUps50,
-        _statistics!.totalWakeUps,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.totalWakeUps50,
+          _statistics!.totalWakeUps,
+        ),
+      );
     }
 
     if (_statistics!.totalWakeUps >= 100 &&
         !unlockedTypes.contains(AchievementType.totalWakeUps100)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.totalWakeUps100,
-        _statistics!.totalWakeUps,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.totalWakeUps100,
+          _statistics!.totalWakeUps,
+        ),
+      );
     }
 
     // ミッション達成数
     if (_statistics!.completedMissions >= 50 &&
         !unlockedTypes.contains(AchievementType.missionMaster)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.missionMaster,
-        _statistics!.completedMissions,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.missionMaster,
+          _statistics!.completedMissions,
+        ),
+      );
     }
 
     // 早起き（6時前）
     final todayRecord = _statistics!.dailyRecords.lastWhere(
       (r) => r.isSameDate(DateTime.now()),
-      orElse: () => DailyRecord(
-        date: DateTime.now(),
-        wakeUpSuccess: false,
-        missionsCompleted: 0,
-        missionsAttempted: 0,
-      ),
+      orElse:
+          () => DailyRecord(
+            date: DateTime.now(),
+            wakeUpSuccess: false,
+            missionsCompleted: 0,
+            missionsAttempted: 0,
+          ),
     );
 
     if (todayRecord.wakeUpTime != null &&
         todayRecord.wakeUpTime!.inMinutes < 360 &&
         !unlockedTypes.contains(AchievementType.earlyBird)) {
-      newAchievements.add(_createAchievement(
-        userId,
-        AchievementType.earlyBird,
-        todayRecord.wakeUpTime!.inMinutes,
-      ));
+      newAchievements.add(
+        _createAchievement(
+          userId,
+          AchievementType.earlyBird,
+          todayRecord.wakeUpTime!.inMinutes,
+        ),
+      );
     }
 
     // 新規実績を追加
@@ -322,31 +349,37 @@ class StatisticsService extends ChangeNotifier {
       final weekStart = now.subtract(Duration(days: now.weekday - 1 + i * 7));
       final weekEnd = weekStart.add(const Duration(days: 6));
 
-      final weekRecords = _statistics!.dailyRecords.where((record) {
-        return record.date.isAfter(weekStart.subtract(const Duration(days: 1))) &&
-            record.date.isBefore(weekEnd.add(const Duration(days: 1)));
-      }).toList();
+      final weekRecords =
+          _statistics!.dailyRecords.where((record) {
+            return record.date.isAfter(
+                  weekStart.subtract(const Duration(days: 1)),
+                ) &&
+                record.date.isBefore(weekEnd.add(const Duration(days: 1)));
+          }).toList();
 
-      final successDays =
-          weekRecords.where((r) => r.wakeUpSuccess).length;
+      final successDays = weekRecords.where((r) => r.wakeUpSuccess).length;
       final totalDays = weekRecords.length;
-      
-      final wakeUpTimes = weekRecords
-          .where((r) => r.wakeUpTime != null)
-          .map((r) => r.wakeUpTime!.inMinutes)
-          .toList();
-      
-      final averageWakeUpTime = wakeUpTimes.isNotEmpty
-          ? wakeUpTimes.reduce((a, b) => a + b) / wakeUpTimes.length
-          : 0.0;
 
-      weeklyStats.add(WeeklyStats(
-        weekNumber: _getWeekNumber(weekStart),
-        year: weekStart.year,
-        successDays: successDays,
-        totalDays: totalDays,
-        averageWakeUpTime: averageWakeUpTime,
-      ));
+      final wakeUpTimes =
+          weekRecords
+              .where((r) => r.wakeUpTime != null)
+              .map((r) => r.wakeUpTime!.inMinutes)
+              .toList();
+
+      final averageWakeUpTime =
+          wakeUpTimes.isNotEmpty
+              ? wakeUpTimes.reduce((a, b) => a + b) / wakeUpTimes.length
+              : 0.0;
+
+      weeklyStats.add(
+        WeeklyStats(
+          weekNumber: _getWeekNumber(weekStart),
+          year: weekStart.year,
+          successDays: successDays,
+          totalDays: totalDays,
+          averageWakeUpTime: averageWakeUpTime,
+        ),
+      );
     }
 
     return weeklyStats.reversed.toList();
