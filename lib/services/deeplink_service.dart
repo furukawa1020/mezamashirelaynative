@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import 'storage_service.dart';
@@ -10,6 +10,7 @@ import 'auth_service.dart';
 /// URLスキーマ: mezamashirelay://invite/{inviteCode}
 /// 例: mezamashirelay://invite/ABC123
 class DeeplinkService {
+  final _appLinks = AppLinks();
   StreamSubscription? _linkSubscription;
   BuildContext? _context;
   bool _initialized = false;
@@ -23,11 +24,9 @@ class DeeplinkService {
     _handleInitialLink();
 
     // アプリ実行中のリンクを監視
-    _linkSubscription = uriLinkStream.listen(
-      (Uri? uri) {
-        if (uri != null) {
-          _handleDeeplink(uri);
-        }
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+      (Uri uri) {
+        _handleDeeplink(uri);
       },
       onError: (err) {
         debugPrint('Deeplink error: $err');
@@ -43,7 +42,7 @@ class DeeplinkService {
   /// 初期リンク処理（コールドスタート時）
   Future<void> _handleInitialLink() async {
     try {
-      final initialUri = await getInitialUri();
+      final initialUri = await _appLinks.getInitialLink();
       if (initialUri != null) {
         _handleDeeplink(initialUri);
       }
