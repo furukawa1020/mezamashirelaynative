@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../models/group.dart';
+import 'group_chat_screen.dart';
 
 // グループ管理画面
 class GroupsScreen extends StatefulWidget {
@@ -327,9 +328,30 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       subtitle: Text(
                         '${group.memberIds.length}人 · ${group.mode == GroupMode.race ? "競争モード" : "全員モード"}',
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.share),
-                        onPressed: () => _showShareDialog(group),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.chat_bubble_outline),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GroupChatScreen(
+                                    groupId: group.groupId,
+                                    groupName: group.name,
+                                  ),
+                                ),
+                              );
+                            },
+                            tooltip: 'チャット',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.share),
+                            onPressed: () => _showShareDialog(group),
+                            tooltip: '共有',
+                          ),
+                        ],
                       ),
                     ),
                   );
