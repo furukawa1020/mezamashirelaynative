@@ -24,38 +24,44 @@ class NotificationsScreen extends StatelessWidget {
                   await notificationService.clearAll();
                 }
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'markAllRead',
-                  child: Text('すべて既読にする'),
-                ),
-                const PopupMenuItem(
-                  value: 'clearAll',
-                  child: Text('すべて削除'),
-                ),
-              ],
+              itemBuilder:
+                  (context) => [
+                    const PopupMenuItem(
+                      value: 'markAllRead',
+                      child: Text('すべて既読にする'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'clearAll',
+                      child: Text('すべて削除'),
+                    ),
+                  ],
             ),
         ],
       ),
-      body: notifications.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.notifications_none, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('通知はありません', style: TextStyle(color: Colors.grey)),
-                ],
+      body:
+          notifications.isEmpty
+              ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_none,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 16),
+                    Text('通知はありません', style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
+              )
+              : ListView.separated(
+                itemCount: notifications.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return _NotificationTile(notification: notification);
+                },
               ),
-            )
-          : ListView.separated(
-              itemCount: notifications.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return _NotificationTile(notification: notification);
-              },
-            ),
     );
   }
 }
@@ -134,7 +140,8 @@ class _NotificationTile extends StatelessWidget {
         title: Text(
           notification.title,
           style: TextStyle(
-            fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+            fontWeight:
+                notification.isRead ? FontWeight.normal : FontWeight.bold,
           ),
         ),
         subtitle: Text(notification.message),
@@ -142,10 +149,7 @@ class _NotificationTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              _getTimeAgo(),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(_getTimeAgo(), style: Theme.of(context).textTheme.bodySmall),
             if (!notification.isRead)
               Container(
                 margin: const EdgeInsets.only(top: 4),

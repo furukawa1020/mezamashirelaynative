@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -14,9 +15,49 @@ class _NotificationSettingsScreenState
   bool _groupInvitations = true;
   bool _achievementNotifications = true;
   bool _bleConnectionAlerts = true;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _sessionReminders = prefs.getBool('notif_session_reminders') ?? true;
+      _groupInvitations = prefs.getBool('notif_group_invitations') ?? true;
+      _achievementNotifications = prefs.getBool('notif_achievements') ?? true;
+      _bleConnectionAlerts = prefs.getBool('notif_ble_alerts') ?? true;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notif_session_reminders', _sessionReminders);
+    await prefs.setBool('notif_group_invitations', _groupInvitations);
+    await prefs.setBool('notif_achievements', _achievementNotifications);
+    await prefs.setBool('notif_ble_alerts', _bleConnectionAlerts);
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('通知設定を保存しました')));
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('通知設定')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('通知設定')),
       body: ListView(
@@ -61,15 +102,23 @@ class _NotificationSettingsScreenState
             },
           ),
           const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'その他',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('通知について'),
+            subtitle: const Text('ローカル通知のみ使用しています'),
+          ),
+          const Divider(),
           Padding(
             padding: const EdgeInsets.all(16),
             child: FilledButton(
-              onPressed: () {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('通知設定を保存しました')));
-                Navigator.of(context).pop();
-              },
+              onPressed: _saveSettings,
               child: const Text('保存'),
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import '../models/group.dart';
 import '../models/mission.dart';
 import '../models/session.dart';
+import '../models/user.dart';
 
 // ローカルストレージサービス�E�EharedPreferences wrapper�E�E
 class StorageService {
@@ -309,7 +310,7 @@ class StorageService {
   Future<String> saveImage(String sourcePath, String userId) async {
     final appDir = await getApplicationDocumentsDirectory();
     final imagesDir = Directory('${appDir.path}/images/$userId');
-    
+
     // ディレクトリがなければ作成
     if (!await imagesDir.exists()) {
       await imagesDir.create(recursive: true);
@@ -347,8 +348,43 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('mz_user_image_$userId');
   }
-}
 
+  // === ユーザー情報キャッシュ ===
+
+  // ユーザー情報を保存（キャッシュ）
+  Future<void> cacheUserInfo(AppUser user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      'mz_cached_user_${user.userId}',
+      jsonEncode(user.toJson()),
+    );
+  }
+
+  // ユーザー情報を取得（キャッシュから）
+  Future<AppUser?> getCachedUserInfo(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userStr = prefs.getString('mz_cached_user_$userId');
+    if (userStr == null) return null;
+
+    try {
+      final userJson = jsonDecode(userStr);
+      return AppUser.fromJson(userJson);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // 複数ユーザー情報を一括保存
+  Future<void> cacheMultipleUsers(List<AppUser> users) async {
+    final prefs = await SharedPreferences.getInstance();
+    for (final user in users) {
+      await prefs.setString(
+        'mz_cached_user_${user.userId}',
+        jsonEncode(user.toJson()),
+      );
+    }
+  }
+}
 
 // Dart 2.x互換用extension
 extension FirstWhereOrNullExtension<E> on Iterable<E> {

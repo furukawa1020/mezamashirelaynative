@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../models/user.dart';
+import 'storage_service.dart';
 
 // 匿名認証サービス（デバイスID強化版）
 class AuthService {
@@ -113,14 +114,38 @@ class AuthService {
       return _currentUser;
     }
 
-    // 現状は他ユーザーの情報は保存していないので、
-    // 簡易的にユーザーIDからダミー情報を返す
-    return AppUser(
+    // StorageServiceからキャッシュを取得
+    final storage = StorageService();
+    final cachedUser = await storage.getCachedUserInfo(userId);
+    if (cachedUser != null) {
+      return cachedUser;
+    }
+
+    // キャッシュにない場合は、グループやセッションから推測して生成
+    // 実際のアプリではサーバーからフェッチする
+    final generatedUser = AppUser(
       userId: userId,
       nickname: 'ユーザー${userId.substring(0, 6)}',
       createdAt: DateTime.now(),
       lastActiveAt: DateTime.now(),
     );
+
+    // 生成したユーザー情報をキャッシュに保存
+    await storage.cacheUserInfo(generatedUser);
+
+    return generatedUser;
+  }
+
+  // 複数ユーザー情報を取得
+  Future<Map<String, AppUser>> getUsers(List<String> userIds) async {
+    final users = <String, AppUser>{};
+    for (final userId in userIds) {
+      final user = await getUser(userId);
+      if (user != null) {
+        users[userId] = user;
+      }
+    }
+    return users;
   }
 
   // アカウントリセット（デバッグ用）

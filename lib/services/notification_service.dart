@@ -12,8 +12,7 @@ class NotificationService extends ChangeNotifier {
   List<AppNotification> _notifications = [];
 
   List<AppNotification> get notifications => _notifications;
-  int get unreadCount =>
-      _notifications.where((n) => !n.isRead).length;
+  int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
   NotificationService() {
     _loadNotifications();
@@ -26,10 +25,9 @@ class NotificationService extends ChangeNotifier {
     if (notificationsStr == null) return;
 
     final List<dynamic> notificationsJson = jsonDecode(notificationsStr);
-    _notifications = notificationsJson
-        .map((j) => AppNotification.fromJson(j))
-        .toList()
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    _notifications =
+        notificationsJson.map((j) => AppNotification.fromJson(j)).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     notifyListeners();
   }
 
@@ -65,8 +63,9 @@ class NotificationService extends ChangeNotifier {
 
   // 通知を既読にする
   Future<void> markAsRead(String notificationId) async {
-    final index =
-        _notifications.indexWhere((n) => n.notificationId == notificationId);
+    final index = _notifications.indexWhere(
+      (n) => n.notificationId == notificationId,
+    );
     if (index == -1) return;
 
     _notifications[index] = _notifications[index].copyWith(isRead: true);
@@ -76,9 +75,8 @@ class NotificationService extends ChangeNotifier {
 
   // すべて既読にする
   Future<void> markAllAsRead() async {
-    _notifications = _notifications
-        .map((n) => n.copyWith(isRead: true))
-        .toList();
+    _notifications =
+        _notifications.map((n) => n.copyWith(isRead: true)).toList();
     await _saveNotifications();
     notifyListeners();
   }

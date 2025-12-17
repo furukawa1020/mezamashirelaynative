@@ -20,9 +20,7 @@ class AppNotification {
     this.data,
   });
 
-  AppNotification copyWith({
-    bool? isRead,
-  }) {
+  AppNotification copyWith({bool? isRead}) {
     return AppNotification(
       notificationId: notificationId,
       userId: userId,
@@ -36,15 +34,15 @@ class AppNotification {
   }
 
   Map<String, dynamic> toJson() => {
-        'notification_id': notificationId,
-        'user_id': userId,
-        'type': type.name,
-        'title': title,
-        'message': message,
-        'created_at': createdAt.toIso8601String(),
-        'is_read': isRead,
-        'data': data,
-      };
+    'notification_id': notificationId,
+    'user_id': userId,
+    'type': type.name,
+    'title': title,
+    'message': message,
+    'created_at': createdAt.toIso8601String(),
+    'is_read': isRead,
+    'data': data,
+  };
 
   factory AppNotification.fromJson(Map<String, dynamic> json) =>
       AppNotification(
