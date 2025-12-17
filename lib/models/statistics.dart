@@ -31,8 +31,7 @@ class Statistics {
       'success_rate': successRate,
       'total_missions': totalMissions,
       'completed_missions': completedMissions,
-      'daily_records':
-          dailyRecords.map((record) => record.toJson()).toList(),
+      'daily_records': dailyRecords.map((record) => record.toJson()).toList(),
       'last_wake_up_date': lastWakeUpDate?.toIso8601String(),
     };
   }
@@ -46,12 +45,14 @@ class Statistics {
       successRate: (json['success_rate'] as num).toDouble(),
       totalMissions: json['total_missions'] as int,
       completedMissions: json['completed_missions'] as int,
-      dailyRecords: (json['daily_records'] as List)
-          .map((r) => DailyRecord.fromJson(r))
-          .toList(),
-      lastWakeUpDate: json['last_wake_up_date'] != null
-          ? DateTime.parse(json['last_wake_up_date'] as String)
-          : null,
+      dailyRecords:
+          (json['daily_records'] as List)
+              .map((r) => DailyRecord.fromJson(r))
+              .toList(),
+      lastWakeUpDate:
+          json['last_wake_up_date'] != null
+              ? DateTime.parse(json['last_wake_up_date'] as String)
+              : null,
     );
   }
 
@@ -102,9 +103,10 @@ class DailyRecord {
       wakeUpSuccess: json['wake_up_success'] as bool,
       missionsCompleted: json['missions_completed'] as int,
       missionsAttempted: json['missions_attempted'] as int,
-      wakeUpTime: json['wake_up_time'] != null
-          ? Duration(minutes: json['wake_up_time'] as int)
-          : null,
+      wakeUpTime:
+          json['wake_up_time'] != null
+              ? Duration(minutes: json['wake_up_time'] as int)
+              : null,
     );
   }
 
@@ -132,8 +134,7 @@ class WeeklyStats {
     required this.averageWakeUpTime,
   });
 
-  double get successRate =>
-      totalDays > 0 ? successDays / totalDays : 0.0;
+  double get successRate => totalDays > 0 ? successDays / totalDays : 0.0;
 }
 
 // 月次統計
@@ -152,6 +153,5 @@ class MonthlyStats {
     required this.longestStreak,
   });
 
-  double get successRate =>
-      totalDays > 0 ? successDays / totalDays : 0.0;
+  double get successRate => totalDays > 0 ? successDays / totalDays : 0.0;
 }
