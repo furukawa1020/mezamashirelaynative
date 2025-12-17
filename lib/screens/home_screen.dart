@@ -7,6 +7,7 @@ import 'missions_screen.dart';
 import 'groups_screen.dart';
 import 'profile_screen.dart';
 import 'notifications_screen.dart';
+import 'statistics_screen.dart';
 import 'session_screen.dart';
 
 // ホーム画面（メインダッシュボード）
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     const _DashboardTab(),
+    const StatisticsScreen(),
     const MissionsScreen(),
     const GroupsScreen(),
     const ProfileScreen(),
