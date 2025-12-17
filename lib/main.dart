@@ -9,6 +9,7 @@ import 'services/alarm_service.dart';
 import 'services/notification_service.dart';
 import 'services/statistics_service.dart';
 import 'services/chat_service.dart';
+import 'services/theme_service.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -22,9 +23,11 @@ void main() async {
   final notificationService = NotificationService();
   final statisticsService = StatisticsService();
   final chatService = ChatService();
+  final themeService = ThemeService();
   final sessionService = SessionService(storageService, bleService);
 
   await authService.initialize();
+  await themeService.loadSettings();
   await alarmService.initialize();
   deeplinkService.initialize();
 
@@ -38,6 +41,7 @@ void main() async {
       notificationService: notificationService,
       statisticsService: statisticsService,
       chatService: chatService,
+      themeService: themeService,
       sessionService: sessionService,
     ),
   );
@@ -52,6 +56,7 @@ class MezamashiRelayApp extends StatelessWidget {
   final NotificationService notificationService;
   final StatisticsService statisticsService;
   final ChatService chatService;
+  final ThemeService themeService;
   final SessionService sessionService;
 
   const MezamashiRelayApp({
@@ -64,6 +69,7 @@ class MezamashiRelayApp extends StatelessWidget {
     required this.notificationService,
     required this.statisticsService,
     required this.chatService,
+    required this.themeService,
     required this.sessionService,
   });
 
@@ -83,18 +89,23 @@ class MezamashiRelayApp extends StatelessWidget {
           value: statisticsService,
         ),
         ChangeNotifierProvider<ChatService>.value(value: chatService),
+        ChangeNotifierProvider<ThemeService>.value(value: themeService),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
-      child: MaterialApp(
-        title: 'めざましリレー',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        ),
-        home: const SplashScreen(),
-        debugShowCheckedModeBanner: false,
+      child: Consumer<ThemeService>(
+        builder: (context, themeService, _) {
+          final brightness = MediaQuery.of(context).platformBrightness;
+          return MaterialApp(
+            title: 'めざましリレー',
+            debugShowCheckedModeBanner: false,
+            theme: themeService.getTheme(brightness),
+            home: const SplashScreen(),
+          );
+        },
       ),
+    );
+  }
+}
     );
   }
 }

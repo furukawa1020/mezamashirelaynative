@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
+import '../services/theme_service.dart';
+import '../theme/app_theme.dart';
 import 'notification_settings_screen.dart';
 
 // プロフィール画面
@@ -76,6 +78,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ).showSnackBar(SnackBar(content: Text('画像を選択しました: ${image.name}')));
       // TODO: 画像をStorageServiceに保存
     }
+  }
+
+  void _showThemeSettings() {
+    final themeService = context.read<ThemeService>();
+    
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'テーマ設定',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Text('明るさ', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: AppThemeMode.values.map((mode) {
+                final isSelected = themeService.themeMode == mode;
+                return ChoiceChip(
+                  label: Text(themeService.getThemeModeName(mode)),
+                  selected: isSelected,
+                  onSelected: (_) {
+                    themeService.setThemeMode(mode);
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+            const Text('カラーテーマ', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: AppColorTheme.values.map((colorTheme) {
+                final isSelected = themeService.colorTheme == colorTheme;
+                return ChoiceChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.circle,
+                        size: 16,
+                        color: themeService.getColorThemeColor(colorTheme),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(themeService.getColorThemeName(colorTheme)),
+                    ],
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) {
+                    themeService.setColorTheme(colorTheme);
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -189,6 +258,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // その他の設定
             const Divider(),
+            ListTile(
+              leading: const Icon(Icons.palette),
+              title: const Text('テーマ設定'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => _showThemeSettings(),
+            ),
             ListTile(
               leading: const Icon(Icons.notifications),
               title: const Text('通知設定'),

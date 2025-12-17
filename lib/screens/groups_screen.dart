@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../models/group.dart';
 import 'group_chat_screen.dart';
+import 'ranking_screen.dart';
 
 // グループ管理画面
 class GroupsScreen extends StatefulWidget {
@@ -331,6 +332,21 @@ class _GroupsScreenState extends State<GroupsScreen> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          IconButton(
+                            icon: const Icon(Icons.leaderboard),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RankingScreen(
+                                    groupId: group.groupId,
+                                    groupName: group.name,
+                                  ),
+                                ),
+                              );
+                            },
+                            tooltip: 'ランキング',
+                          ),
                           IconButton(
                             icon: const Icon(Icons.chat_bubble_outline),
                             onPressed: () {
