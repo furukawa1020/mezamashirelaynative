@@ -43,6 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'ホーム',
           ),
           NavigationDestination(
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
+            label: '統計',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.task_outlined),
             selectedIcon: Icon(Icons.task),
             label: 'ミッション',
