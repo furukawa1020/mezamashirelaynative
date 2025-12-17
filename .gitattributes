@@ -1,0 +1,7 @@
+# CMakeファイルを言語統計から除外
+**/CMakeLists.txt linguist-vendored
+*.cmake linguist-vendored
+
+# Makefileは除外（念のため）
+Makefile linguist-vendored
+makefile linguist-vendored
