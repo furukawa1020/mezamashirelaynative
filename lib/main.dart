@@ -34,6 +34,7 @@ void main() async {
       bleService: bleService,
       alarmService: alarmService,
       notificationService: notificationService,
+      statisticsService: statisticsService,
       sessionService: sessionService,
     ),
   );
@@ -46,6 +47,7 @@ class MezamashiRelayApp extends StatelessWidget {
   final BLEService bleService;
   final AlarmService alarmService;
   final NotificationService notificationService;
+  final StatisticsService statisticsService;
   final SessionService sessionService;
 
   const MezamashiRelayApp({
@@ -56,6 +58,7 @@ class MezamashiRelayApp extends StatelessWidget {
     required this.bleService,
     required this.alarmService,
     required this.notificationService,
+    required this.statisticsService,
     required this.sessionService,
   });
 
@@ -70,6 +73,9 @@ class MezamashiRelayApp extends StatelessWidget {
         Provider<AlarmService>.value(value: alarmService),
         ChangeNotifierProvider<NotificationService>.value(
           value: notificationService,
+        ),
+        ChangeNotifierProvider<StatisticsService>.value(
+          value: statisticsService,
         ),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
