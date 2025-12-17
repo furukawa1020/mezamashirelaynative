@@ -37,6 +37,7 @@ void main() async {
       alarmService: alarmService,
       notificationService: notificationService,
       statisticsService: statisticsService,
+      chatService: chatService,
       sessionService: sessionService,
     ),
   );
@@ -50,6 +51,7 @@ class MezamashiRelayApp extends StatelessWidget {
   final AlarmService alarmService;
   final NotificationService notificationService;
   final StatisticsService statisticsService;
+  final ChatService chatService;
   final SessionService sessionService;
 
   const MezamashiRelayApp({
@@ -61,6 +63,7 @@ class MezamashiRelayApp extends StatelessWidget {
     required this.alarmService,
     required this.notificationService,
     required this.statisticsService,
+    required this.chatService,
     required this.sessionService,
   });
 
@@ -79,6 +82,7 @@ class MezamashiRelayApp extends StatelessWidget {
         ChangeNotifierProvider<StatisticsService>.value(
           value: statisticsService,
         ),
+        ChangeNotifierProvider<ChatService>.value(value: chatService),
         ChangeNotifierProvider<SessionService>.value(value: sessionService),
       ],
       child: MaterialApp(
