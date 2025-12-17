@@ -4,17 +4,62 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/chat_message.dart';
 import 'api_service.dart';
+import 'websocket_service.dart';
 
-// チャットサービス - API連携 + ローカルキャッシュ
+// チャットサービス - API連携 + WebSocket + ローカルキャッシュ
 class ChatService extends ChangeNotifier {
   static const String _messagesKeyPrefix = 'mz_chat_messages';
   final Uuid _uuid = const Uuid();
+  final WebSocketService _wsService = WebSocketService();
 
   // グループIDごとのメッセージリスト
   final Map<String, List<ChatMessage>> _messagesByGroup = {};
 
+  ChatService() {
+    // WebSocketメッセージ受信コールバック設定
+    _wsService.onMessageReceived = _handleWebSocketMessage;
+  }
+
   List<ChatMessage> getMessages(String groupId) {
     return _messagesByGroup[groupId] ?? [];
+  }
+
+  // WebSocketからのメッセージを処理
+  void _handleWebSocketMessage(Map<String, dynamic> messageData) {
+    try {
+      final groupId = messageData['group_id'] ?? '';
+      final message = ChatMessage(
+        messageId: messageData['message_id'],
+        groupId: groupId,
+        userId: messageData['sender_user_id'],
+        nickname: messageData['sender_user_id'], // TODO: ユーザー情報から取得
+        content: messageData['content'],
+        sentAt: DateTime.parse(messageData['created_at']),
+        type: _parseMessageType(messageData['message_type']),
+      );
+
+      if (!_messagesByGroup.containsKey(groupId)) {
+        _messagesByGroup[groupId] = [];
+      }
+      _messagesByGroup[groupId]!.add(message);
+      _messagesByGroup[groupId]!.sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
+      // ローカルキャッシュに保存
+      _saveMessages(groupId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Failed to handle WebSocket message: $e');
+    }
+  }
+
+  // WebSocket接続
+  Future<void> connectToGroup(String groupId) async {
+    await _wsService.connect(groupId);
+  }
+
+  // WebSocket切断
+  Future<void> disconnectFromGroup() async {
+    await _wsService.disconnect();
   }
 
   // メッセージ読み込み（API連携）
@@ -22,19 +67,24 @@ class ChatService extends ChangeNotifier {
     try {
       // APIからメッセージ取得
       final messages = await ApiService.getMessages(groupId: groupId);
-      
-      _messagesByGroup[groupId] = messages.map((m) => ChatMessage(
-        messageId: m['message_id'],
-        groupId: groupId,
-        userId: m['sender_user_id'],
-        nickname: m['sender_user_id'], // TODO: ユーザー情報から取得
-        content: m['content'],
-        sentAt: DateTime.parse(m['created_at']),
-        type: _parseMessageType(m['message_type']),
-        reactions: _parseReactions(m['reactions']),
-      )).toList()
-        ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
-      
+
+      _messagesByGroup[groupId] =
+          messages
+              .map(
+                (m) => ChatMessage(
+                  messageId: m['message_id'],
+                  groupId: groupId,
+                  userId: m['sender_user_id'],
+                  nickname: m['sender_user_id'], // TODO: ユーザー情報から取得
+                  content: m['content'],
+                  sentAt: DateTime.parse(m['created_at']),
+                  type: _parseMessageType(m['message_type']),
+                  reactions: _parseReactions(m['reactions']),
+                ),
+              )
+              .toList()
+            ..sort((a, b) => a.sentAt.compareTo(b.sentAt));
+
       // ローカルキャッシュに保存
       await _saveMessages(groupId);
       notifyListeners();
