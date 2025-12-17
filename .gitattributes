@@ -1,7 +1,11 @@
-# CMakeファイルを言語統計から除外
-**/CMakeLists.txt linguist-vendored
-*.cmake linguist-vendored
+# CMakeファイルを言語統計から除外（より強力な設定）
+**/CMakeLists.txt linguist-vendored linguist-generated
+*.cmake linguist-vendored linguist-generated
 
 # Makefileは除外（念のため）
 Makefile linguist-vendored
 makefile linguist-vendored
+
+# Flutter生成ファイルも除外
+**/.dart_tool/** linguist-generated
+**/build/** linguist-generated
