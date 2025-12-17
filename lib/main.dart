@@ -7,6 +7,7 @@ import 'services/ble_service.dart';
 import 'services/session_service.dart';
 import 'services/alarm_service.dart';
 import 'services/notification_service.dart';
+import 'services/statistics_service.dart';
 import 'screens/splash_screen.dart';
 
 void main() async {
@@ -18,6 +19,7 @@ void main() async {
   final bleService = BLEService();
   final alarmService = AlarmService();
   final notificationService = NotificationService();
+  final statisticsService = StatisticsService();
   final sessionService = SessionService(storageService, bleService);
 
   await authService.initialize();
