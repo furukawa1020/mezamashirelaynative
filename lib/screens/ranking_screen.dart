@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart';
 import '../models/user.dart';
 
 // ランキング画面
@@ -43,41 +44,60 @@ class _RankingScreenState extends State<RankingScreen>
   Future<void> _loadRankings() async {
     setState(() => _isLoading = true);
 
-    // TODO: 実際のランキングデータを取得
-    // 現在はダミーデータ
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      // APIからランキング取得
+      final ranking = await ApiService.getRanking(groupId: widget.groupId);
+      
+      final entries = ranking.map((r) => RankingEntry(
+        userId: r['user_id'],
+        nickname: r['nickname'] ?? 'ゲスト',
+        score: r['success_count'] * 10,
+        rank: r['rank'],
+        streak: 0, // TODO: API側で計算
+        avatarUrl: r['avatar_url'],
+      )).toList();
 
-    final dummyUsers = [
-      RankingEntry(
-        userId: '1',
-        nickname: 'ユーザー1',
-        score: 150,
-        rank: 1,
-        streak: 15,
-        avatarUrl: null,
-      ),
-      RankingEntry(
-        userId: '2',
-        nickname: 'ユーザー2',
-        score: 120,
-        rank: 2,
-        streak: 12,
-        avatarUrl: null,
-      ),
-      RankingEntry(
-        userId: '3',
-        nickname: 'ユーザー3',
-        score: 100,
-        rank: 3,
-        streak: 10,
-        avatarUrl: null,
-      ),
-      RankingEntry(
-        userId: '4',
-        nickname: 'ユーザー4',
-        score: 80,
-        rank: 4,
-        streak: 8,
+      setState(() {
+        _weeklyRanking = entries;
+        _monthlyRanking = entries;
+        _allTimeRanking = entries;
+        _isLoading = false;
+      });
+    } catch (e) {
+      // API失敗時はダミーデータ
+      await Future.delayed(const Duration(seconds: 1));
+
+      final dummyUsers = [
+        RankingEntry(
+          userId: '1',
+          nickname: 'ユーザー1',
+          score: 150,
+          rank: 1,
+          streak: 15,
+          avatarUrl: null,
+        ),
+        RankingEntry(
+          userId: '2',
+          nickname: 'ユーザー2',
+          score: 120,
+          rank: 2,
+          streak: 12,
+          avatarUrl: null,
+        ),
+        RankingEntry(
+          userId: '3',
+          nickname: 'ユーザー3',
+          score: 100,
+          rank: 3,
+          streak: 10,
+          avatarUrl: null,
+        ),
+        RankingEntry(
+          userId: '4',
+          nickname: 'ユーザー4',
+          score: 80,
+          rank: 4,
+          streak: 8,
         avatarUrl: null,
       ),
       RankingEntry(

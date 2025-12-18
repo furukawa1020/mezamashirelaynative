@@ -141,18 +141,18 @@ class _GroupsScreenState extends State<GroupsScreen> {
                     final auth = context.read<AuthService>();
                     final storage = context.read<StorageService>();
 
-                    final group = await storage.findGroupByInviteCode(code);
-                    if (group != null) {
-                      await storage.joinGroup(
-                        group.groupId,
+                    try {
+                      // API経由でグループ参加
+                      await storage.joinGroupByInviteCode(
+                        code,
                         auth.currentUser!.userId,
                       );
                       Navigator.pop(context);
                       _loadGroups();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('「${group.name}」に参加しました')),
+                        const SnackBar(content: Text('グループに参加しました')),
                       );
-                    } else {
+                    } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('招待コードが無効です')),
                       );
