@@ -4,8 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/statistics.dart';
 import '../models/achievement.dart';
 import '../models/session.dart';
+import 'api_service.dart';
 
-// 統計サービス
+// 統計サービス - API連携版
 class StatisticsService extends ChangeNotifier {
   static const String _statisticsKey = 'mz_statistics';
   static const String _achievementsKey = 'mz_achievements';
@@ -16,19 +17,40 @@ class StatisticsService extends ChangeNotifier {
   Statistics? get statistics => _statistics;
   List<Achievement> get achievements => _achievements;
 
-  // 統計データを読み込み
+  // 統計データを読み込み - API連携
   Future<void> loadStatistics(String userId) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // 統計データ
-    final statsStr = prefs.getString('$_statisticsKey\_$userId');
-    if (statsStr != null) {
-      _statistics = Statistics.fromJson(jsonDecode(statsStr));
-    } else {
-      _statistics = Statistics.empty(userId);
+    try {
+      // APIから統計取得
+      final response = await ApiService.getUserStatistics(userId);
+      final stats = response['statistics'];
+      
+      // APIデータから統計を構築
+      _statistics = Statistics(
+        userId: userId,
+        totalSessions: stats['total_sessions'] ?? 0,
+        successfulSessions: stats['successful_sessions'] ?? 0,
+        currentStreak: 0, // TODO: API側で計算
+        longestStreak: 0, // TODO: API側で計算
+        totalPoints: stats['successful_sessions'] * 10 ?? 0,
+        level: _calculateLevel(stats['successful_sessions'] ?? 0),
+        dailyRecords: [], // TODO: API側から取得
+      );
+      
+      // ローカルキャッシュに保存
+      await _saveStatistics(userId);
+    } catch (e) {
+      // API失敗時はローカルから読み込み
+      final prefs = await SharedPreferences.getInstance();
+      final statsStr = prefs.getString('$_statisticsKey\_$userId');
+      if (statsStr != null) {
+        _statistics = Statistics.fromJson(jsonDecode(statsStr));
+      } else {
+        _statistics = Statistics.empty(userId);
+      }
     }
 
-    // 実績データ
+    // 実績データ（ローカルのみ）
+    final prefs = await SharedPreferences.getInstance();
     final achievementsStr = prefs.getString('$_achievementsKey\_$userId');
     if (achievementsStr != null) {
       final List<dynamic> achievementsJson = jsonDecode(achievementsStr);
@@ -37,6 +59,11 @@ class StatisticsService extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  int _calculateLevel(int successfulSessions) {
+    // 10セッションごとにレベルアップ
+    return (successfulSessions / 10).floor() + 1;
   }
 
   // セッション完了時に統計を更新

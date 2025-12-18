@@ -24,10 +24,12 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   void initState() {
     super.initState();
     _loadMessages();
+    _connectWebSocket();
   }
 
   @override
   void dispose() {
+    _disconnectWebSocket();
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -40,6 +42,18 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
       _isLoading = false;
     });
     _scrollToBottom();
+  }
+
+  // WebSocket接続
+  Future<void> _connectWebSocket() async {
+    final chatService = Provider.of<ChatService>(context, listen: false);
+    await chatService.connectToGroup(widget.group.groupId);
+  }
+
+  // WebSocket切断
+  Future<void> _disconnectWebSocket() async {
+    final chatService = Provider.of<ChatService>(context, listen: false);
+    await chatService.disconnectFromGroup();
   }
 
   void _scrollToBottom() {

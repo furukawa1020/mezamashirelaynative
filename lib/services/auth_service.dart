@@ -5,8 +5,9 @@ import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../models/user.dart';
 import 'storage_service.dart';
+import 'api_service.dart';
 
-// 匿名認証サービス（デバイスID強化版）
+// 匿名認証サービス - API連携版
 class AuthService {
   static const String _userKey = 'mz_user';
   static const String _deviceIdKey = 'mz_device_id';
@@ -54,7 +55,7 @@ class AuthService {
     return deviceIdentifier;
   }
 
-  // 初期化（アプリ起動時に呼ぶ）
+  // 初期化（アプリ起動時に呼ぶ）- API同期付き
   Future<AppUser> initialize() async {
     // デバイスIDを取得
     _deviceId = await _getOrCreateDeviceId();
@@ -74,6 +75,9 @@ class AuthService {
         lastActiveAt: DateTime.now(),
       );
       await _saveUser(_currentUser!);
+      
+      // APIと同期
+      await _syncWithApi(_currentUser!);
     } else {
       // 新規ユーザー作成（完全匿名）
       _currentUser = AppUser(
@@ -82,9 +86,38 @@ class AuthService {
         lastActiveAt: DateTime.now(),
       );
       await _saveUser(_currentUser!);
-    }
+      
+      // APIと同期
+      await _ - API連携
+  Future<void> updateProfile({String? nickname, String? avatarUrl}) async {
+    if (_currentUser == null) return;
 
-    return _currentUser!;
+    _currentUser = AppUser(
+      userId: _currentUser!.userId,
+      nickname: nickname ?? _currentUser!.nickname,
+      avatarUrl: avatarUrl ?? _currentUser!.avatarUrl,
+      createdAt: _currentUser!.createdAt,
+      lastActiveAt: DateTime.now(),
+    );
+
+    await _saveUser(_currentUser!);
+    
+    // APIに更新を送信
+    try {
+      await ApiService.updateUser(
+        userId: _currentUser!.userId,
+        nickname: _currentUser!.nickname,
+        avatarUrl: _currentUser!.avatarUrl,
+      );
+    } catch (e) {
+      print('Failed to update user profile on API: $e');
+    }
+        isAnonymous: user.nickname == null,
+      );
+    } catch (e) {
+      // API同期失敗してもローカルでは動作続行
+      print('Failed to sync user with API: $e');
+    }
   }
 
   // プロフィール更新
