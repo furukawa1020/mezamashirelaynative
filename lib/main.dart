@@ -106,6 +106,3 @@ class MezamashiRelayApp extends StatelessWidget {
     );
   }
 }
-    );
-  }
-}

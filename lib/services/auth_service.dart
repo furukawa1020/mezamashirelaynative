@@ -88,36 +88,19 @@ class AuthService {
       await _saveUser(_currentUser!);
       
       // APIと同期
-      await _ - API連携
-  Future<void> updateProfile({String? nickname, String? avatarUrl}) async {
+    await _syncWithApi();
+  }
+
+  // APIと同期
+  Future<void> _syncWithApi() async {
     if (_currentUser == null) return;
-
-    _currentUser = AppUser(
-      userId: _currentUser!.userId,
-      nickname: nickname ?? _currentUser!.nickname,
-      avatarUrl: avatarUrl ?? _currentUser!.avatarUrl,
-      createdAt: _currentUser!.createdAt,
-      lastActiveAt: DateTime.now(),
-    );
-
-    await _saveUser(_currentUser!);
     
-    // APIに更新を送信
     try {
-      await ApiService.updateUser(
-        userId: _currentUser!.userId,
-        nickname: _currentUser!.nickname,
-        avatarUrl: _currentUser!.avatarUrl,
-      );
-    } catch (e) {
-      print('Failed to update user profile on API: $e');
-    }
-        isAnonymous: user.nickname == null,
-      );
-    } catch (e) {
-      // API同期失敗してもローカルでは動作続行
-      print('Failed to sync user with API: $e');
-    }
+      final user = _currentUser!;
+      await ApiService.syncUser(
+        userId: user.userId,
+        nickname: user.nickname,
+        avatarUrl: user.avatarUrl,
   }
 
   // プロフィール更新

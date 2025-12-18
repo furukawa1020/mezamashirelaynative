@@ -5,6 +5,25 @@ import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
 
+// ランキングエントリー
+class RankingEntry {
+  final String userId;
+  final String nickname;
+  final int score;
+  final int rank;
+  final int streak;
+  final String? avatarUrl;
+
+  RankingEntry({
+    required this.userId,
+    required this.nickname,
+    required this.score,
+    required this.rank,
+    required this.streak,
+    this.avatarUrl,
+  });
+}
+
 // ランキング画面
 class RankingScreen extends StatefulWidget {
   final String groupId;
@@ -255,23 +274,4 @@ class _RankingScreenState extends State<RankingScreen>
       ),
     );
   }
-}
-
-// ランキングエントリー
-class RankingEntry {
-  final String userId;
-  final String nickname;
-  final int score;
-  final int rank;
-  final int streak;
-  final String? avatarUrl;
-
-  RankingEntry({
-    required this.userId,
-    required this.nickname,
-    required this.score,
-    required this.rank,
-    required this.streak,
-    this.avatarUrl,
-  });
 }

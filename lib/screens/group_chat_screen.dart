@@ -27,6 +27,16 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     _connectWebSocket();
   }
 
+  void _connectWebSocket() {
+    final chatService = context.read<ChatService>();
+    chatService.connectToGroup(widget.group.groupId);
+  }
+
+  void _disconnectWebSocket() {
+    final chatService = context.read<ChatService>();
+    chatService.disconnectFromGroup();
+  }
+
   @override
   void dispose() {
     _disconnectWebSocket();
@@ -78,7 +88,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     await chatService.sendMessage(
       groupId: widget.group.groupId,
       userId: auth.currentUser!.userId,
-      nickname: auth.currentUser!.nickname,
+      nickname: auth.currentUser!.nickname ?? 'ゲスト',
       content: content,
     );
 
@@ -95,7 +105,7 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     await chatService.sendCheerMessage(
       widget.group.groupId,
       auth.currentUser!.userId,
-      auth.currentUser!.nickname,
+      auth.currentUser!.nickname ?? 'ゲスト',
       targetNickname,
     );
 

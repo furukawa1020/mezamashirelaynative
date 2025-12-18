@@ -27,12 +27,14 @@ class StatisticsService extends ChangeNotifier {
       // APIデータから統計を構築
       _statistics = Statistics(
         userId: userId,
-        totalSessions: stats['total_sessions'] ?? 0,
-        successfulSessions: stats['successful_sessions'] ?? 0,
+        totalWakeUps: stats['total_sessions'] ?? 0,
+        successRate: stats['successful_sessions'] > 0
+            ? (stats['successful_sessions'] / stats['total_sessions'] * 100)
+            : 0.0,
         currentStreak: 0, // TODO: API側で計算
         longestStreak: 0, // TODO: API側で計算
-        totalPoints: stats['successful_sessions'] * 10 ?? 0,
-        level: _calculateLevel(stats['successful_sessions'] ?? 0),
+        totalMissions: 0,
+        completedMissions: 0,
         dailyRecords: [], // TODO: API側から取得
       );
       

@@ -8,6 +8,7 @@
 
 import 'package:app_links_web/app_links_web.dart';
 import 'package:audioplayers_web/audioplayers_web.dart';
+import 'package:device_info_plus/src/device_info_plus_web.dart';
 import 'package:flutter_blue_plus_web/flutter_blue_plus_web.dart';
 import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:share_plus/src/share_plus_web.dart';
@@ -19,6 +20,7 @@ void registerPlugins([final Registrar? pluginRegistrar]) {
   final Registrar registrar = pluginRegistrar ?? webPluginRegistrar;
   AppLinksPluginWeb.registerWith(registrar);
   AudioplayersPlugin.registerWith(registrar);
+  DeviceInfoPlusWebPlugin.registerWith(registrar);
   FlutterBluePlusWeb.registerWith(registrar);
   ImagePickerPlugin.registerWith(registrar);
   SharePlusWebPlugin.registerWith(registrar);
