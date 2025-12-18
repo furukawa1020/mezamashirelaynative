@@ -54,18 +54,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     _scrollToBottom();
   }
 
-  // WebSocket接続
-  Future<void> _connectWebSocket() async {
-    final chatService = Provider.of<ChatService>(context, listen: false);
-    await chatService.connectToGroup(widget.group.groupId);
-  }
-
-  // WebSocket切断
-  Future<void> _disconnectWebSocket() async {
-    final chatService = Provider.of<ChatService>(context, listen: false);
-    await chatService.disconnectFromGroup();
-  }
-
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(

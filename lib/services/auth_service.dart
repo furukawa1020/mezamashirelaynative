@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -8,7 +9,7 @@ import 'storage_service.dart';
 import 'api_service.dart';
 
 // 匿名認証サービス - API連携版
-class AuthService {
+class AuthService extends ChangeNotifier {
   static const String _userKey = 'mz_user';
   static const String _deviceIdKey = 'mz_device_id';
   static const Uuid _uuid = Uuid();
@@ -77,7 +78,7 @@ class AuthService {
       await _saveUser(_currentUser!);
 
       // APIと同期
-      await _syncWithApi(_currentUser!);
+      await _syncWithApi();
     } else {
       // 新規ユーザー作成（完全匿名）
       _currentUser = AppUser(
@@ -91,8 +92,11 @@ class AuthService {
       await _syncWithApi();
     }
 
-    // APIと同期
-    Future<void> _syncWithApi() async {
+    return _currentUser!;
+  }
+
+  // APIと同期
+  Future<void> _syncWithApi() async {
       if (_currentUser == null) return;
 
       try {
