@@ -6,11 +6,11 @@ import 'package:flutter/foundation.dart';
 class WebSocketService {
   // 開発環境: localhost、本番環境: Railway URL
   static const String wsUrl = 'ws://localhost:3000/cable';
-  
+
   WebSocketChannel? _channel;
   bool _isConnected = false;
   String? _currentGroupId;
-  
+
   // メッセージ受信コールバック
   Function(Map<String, dynamic>)? onMessageReceived;
   Function()? onConnected;
@@ -62,10 +62,7 @@ class WebSocketService {
 
     final subscribeMessage = jsonEncode({
       'command': 'subscribe',
-      'identifier': jsonEncode({
-        'channel': 'ChatChannel',
-        'group_id': groupId,
-      }),
+      'identifier': jsonEncode({'channel': 'ChatChannel', 'group_id': groupId}),
     });
 
     _channel!.sink.add(subscribeMessage);
@@ -109,10 +106,7 @@ class WebSocketService {
 
     final message = jsonEncode({
       'command': 'message',
-      'identifier': jsonEncode({
-        'channel': 'ChatChannel',
-        'group_id': groupId,
-      }),
+      'identifier': jsonEncode({'channel': 'ChatChannel', 'group_id': groupId}),
       'data': jsonEncode({
         'action': 'send_message',
         'group_id': groupId,

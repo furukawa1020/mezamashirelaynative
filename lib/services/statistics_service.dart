@@ -23,21 +23,22 @@ class StatisticsService extends ChangeNotifier {
       // APIから統計取得
       final response = await ApiService.getUserStatistics(userId);
       final stats = response['statistics'];
-      
+
       // APIデータから統計を構築
       _statistics = Statistics(
         userId: userId,
         totalWakeUps: stats['total_sessions'] ?? 0,
-        successRate: stats['successful_sessions'] > 0
-            ? (stats['successful_sessions'] / stats['total_sessions'] * 100)
-            : 0.0,
+        successRate:
+            stats['successful_sessions'] > 0
+                ? (stats['successful_sessions'] / stats['total_sessions'] * 100)
+                : 0.0,
         currentStreak: 0, // TODO: API側で計算
         longestStreak: 0, // TODO: API側で計算
         totalMissions: 0,
         completedMissions: 0,
         dailyRecords: [], // TODO: API側から取得
       );
-      
+
       // ローカルキャッシュに保存
       await _saveStatistics(userId);
     } catch (e) {

@@ -53,7 +53,9 @@ enum ChatMessageType {
   system, // システムメッセージ（メンバー参加等）
   achievement, // 実績解除通知
   wakeUp, // 起床通知
+  wakeup, // 起床通知（別名）
   cheer, // 応援メッセージ
+  image, // 画像メッセージ
 }
 
 // リアクション

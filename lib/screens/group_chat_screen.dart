@@ -27,6 +27,14 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
     _connectWebSocket();
   }
 
+  @override
+  void dispose() {
+    _disconnectWebSocket();
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _connectWebSocket() {
     final chatService = context.read<ChatService>();
     chatService.connectToGroup(widget.group.groupId);
@@ -35,14 +43,6 @@ class _GroupChatScreenState extends State<GroupChatScreen> {
   void _disconnectWebSocket() {
     final chatService = context.read<ChatService>();
     chatService.disconnectFromGroup();
-  }
-
-  @override
-  void dispose() {
-    _disconnectWebSocket();
-    _messageController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadMessages() async {

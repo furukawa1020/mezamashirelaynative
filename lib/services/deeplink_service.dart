@@ -97,7 +97,7 @@ class DeeplinkService {
     }
 
     // グループに参加
-    await storage.joinGroup(targetGroup.groupId, currentUser.userId);
+    await storage.joinGroupByInviteCode(targetGroup.inviteCode, currentUser.userId);
     _showSuccess('グループ「${targetGroup.name}」に参加しました！');
   }
 

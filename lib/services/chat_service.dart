@@ -79,7 +79,7 @@ class ChatService extends ChangeNotifier {
                   content: m['content'],
                   sentAt: DateTime.parse(m['created_at']),
                   type: _parseMessageType(m['message_type']),
-                  reactions: _parseReactions(m['reactions']),
+                  metadata: {'reactions': _parseReactions(m['reactions'])},
                 ),
               )
               .toList()

@@ -75,7 +75,7 @@ class AuthService {
         lastActiveAt: DateTime.now(),
       );
       await _saveUser(_currentUser!);
-      
+
       // APIと同期
       await _syncWithApi(_currentUser!);
     } else {
@@ -86,48 +86,91 @@ class AuthService {
         lastActiveAt: DateTime.now(),
       );
       await _saveUser(_currentUser!);
-      
+
       // APIと同期
-    await _syncWithApi();
-  }
+      await _syncWithApi();
+    }
 
-  // APIと同期
-  Future<void> _syncWithApi() async {
-    if (_currentUser == null) return;
-    
-    try {
-      final user = _currentUser!;
-      await ApiService.syncUser(
-        userId: user.userId,
-        nickname: user.nickname,
-        avatarUrl: user.avatarUrl,
-  }
+    // APIと同期
+    Future<void> _syncWithApi() async {
+      if (_currentUser == null) return;
 
-  // プロフィール更新
-  Future<void> updateProfile({String? nickname, String? avatarUrl}) async {
-    if (_currentUser == null) return;
+      try {
+        final user = _currentUser!;
+        await ApiService.syncUser(
+          userId: user.userId,
+          nickname: user.nickname,
+          avatarUrl: user.avatarUrl,
+          isAnonymous: user.nickname == null,
+        );
+      } catch (e) {
+        print('Failed to sync user with API: $e');
+      }
+    }
 
-    _currentUser = AppUser(
-      userId: _currentUser!.userId,
-      nickname: nickname ?? _currentUser!.nickname,
-      avatarUrl: avatarUrl ?? _currentUser!.avatarUrl,
-      createdAt: _currentUser!.createdAt,
-      lastActiveAt: DateTime.now(),
-    );
+    // プロフィール更新
+    Future<void> updateProfile({String? nickname, String? avatarUrl}) async {
+      if (_currentUser == null) return;
 
-    await _saveUser(_currentUser!);
-  }
+      _currentUser = AppUser(
+        userId: _currentUser!.userId,
+        nickname: nickname ?? _currentUser!.nickname,
+        avatarUrl: avatarUrl ?? _currentUser!.avatarUrl,
+        createdAt: _currentUser!.createdAt,
+        lastActiveAt: DateTime.now(),
+      );
 
-  // ユーザー情報を保存
-  Future<void> _saveUser(AppUser user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userKey, _jsonEncode(user.toJson()));
-  }
+      await _saveUser(_currentUser!);
 
-  // ユーザー情報取得（userId指定）
-  Future<AppUser?> getUser(String userId) async {
-    if (_currentUser?.userId == userId) {
-      return _currentUser;
+      // APIに更新を送信
+      try {
+        await ApiService.updateUser(
+          userId: _currentUser!.userId,
+          nickname: _currentUser!.nickname,
+          avatarUrl: _currentUser!.avatarUrl,
+        );
+      } catch (e) {
+        print('Failed to update user profile on API: $e');
+      }
+
+      notifyListeners();
+    }
+
+    // ユーザー情報を保存
+    Future<void> _saveUser(AppUser user) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userKey, _jsonEncode(user.toJson()));
+    }
+
+    // ユーザー情報取得（userId指定）
+    Future<AppUser?> getUser(String userId) async {
+      if (_currentUser?.userId == userId) {
+        return _currentUser;
+      }
+      return null;
+    }
+
+    // アカウントリセット
+    Future<void> resetAccount() async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_userKey);
+      _currentUser = null;
+      notifyListeners();
+    }
+
+    // JSON解析
+    AppUser _parseJson(Map<String, dynamic> json) {
+      return AppUser.fromJson(json);
+    }
+
+    // JSONエンコード
+    String _jsonEncode(Map<String, dynamic> json) {
+      return jsonEncode(json);
+    }
+
+    // 認証トークン生成
+    String generateAuthToken() {
+      return _currentUser?.userId ?? '';
     }
 
     // StorageServiceからキャッシュを取得

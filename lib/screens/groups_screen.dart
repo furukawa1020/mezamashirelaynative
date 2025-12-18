@@ -355,9 +355,8 @@ class _GroupsScreenState extends State<GroupsScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => GroupChatScreen(
-                                      group: group,
-                                      ),
+                                      (context) =>
+                                          GroupChatScreen(group: group),
                                 ),
                               );
                             },
