@@ -199,7 +199,3 @@ class AuthService extends ChangeNotifier {
     }
     return '${_currentUser!.userId}:$_deviceId:${DateTime.now().millisecondsSinceEpoch}';
   }
-
-  // デバイスIDを取得または作成
-  Future<String> _getOrCreateDeviceId() async {
-}
