@@ -97,22 +97,22 @@ class AuthService extends ChangeNotifier {
 
   // APIと同期
   Future<void> _syncWithApi() async {
-      if (_currentUser == null) return;
+    if (_currentUser == null) return;
 
-      try {
-        final user = _currentUser!;
-        await ApiService.syncUser(
-          userId: user.userId,
-          nickname: user.nickname,
-          avatarUrl: user.avatarUrl,
-          isAnonymous: user.nickname == null,
-        );
-      } catch (e) {
-        print('Failed to sync user with API: $e');
-      }
+    try {
+      final user = _currentUser!;
+      await ApiService.syncUser(
+        userId: user.userId,
+        nickname: user.nickname ?? '',
+        avatarUrl: user.avatarUrl,
+        isAnonymous: user.nickname == null,
+      );
+    } catch (e) {
+      print('Failed to sync user with API: $e');
     }
+  }
 
-    // プロフィール更新
+  // プロフィール更新
     Future<void> updateProfile({String? nickname, String? avatarUrl}) async {
       if (_currentUser == null) return;
 
@@ -151,32 +151,7 @@ class AuthService extends ChangeNotifier {
       if (_currentUser?.userId == userId) {
         return _currentUser;
       }
-      return null;
-    }
-
-    // アカウントリセット
-    Future<void> resetAccount() async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(_userKey);
-      _currentUser = null;
-      notifyListeners();
-    }
-
-    // JSON解析
-    AppUser _parseJson(Map<String, dynamic> json) {
-      return AppUser.fromJson(json);
-    }
-
-    // JSONエンコード
-    String _jsonEncode(Map<String, dynamic> json) {
-      return jsonEncode(json);
-    }
-
-    // 認証トークン生成
-    String generateAuthToken() {
-      return _currentUser?.userId ?? '';
-    }
-
+    
     // StorageServiceからキャッシュを取得
     final storage = StorageService();
     final cachedUser = await storage.getCachedUserInfo(userId);
@@ -185,7 +160,6 @@ class AuthService extends ChangeNotifier {
     }
 
     // キャッシュにない場合は、グループやセッションから推測して生成
-    // 実際のアプリではサーバーからフェッチする
     final generatedUser = AppUser(
       userId: userId,
       nickname: 'ユーザー${userId.substring(0, 6)}',
@@ -199,25 +173,14 @@ class AuthService extends ChangeNotifier {
     return generatedUser;
   }
 
-  // 複数ユーザー情報を取得
-  Future<Map<String, AppUser>> getUsers(List<String> userIds) async {
-    final users = <String, AppUser>{};
-    for (final userId in userIds) {
-      final user = await getUser(userId);
-      if (user != null) {
-        users[userId] = user;
-      }
-    }
-    return users;
-  }
-
-  // アカウントリセット（デバッグ用）
+  // アカウントリセット
   Future<void> resetAccount() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userKey);
     await prefs.remove(_deviceIdKey);
     _currentUser = null;
     _deviceId = null;
+    notifyListeners();
   }
 
   // JSON処理
@@ -229,12 +192,14 @@ class AuthService extends ChangeNotifier {
     return jsonEncode(map);
   }
 
-  // デバイスIDとユーザーIDを組み合わせたトークンを生成（将来のサーバー連携用）
+  // 認証トークン生成
   String generateAuthToken() {
     if (_currentUser == null || _deviceId == null) {
       throw Exception('User or device not initialized');
     }
-    // 簡易的なトークン（実際はサーバー側で署名付きJWTなどを使用）
     return '${_currentUser!.userId}:$_deviceId:${DateTime.now().millisecondsSinceEpoch}';
   }
+
+  // デバイスIDを取得または作成
+  Future<String> _getOrCreateDeviceId() async {
 }

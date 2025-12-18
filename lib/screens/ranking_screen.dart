@@ -147,17 +147,16 @@ class _RankingScreenState extends State<RankingScreen>
           tabs: const [Tab(text: '週間'), Tab(text: '月間'), Tab(text: '全期間')],
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildRankingList(_weeklyRanking, currentUserId),
-                  _buildRankingList(_monthlyRanking, currentUserId),
-                  _buildRankingList(_allTimeRanking, currentUserId),
-                ],
-              ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildRankingList(_weeklyRanking, currentUserId),
+                _buildRankingList(_monthlyRanking, currentUserId),
+                _buildRankingList(_allTimeRanking, currentUserId),
+              ],
+            ),
     );
   }
 
