@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
+  // TODO: Railway デプロイ後、以下のURLを本番URLに変更してください
+  // 例: static const String baseUrl = 'https://your-app.railway.app/api/v1';
   // 開発環境: localhost、本番環境: Railway URL
   static const String baseUrl = 'http://localhost:3000/api/v1';
 

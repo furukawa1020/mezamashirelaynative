@@ -4,6 +4,11 @@ dist
 .vscode
 .DS_Store
 
+# ガイドファイル（非公開）
+docs/SIGNING_GUIDE.md
+docs/ASSETS_GUIDE.md
+android/key.properties.example
+
 # Build files
 Makefile
 makefile

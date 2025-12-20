@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 // WebSocketサービス - Action Cable接続
 class WebSocketService {
+  // TODO: Railway デプロイ後、以下のURLを本番URLに変更してください
+  // 例: static const String wsUrl = 'wss://your-app.railway.app/cable';
   // 開発環境: localhost、本番環境: Railway URL
   static const String wsUrl = 'ws://localhost:3000/cable';
 
