@@ -64,11 +64,6 @@ class StatisticsService extends ChangeNotifier {
     notifyListeners();
   }
 
-  int _calculateLevel(int successfulSessions) {
-    // 10セッションごとにレベルアップ
-    return (successfulSessions / 10).floor() + 1;
-  }
-
   // セッション完了時に統計を更新
   Future<void> updateStatisticsFromSession(
     String userId,

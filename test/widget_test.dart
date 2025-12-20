@@ -6,6 +6,10 @@ import 'package:mezamashi_relay/services/deeplink_service.dart';
 import 'package:mezamashi_relay/services/ble_service.dart';
 import 'package:mezamashi_relay/services/alarm_service.dart';
 import 'package:mezamashi_relay/services/session_service.dart';
+import 'package:mezamashi_relay/services/notification_service.dart';
+import 'package:mezamashi_relay/services/statistics_service.dart';
+import 'package:mezamashi_relay/services/chat_service.dart';
+import 'package:mezamashi_relay/services/theme_service.dart';
 import 'package:mezamashi_relay/main.dart';
 
 void main() {
@@ -17,6 +21,10 @@ void main() {
     final bleService = BLEService();
     final alarmService = AlarmService();
     final sessionService = SessionService(storageService, bleService);
+    final notificationService = NotificationService();
+    final statisticsService = StatisticsService();
+    final chatService = ChatService();
+    final themeService = ThemeService();
 
     await authService.initialize();
     await alarmService.initialize();
@@ -30,6 +38,10 @@ void main() {
         bleService: bleService,
         alarmService: alarmService,
         sessionService: sessionService,
+        notificationService: notificationService,
+        statisticsService: statisticsService,
+        chatService: chatService,
+        themeService: themeService,
       ),
     );
 
