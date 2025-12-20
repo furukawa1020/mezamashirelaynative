@@ -152,15 +152,15 @@ class _RankingScreenState extends State<RankingScreen>
           : TabBarView(
               controller: _tabController,
               children: [
-                _buildRankingList(_weeklyRanking, currentUserId),
-                _buildRankingList(_monthlyRanking, currentUserId),
-                _buildRankingList(_allTimeRanking, currentUserId),
+                buildRankingList(_weeklyRanking, currentUserId),
+                buildRankingList(_monthlyRanking, currentUserId),
+                buildRankingList(_allTimeRanking, currentUserId),
               ],
             ),
     );
   }
 
-  Widget _buildRankingList(List<RankingEntry> rankings, String? currentUserId) {
+  Widget buildRankingList(List<RankingEntry> rankings, String? currentUserId) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: rankings.length,
@@ -168,12 +168,12 @@ class _RankingScreenState extends State<RankingScreen>
         final entry = rankings[index];
         final isCurrentUser = entry.userId == currentUserId;
 
-        return _buildRankingCard(entry, isCurrentUser, index);
+        return buildRankingCard(entry, isCurrentUser, index);
       },
     );
   }
 
-  Widget _buildRankingCard(RankingEntry entry, bool isCurrentUser, int index) {
+  Widget buildRankingCard(RankingEntry entry, bool isCurrentUser, int index) {
     Color? rankColor;
     IconData? rankIcon;
 

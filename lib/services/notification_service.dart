@@ -136,7 +136,7 @@ class NotificationService extends ChangeNotifier {
       userId: userId,
       type: NotificationType.missionAchieved,
       title: 'ミッション達成',
-      message: '「$missionName」を${consecutiveDays}日間継続達成！',
+      message: '「$missionName」を$consecutiveDays日間継続達成！',
     );
   }
 

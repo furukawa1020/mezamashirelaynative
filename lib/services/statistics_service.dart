@@ -44,7 +44,7 @@ class StatisticsService extends ChangeNotifier {
     } catch (e) {
       // API失敗時はローカルから読み込み
       final prefs = await SharedPreferences.getInstance();
-      final statsStr = prefs.getString('$_statisticsKey\_$userId');
+      final statsStr = prefs.getString('${_statisticsKey}_$userId');
       if (statsStr != null) {
         _statistics = Statistics.fromJson(jsonDecode(statsStr));
       } else {
@@ -54,7 +54,7 @@ class StatisticsService extends ChangeNotifier {
 
     // 実績データ（ローカルのみ）
     final prefs = await SharedPreferences.getInstance();
-    final achievementsStr = prefs.getString('$_achievementsKey\_$userId');
+    final achievementsStr = prefs.getString('${_achievementsKey}_$userId');
     if (achievementsStr != null) {
       final List<dynamic> achievementsJson = jsonDecode(achievementsStr);
       _achievements =
@@ -353,7 +353,7 @@ class StatisticsService extends ChangeNotifier {
     if (_statistics == null) return;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-      '$_statisticsKey\_$userId',
+      '${_statisticsKey}_$userId',
       jsonEncode(_statistics!.toJson()),
     );
   }
@@ -363,7 +363,7 @@ class StatisticsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final achievementsJson = _achievements.map((a) => a.toJson()).toList();
     await prefs.setString(
-      '$_achievementsKey\_$userId',
+      '${_achievementsKey}_$userId',
       jsonEncode(achievementsJson),
     );
   }

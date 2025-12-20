@@ -91,7 +91,7 @@ class ChatService extends ChangeNotifier {
     } catch (e) {
       // API失敗時はローカルから読み込み
       final prefs = await SharedPreferences.getInstance();
-      final messagesStr = prefs.getString('$_messagesKeyPrefix\_$groupId');
+      final messagesStr = prefs.getString('${_messagesKeyPrefix}_$groupId');
 
       if (messagesStr != null) {
         final List<dynamic> messagesJson = jsonDecode(messagesStr);
@@ -302,7 +302,7 @@ class ChatService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final messagesJson = messages.map((m) => m.toJson()).toList();
     await prefs.setString(
-      '$_messagesKeyPrefix\_$groupId',
+      '${_messagesKeyPrefix}_$groupId',
       jsonEncode(messagesJson),
     );
   }
